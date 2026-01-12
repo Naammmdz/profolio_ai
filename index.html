@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profolio - AI Portfolio Builder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        // Initialize theme from local storage to prevent flash
+        try {
+            if (localStorage.theme === 'light') {
+                document.documentElement.classList.remove('dark');
+            } else {
+                document.documentElement.classList.add('dark');
+            }
+        } catch (_) {}
+
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "var(--primary)",
+                        "primary-foreground": "var(--primary-foreground)",
+                        "accent": "var(--accent)",
+                        "background": "var(--background)",
+                        "surface": "var(--surface)",
+                        "surface-highlight": "var(--surface-highlight)",
+                        "border": "var(--border)",
+                        "text-muted": "var(--text-muted)",
+                    },
+                    fontFamily: {
+                        "serif": ["Instrument Serif", "serif"],
+                        "sans": ["Inter", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, var(--border) 1px, transparent 1px), linear-gradient(to bottom, var(--border) 1px, transparent 1px)",
+                    },
+                    animation: {
+                        marquee: "marquee var(--duration) linear infinite",
+                        "marquee-vertical": "marquee-vertical var(--duration) linear infinite",
+                    },
+                    keyframes: {
+                        marquee: {
+                            from: { transform: "translateX(0)" },
+                            to: { transform: "translateX(calc(-100% - var(--gap)))" },
+                        },
+                        "marquee-vertical": {
+                            from: { transform: "translateY(0)" },
+                            to: { transform: "translateY(calc(-100% - var(--gap)))" },
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        :root {
+            --background: #ffffff;
+            --surface: #f9fafb;
+            --surface-highlight: #f3f4f6;
+            --border: #e5e7eb;
+            --primary: #18181b;
+            --primary-foreground: #ffffff;
+            --text-muted: #52525b;
+            --accent: #d97706;
+        }
+
+        .dark {
+            --background: #050505;
+            --surface: #0a0a0a;
+            --surface-highlight: #171717;
+            --border: #27272a;
+            --primary: #d4d4d8;
+            --primary-foreground: #09090b;
+            --text-muted: #a1a1aa;
+            --accent: #f59e0b;
+        }
+
+        body { font-family: "Inter", sans-serif; background-color: var(--background); color: var(--primary); transition: background-color 0.3s, color 0.3s; }
+        h1, h2, h3, h4, .font-serif { font-family: "Instrument Serif", serif; }
+        .font-mono { font-family: "JetBrains Mono", monospace; }
+        .bg-grid {
+            background-size: 40px 40px;
+            mask-image: linear-gradient(to bottom, transparent, 5%, black, 95%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, transparent, 5%, black, 95%, transparent);
+        }
+        /* Custom scrollbar to match theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--surface); 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border); 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted); 
+        }
+
+        /* View Transitions */
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+            animation: none;
+            mix-blend-mode: normal;
+        }
+        ::view-transition-new(root) {
+            z-index: 2147483646;
+        }
+    </style>
+    <script type="importmap">
+    {
+      "imports": {
+        "react-dom/": "https://esm.sh/react-dom@18.3.1/",
+        "react-dom": "https://esm.sh/react-dom@18.3.1",
+        "react/": "https://esm.sh/react@18.3.1/",
+        "react": "https://esm.sh/react@18.3.1",
+        "framer-motion": "https://esm.sh/framer-motion@11.0.8?external=react,react-dom",
+        "rough-notation": "https://esm.sh/rough-notation@0.5.1"
+      }
+    }
+    </script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-background text-primary overflow-x-hidden selection:bg-primary/10">
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
