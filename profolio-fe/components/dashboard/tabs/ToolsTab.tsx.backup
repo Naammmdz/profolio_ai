@@ -1,0 +1,715 @@
+import React from 'react';
+import DashboardHeader from '../DashboardHeader';
+import DashboardFooter from '../shared/DashboardFooter';
+
+interface ToolsTabProps {
+  onPreview: () => void;
+  onNavigate: (tab: string) => void;
+  expandedTools: Record<string, boolean>;
+  onToggleTool: (tool: string) => void;
+  onCreateProject: () => void;
+  onEditProject: (project: any) => void;
+  onCreateSkillCategory: () => void;
+  onEditSkillCategory: (category: any) => void;
+}
+
+const ToolsTab: React.FC<ToolsTabProps> = ({
+  onPreview,
+  onNavigate,
+  expandedTools,
+  onToggleTool,
+  onCreateProject,
+  onEditProject,
+  onCreateSkillCategory,
+  onEditSkillCategory
+}) => {
+  // Sample data - should come from props or state in real app
+  const sampleProjects = [
+    { title: "NAVER Hackathon 2025", desc: "WebApp • React, Spring Boot 3.x, PostgreSQL +2 more" },
+    { title: "Developer Bookmark Manager", desc: "WebApp • React 18+/TypeScript, Spring Boot 3.x, MS SQL Server +1 more" },
+    { title: "School Medical Management System", desc: "WebApp • React.js, Spring Boot, MS SQL Server +1 more" },
+    { title: "Apple Product E-commerce", desc: "WebApp • JSP, Java Servlets, SQL Server +2 more" }
+  ];
+
+  const sampleSkillCategories = [
+    { title: "Languages", skills: ["Java", "Basic HTML", "CSS", "JavaScript", "Data Structures & Algorithms (DSA)", "Object-Oriented Programming (OOP)"] },
+    { title: "Frameworks", skills: ["Spring Framework (Spring Boot, Spring MVC, Spring Data JPA, Spring Security)", "Quarkus"] },
+    { title: "Databases", skills: ["MS SQL Server", "PostgreSQL", "Redis"] },
+    { title: "Tools", skills: ["Git", "Docker", "Maven", "RabbitMQ", "Postman", "Swagger", "IDE (IntelliJ IDEA, VS Code)"] }
+  ];
+
+  // Sample data for other tools
+  const [meInfo, setMeInfo] = React.useState({
+    name: "Ta Giang Nam",
+    age: "19",
+    location: "District 9, Ho Chi Minh City, Vietnam",
+    introduction: "I am a high-achieving Software Engineering student passionate about Backend Systems and Algorithmic Problem Solving. I am eager to join a high-growth product team to tackle challenging technical problems and deliver user-centric value."
+  });
+
+  const [tags, setTags] = React.useState<string[]>(['Java', 'Spring Boot', 'PostgreSQL', 'Docker', 'RabbitMQ', 'Redis']);
+  const [tagInput, setTagInput] = React.useState("");
+
+  const [contactInfo, setContactInfo] = React.useState({
+    email: "james.martin@example.com",
+    phone: "+1 (555) 123-4567",
+    linkedin: "linkedin.com/in/jamesmartin",
+    github: "github.com/jamesmartin",
+    website: "jamesmartin.dev"
+  });
+
+  const [locationInfo, setLocationInfo] = React.useState({
+    city: "San Francisco",
+    country: "United States",
+    timezone: "PST (UTC-8)"
+  });
+
+  const [hobbies, setHobbies] = React.useState([
+    "Photography",
+    "Hiking",
+    "Reading",
+    "Gaming"
+  ]);
+
+  return (
+    <div className="p-8 lg:p-12 max-w-5xl mx-auto pb-32">
+      <DashboardHeader
+        onPreview={onPreview}
+        onPublish={() => onNavigate('publish')}
+      />
+      <div className="mb-8">
+        <div className="flex items-center gap-4 mb-2">
+          <h1 className="text-3xl font-bold text-primary">Tools</h1>
+          <label className="switch scale-90 origin-left">
+            <input defaultChecked type="checkbox" />
+            <span className="slider"></span>
+          </label>
+          <span className="text-sm font-medium text-primary -ml-2">Enabled</span>
+        </div>
+        <p className="text-text-muted text-sm">Configure the tools your AI can use to answer questions</p>
+      </div>
+
+      <div className="bg-surface border border-border rounded-xl p-0 mb-8 shadow-sm h-[320px] relative overflow-hidden flex flex-col items-center justify-center bg-[radial-gradient(var(--border)_1px,transparent_1px)] [background-size:16px_16px]">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/50"></div>
+        <div className="relative z-10 flex flex-col items-center">
+          <div className="mb-6 relative">
+            <span className="material-symbols-outlined text-[64px] text-primary apple-float">smart_toy</span>
+            <div className="absolute -bottom-4 right-0 pointer-events-none">
+              <svg className="w-6 h-6 text-primary drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 2l12 11.2-5.8.5 3.3 7.3-2.2.9-3.2-7.4-4.4 4.6z" stroke="white" strokeWidth="1"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-full max-w-sm px-4">
+          <div className="bg-background rounded-full border border-border shadow-sm p-1.5 pl-4 flex items-center">
+            <span className="text-sm text-text-muted flex-1">Ask me anything</span>
+            <div className="size-7 bg-indigo-500 rounded-full flex items-center justify-center text-white cursor-pointer hover:bg-indigo-600 transition-colors">
+              <span className="material-symbols-outlined text-[16px]">arrow_upward</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        {/* Me (personal info) - First Tool */}
+        \u003cdiv className=\"bg-surface border border-border rounded-xl overflow-hidden shadow-sm hover:border-primary/20 transition-colors\"\u003e
+        \u003cdiv className=\"w-full flex items-center justify-between p-6 bg-surface\"\u003e
+        \u003cdiv\u003e
+        \u003cdiv className=\"flex items-center gap-2 mb-1\"\u003e
+        \u003ch3 className=\"text-base font-bold text-primary\"\u003eMe (personal info)\u003c/h3\u003e
+        \u003cspan className=\"bg-green-500/10 text-green-700 dark:text-green-400 rounded-full p-0.5 flex items-center justify-center\"\u003e
+        \u003cspan className=\"material-symbols-outlined text-[14px]\"\u003echeck\u003c/span\u003e
+        \u003c/span\u003e
+        \u003c/div\u003e
+        \u003cp className=\"text-sm text-text-muted\"\u003eBasic information about you - name, photo, bio\u003c/p\u003e
+        \u003c/div\u003e
+        \u003cdiv className=\"flex items-center gap-4\"\u003e
+        \u003cbutton className=\"px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-full transition-colors\"\u003e
+        Try it
+        \u003c/button\u003e
+        \u003clabel className=\"switch scale-90\"\u003e
+        \u003cinput defaultChecked type=\"checkbox\"/\u003e
+        \u003cspan className=\"slider\"\u003e\u003c/span\u003e
+        \u003c/label\u003e
+        \u003cspan
+        onClick={() =\u003e onToggleTool('personal')}
+        className={`material-symbols-outlined text-text-muted cursor-pointer hover:text-primary transition-transform duration-200 ${expandedTools['personal'] ? 'rotate-180' : ''}`}
+        \u003eexpand_more\u003c/span\u003e
+        \u003c/div\u003e
+        \u003c/div\u003e
+        {expandedTools['personal'] && (
+        \u003cdiv className=\"p-6 border-t border-border\"\u003e
+        \u003cdiv className=\"mb-6\"\u003e
+        \u003ch4 className=\"text-sm font-bold text-primary mb-2\"\u003ePresentation Photo\u003c/h4\u003e
+        \u003cp className=\"text-xs text-text-muted mb-3\"\u003eThis photo will be displayed in the presentation tool\u003c/p\u003e
+        \u003cdiv className=\"border-2 border-dashed border-border rounded-xl p-8 flex flex-col items-center justify-center text-center hover:bg-surface-highlight transition-colors cursor-pointer\"\u003e
+        \u003cspan className=\"material-symbols-outlined text-text-muted text-4xl mb-2\"\u003eimage\u003c/span\u003e
+        \u003cp className=\"text-sm text-text-muted mb-1\"\u003eDrop image here or \u003cspan className=\"text-indigo-600 font-medium\"\u003ebrowse\u003c/span\u003e\u003c/p\u003e
+        \u003cp className=\"text-[10px] text-text-muted\"\u003eSquare format recommended • PNG, JPG or GIF (max. 2MB)\u003c/p\u003e
+        \u003c/div\u003e
+        \u003c/div\u003e
+        \u003cdiv className=\"grid grid-cols-1 md:grid-cols-3 gap-6 mb-6\"\u003e
+        \u003cdiv className=\"col-span-1\"\u003e
+        \u003clabel className=\"block text-xs font-bold text-primary mb-1.5\"\u003eName \u003cspan className=\"text-red-500\"\u003e*\u003c/span\u003e\u003c/label\u003e
+        \u003cinput
+        className=\"w-full py-2 px-3 rounded-lg border border-border bg-background text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-primary\"
+        type=\"text\"
+        value={meInfo.name}
+        onChange={(e) =\u003e setMeInfo({...meInfo, name: e.target.value})}
+        /\u003e
+        \u003c/div\u003e
+        \u003cdiv className=\"col-span-1\"\u003e
+        \u003clabel className=\"block text-xs font-bold text-primary mb-1.5\"\u003eAge\u003c/label\u003e
+        \u003cinput
+        className=\"w-full py-2 px-3 rounded-lg border border-border bg-background text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-primary\"
+        type=\"text\"
+        value={meInfo.age}
+        onChange={(e) =\u003e setMeInfo({...meInfo, age: e.target.value})}
+        /\u003e
+        \u003c/div\u003e
+        \u003cdiv className=\"col-span-1\"\u003e
+        \u003clabel className=\"block text-xs font-bold text-primary mb-1.5\"\u003eLocation\u003c/label\u003e
+        \u003cinput
+        className=\"w-full py-2 px-3 rounded-lg border border-border bg-background text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-primary\"
+        type=\"text\"
+        value={meInfo.location}
+        onChange={(e) =\u003e setMeInfo({...meInfo, location: e.target.value})}
+        /\u003e
+        \u003c/div\u003e
+        \u003c/div\u003e
+        \u003cdiv className=\"mb-6\"\u003e
+        \u003clabel className=\"block text-xs font-bold text-primary mb-1.5\"\u003eIntroduction \u003cspan className=\"text-red-500\"\u003e*\u003c/span\u003e\u003c/label\u003e
+        \u003ctextarea
+        className=\"w-full py-2 px-3 rounded-lg border border-border bg-background text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-primary min-h-[100px] resize-y\"
+        value={meInfo.introduction}
+        onChange={(e) =\u003e setMeInfo({...meInfo, introduction: e.target.value})}
+        /\u003e
+        \u003c/div\u003e
+        \u003cdiv className=\"mb-6\"\u003e
+        \u003clabel className=\"block text-xs font-bold text-primary mb-1.5\"\u003eTags\u003c/label\u003e
+        \u003cdiv className=\"p-2 border border-border rounded-lg bg-background mb-3\"\u003e
+        \u003cinput
+        className=\"w-full text-sm outline-none bg-transparent text-primary\"
+        placeholder=\"Type tags (e.g., SaaS Builder, Developer, Student...)\"
+        value={tagInput}
+        onChange={(e) =\u003e setTagInput(e.target.value)}
+        onKeyPress={(e) =\u003e {
+                      if (e.key === 'Enter' && tagInput.trim()) {
+          setTags([...tags, tagInput.trim()]);
+        setTagInput('');
+                      }
+                    }}
+        /\u003e
+        \u003c/div\u003e
+        \u003cdiv className=\"flex flex-wrap gap-2\"\u003e
+        {tags.map((tag, index) =\u003e (
+        \u003cspan key={index} className=\"inline-flex items-center gap-1 px-3 py-1 bg-surface-highlight rounded-full text-xs font-medium text-primary\"\u003e
+        {tag}
+        \u003cspan
+        className=\"material-symbols-outlined text-[14px] cursor-pointer hover:text-red-500\"
+        onClick={() =\u003e setTags(tags.filter((_, i) =\u003e i !== index))}
+        \u003eclose\u003c/span\u003e
+        \u003c/span\u003e
+                  ))}
+        \u003c/div\u003e
+        \u003c/div\u003e
+        \u003cbutton className=\"w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm\"\u003e
+        Save Presentation Information
+        \u003c/button\u003e
+        \u003c/div\u003e
+          )}
+        \u003c/div\u003e
+
+        {/* Projects Tool */}
+        <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm hover:border-primary/20 transition-colors">
+          <div className="w-full flex items-center justify-between p-6 bg-surface">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-base font-bold text-primary">Projects</h3>
+              </div>
+              <p className="text-sm text-text-muted">Showcase your portfolio projects and work</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <button className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-full transition-colors">
+                Try it
+              </button>
+              <label className="switch scale-90">
+                <input defaultChecked type="checkbox" />
+                <span className="slider"></span>
+              </label>
+              <span
+                onClick={() => onToggleTool('projects')}
+                className={`material-symbols-outlined text-text-muted cursor-pointer hover:text-primary transition-transform duration-200 ${expandedTools['projects'] ? 'rotate-180' : ''}`}
+              >expand_more</span>
+            </div>
+          </div>
+          {expandedTools['projects'] && (
+            <div className="p-6 border-t border-border">
+              <div className="space-y-4 mb-6">
+                {sampleProjects.map((project, i) => (
+                  <div key={i} className="flex items-center justify-between p-4 border border-border rounded-xl hover:bg-surface-highlight transition-colors bg-background">
+                    <div>
+                      <h4 className="text-sm font-bold text-primary">{project.title}</h4>
+                      <p className="text-xs text-text-muted mt-0.5">{project.desc}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => onEditProject(project)}
+                        className="text-xs font-medium text-primary hover:text-indigo-600 transition-colors"
+                      >Edit</button>
+                      <button className="text-text-muted hover:text-red-500 transition-colors">
+                        <span className="material-symbols-outlined text-[18px]">delete</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={onCreateProject}
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center justify-center gap-2"
+              >
+                <span className="material-symbols-outlined text-[18px]">add</span>
+                Add Project
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Skills Tool */}
+        <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm hover:border-primary/20 transition-colors">
+          <div className="w-full flex items-center justify-between p-6 bg-surface">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-base font-bold text-primary">Skills</h3>
+              </div>
+              <p className="text-sm text-text-muted">Your technical and soft skills</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <button className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-full transition-colors">
+                Try it
+              </button>
+              <label className="switch scale-90">
+                <input defaultChecked type="checkbox" />
+                <span className="slider"></span>
+              </label>
+              <span
+                onClick={() => onToggleTool('skills')}
+                className={`material-symbols-outlined text-text-muted cursor-pointer hover:text-primary transition-transform duration-200 ${expandedTools['skills'] ? 'rotate-180' : ''}`}
+              >expand_more</span>
+            </div>
+          </div>
+          {expandedTools['skills'] && (
+            <div className="p-6 border-t border-border">
+              <div className="space-y-6 mb-6">
+                {sampleSkillCategories.map((cat, i) => (
+                  <div key={i} className="p-4 border border-border rounded-xl bg-background">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-bold text-primary">{cat.title}</h4>
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => onEditSkillCategory(cat)}
+                          className="text-xs font-medium text-primary hover:text-indigo-600 transition-colors"
+                        >Edit</button>
+                        <button className="text-text-muted hover:text-red-500 transition-colors">
+                          <span className="material-symbols-outlined text-[18px]">delete</span>
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {cat.skills.map((skill, j) => (
+                        <span key={j} className="inline-flex px-3 py-1 bg-surface-highlight rounded-full text-xs font-medium text-primary border border-border">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={onCreateSkillCategory}
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center justify-center gap-2"
+              >
+                <span className="material-symbols-outlined text-[18px]">add</span>
+                Add Category
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Me Tool */}
+        <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm hover:border-primary/20 transition-colors">
+          <div className="w-full flex items-center justify-between p-6 bg-surface">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-base font-bold text-primary">Me</h3>
+              </div>
+              <p className="text-sm text-text-muted">Personal information and background</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <button className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-full transition-colors">
+                Try it
+              </button>
+              <label className="switch scale-90">
+                <input defaultChecked type="checkbox" />
+                <span className="slider"></span>
+              </label>
+              <span
+                onClick={() => onToggleTool('me')}
+                className={`material-symbols-outlined text-text-muted cursor-pointer hover:text-primary transition-transform duration-200 ${expandedTools['me'] ? 'rotate-180' : ''}`}
+              >expand_more</span>
+            </div>
+          </div>
+          {expandedTools['me'] && (
+            <div className="p-6 border-t border-border">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-primary mb-2">Name</label>
+                  <input
+                    type="text"
+                    value={meInfo.name}
+                    onChange={(e) => setMeInfo({ ...meInfo, name: e.target.value })}
+                    className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-primary mb-2">Bio</label>
+                  <input
+                    type="text"
+                    value={meInfo.bio}
+                    onChange={(e) => setMeInfo({ ...meInfo, bio: e.target.value })}
+                    className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                    placeholder="Short bio"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-primary mb-2">About Me</label>
+                  <textarea
+                    value={meInfo.about}
+                    onChange={(e) => setMeInfo({ ...meInfo, about: e.target.value })}
+                    className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 min-h-[100px] resize-y"
+                    placeholder="Tell visitors about yourself..."
+                  />
+                </div>
+              </div>
+              <button className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
+                Save
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Fun & Hobbies Tool */}
+        <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm hover:border-primary/20 transition-colors">
+          <div className="w-full flex items-center justify-between p-6 bg-surface">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-base font-bold text-primary">Fun & Hobbies</h3>
+              </div>
+              <p className="text-sm text-text-muted">Your interests and hobbies</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <button className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-full transition-colors">
+                Try it
+              </button>
+              <label className="switch scale-90">
+                <input defaultChecked type="checkbox" />
+                <span className="slider"></span>
+              </label>
+              <span
+                onClick={() => onToggleTool('hobbies')}
+                className={`material-symbols-outlined text-text-muted cursor-pointer hover:text-primary transition-transform duration-200 ${expandedTools['hobbies'] ? 'rotate-180' : ''}`}
+              >expand_more</span>
+            </div>
+          </div>
+          {expandedTools['hobbies'] && (
+            <div className="p-6 border-t border-border">
+              <div className="space-y-4 mb-6">
+                <div className="flex flex-wrap gap-2">
+                  {hobbies.map((hobby, i) => (
+                    <div key={i} className="inline-flex items-center gap-2 px-3 py-1.5 bg-surface-highlight rounded-full text-xs font-medium text-primary border border-border">
+                      <span>{hobby}</span>
+                      <button
+                        onClick={() => setHobbies(hobbies.filter((_, idx) => idx !== i))}
+                        className="text-text-muted hover:text-red-500 transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-[14px]">close</span>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Add a hobby"
+                    className="flex-1 bg-background border border-border rounded-lg px-4 py-2 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                        setHobbies([...hobbies, e.currentTarget.value.trim()]);
+                        e.currentTarget.value = '';
+                      }
+                    }}
+                  />
+                  <button
+                    onClick={(e) => {
+                      const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                      if (input.value.trim()) {
+                        setHobbies([...hobbies, input.value.trim()]);
+                        input.value = '';
+                      }
+                    }}
+                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+              <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
+                Save
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Contact Tool */}
+        <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm hover:border-primary/20 transition-colors">
+          <div className="w-full flex items-center justify-between p-6 bg-surface">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-base font-bold text-primary">Contact</h3>
+              </div>
+              <p className="text-sm text-text-muted">Your contact information</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <button className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-full transition-colors">
+                Try it
+              </button>
+              <label className="switch scale-90">
+                <input defaultChecked type="checkbox" />
+                <span className="slider"></span>
+              </label>
+              <span
+                onClick={() => onToggleTool('contact')}
+                className={`material-symbols-outlined text-text-muted cursor-pointer hover:text-primary transition-transform duration-200 ${expandedTools['contact'] ? 'rotate-180' : ''}`}
+              >expand_more</span>
+            </div>
+          </div>
+          {expandedTools['contact'] && (
+            <div className="p-6 border-t border-border">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-primary mb-2">Email</label>
+                  <input
+                    type="email"
+                    value={contactInfo.email}
+                    onChange={(e) => setContactInfo({ ...contactInfo, email: e.target.value })}
+                    className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-primary mb-2">Phone</label>
+                  <input
+                    type="tel"
+                    value={contactInfo.phone}
+                    onChange={(e) => setContactInfo({ ...contactInfo, phone: e.target.value })}
+                    className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-primary mb-2">LinkedIn</label>
+                  <input
+                    type="text"
+                    value={contactInfo.linkedin}
+                    onChange={(e) => setContactInfo({ ...contactInfo, linkedin: e.target.value })}
+                    className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                    placeholder="linkedin.com/in/username"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-primary mb-2">GitHub</label>
+                  <input
+                    type="text"
+                    value={contactInfo.github}
+                    onChange={(e) => setContactInfo({ ...contactInfo, github: e.target.value })}
+                    className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                    placeholder="github.com/username"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-primary mb-2">Website</label>
+                  <input
+                    type="url"
+                    value={contactInfo.website}
+                    onChange={(e) => setContactInfo({ ...contactInfo, website: e.target.value })}
+                    className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                    placeholder="yourwebsite.com"
+                  />
+                </div>
+              </div>
+              <button className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
+                Save
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Resume Tool */}
+        <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm hover:border-primary/20 transition-colors">
+          <div className="w-full flex items-center justify-between p-6 bg-surface">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-base font-bold text-primary">Resume</h3>
+              </div>
+              <p className="text-sm text-text-muted">Upload and manage your resume</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <button className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-full transition-colors">
+                Try it
+              </button>
+              <label className="switch scale-90">
+                <input defaultChecked type="checkbox" />
+                <span className="slider"></span>
+              </label>
+              <span
+                onClick={() => onToggleTool('resume')}
+                className={`material-symbols-outlined text-text-muted cursor-pointer hover:text-primary transition-transform duration-200 ${expandedTools['resume'] ? 'rotate-180' : ''}`}
+              >expand_more</span>
+            </div>
+          </div>
+          {expandedTools['resume'] && (
+            <div className="p-6 border-t border-border">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 border border-border rounded-xl bg-background">
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-text-muted">description</span>
+                    <div>
+                      <h4 className="text-sm font-bold text-primary">resume.pdf</h4>
+                      <p className="text-xs text-text-muted">2.4 MB • Updated 2 days ago</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button className="text-xs font-medium text-primary hover:text-indigo-600 transition-colors">Edit</button>
+                    <button className="text-text-muted hover:text-red-500 transition-colors">
+                      <span className="material-symbols-outlined text-[18px]">delete</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <button className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center justify-center gap-2">
+                <span className="material-symbols-outlined text-[18px]">upload</span>
+                Upload Resume
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Video Tool */}
+        <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm hover:border-primary/20 transition-colors">
+          <div className="w-full flex items-center justify-between p-6 bg-surface">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-base font-bold text-primary">Video</h3>
+              </div>
+              <p className="text-sm text-text-muted">Add a video introduction</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <button className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-full transition-colors">
+                Try it
+              </button>
+              <label className="switch scale-90">
+                <input defaultChecked type="checkbox" />
+                <span className="slider"></span>
+              </label>
+              <span
+                onClick={() => onToggleTool('video')}
+                className={`material-symbols-outlined text-text-muted cursor-pointer hover:text-primary transition-transform duration-200 ${expandedTools['video'] ? 'rotate-180' : ''}`}
+              >expand_more</span>
+            </div>
+          </div>
+          {expandedTools['video'] && (
+            <div className="p-6 border-t border-border">
+              <div className="space-y-4">
+                <div className="aspect-video bg-background border border-border rounded-xl flex items-center justify-center">
+                  <div className="text-center">
+                    <span className="material-symbols-outlined text-4xl text-text-muted mb-2">videocam</span>
+                    <p className="text-sm text-text-muted">No video uploaded</p>
+                  </div>
+                </div>
+              </div>
+              <button className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center justify-center gap-2">
+                <span className="material-symbols-outlined text-[18px]">upload</span>
+                Upload Video
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Location Tool */}
+        <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm hover:border-primary/20 transition-colors">
+          <div className="w-full flex items-center justify-between p-6 bg-surface">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-base font-bold text-primary">Location</h3>
+              </div>
+              <p className="text-sm text-text-muted">Your location information</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <button className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-full transition-colors">
+                Try it
+              </button>
+              <label className="switch scale-90">
+                <input defaultChecked type="checkbox" />
+                <span className="slider"></span>
+              </label>
+              <span
+                onClick={() => onToggleTool('location')}
+                className={`material-symbols-outlined text-text-muted cursor-pointer hover:text-primary transition-transform duration-200 ${expandedTools['location'] ? 'rotate-180' : ''}`}
+              >expand_more</span>
+            </div>
+          </div>
+          {expandedTools['location'] && (
+            <div className="p-6 border-t border-border">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-primary mb-2">City</label>
+                  <input
+                    type="text"
+                    value={locationInfo.city}
+                    onChange={(e) => setLocationInfo({ ...locationInfo, city: e.target.value })}
+                    className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-primary mb-2">Country</label>
+                  <input
+                    type="text"
+                    value={locationInfo.country}
+                    onChange={(e) => setLocationInfo({ ...locationInfo, country: e.target.value })}
+                    className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-primary mb-2">Timezone</label>
+                  <input
+                    type="text"
+                    value={locationInfo.timezone}
+                    onChange={(e) => setLocationInfo({ ...locationInfo, timezone: e.target.value })}
+                    className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                    placeholder="PST (UTC-8)"
+                  />
+                </div>
+              </div>
+              <button className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
+                Save
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <DashboardFooter />
+    </div>
+  );
+};
+
+export default ToolsTab;
+

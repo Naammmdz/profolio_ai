@@ -44,7 +44,21 @@ spring:
             locator:
               enabled: true
           routes:
-            # Add your service routes here
+            # Authorization Server Route - OAuth2 endpoints
+            - id: authorization-server-oauth2
+              uri: lb://authorization-server
+              predicates:
+                - Path=/oauth2/**
+              filters:
+                - StripPrefix=0
+            # Authorization Server Route - Custom auth endpoints (if any)
+            - id: authorization-server-auth
+              uri: lb://authorization-server
+              predicates:
+                - Path=/auth/**
+              filters:
+                - StripPrefix=0
+            # Add your other service routes here
             # Example:
             # - id: profolio-service
             #   uri: lb://profolio-service
