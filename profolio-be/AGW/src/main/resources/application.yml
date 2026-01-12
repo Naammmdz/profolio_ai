@@ -1,0 +1,79 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,health,prometheus,metrics
+
+---
+spring:
+  application:
+    name: AGW
+  cloud:
+    gateway:
+      server:
+        webflux:
+          httpclient:
+            pool:
+              type: fixed
+              max-connections: 3000
+              acquire-timeout: 8000
+              max-life-time: 300s
+              max-idle-time: 10s
+            connect-timeout: 30000
+            response-timeout: 60s
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins: 
+                  - "http://localhost:3000"
+                  - "http://localhost:5173"
+                  # Add production domain here
+                  # - "https://profolio.yourdomain.com"
+                allowedMethods: 
+                  - GET
+                  - POST
+                  - PUT
+                  - DELETE
+                  - OPTIONS
+                  - PATCH
+                allowedHeaders: 
+                  - "*"
+                allowCredentials: true
+                maxAge: 3600
+          discovery:
+            locator:
+              enabled: true
+          routes:
+            # Add your service routes here
+            # Example:
+            # - id: profolio-service
+            #   uri: lb://profolio-service
+            #   predicates:
+            #     - Path=/api/**
+            #   filters:
+            #     - StripPrefix=1
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+    loadbalancer:
+      ribbon:
+        enabled: false
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        enabled: true
+        instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+        prefer-ip-address: true
+        register: false
+        register-health-check: false
+      config:
+        enabled: false
+      retry:
+        enabled: true
+        initial-interval: 1000
+        max-attempts: 6
+
+server:
+  port: 8443
+  ssl:
+    enabled: false
