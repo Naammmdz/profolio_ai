@@ -1,20 +1,35 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Profolio AI
 
-# Run and deploy your AI Studio app
+Monorepo for Profolio AI application - an intelligent AI-powered portfolio creation platform.
 
-This contains everything you need to run your app locally.
+## Project Structure
 
-View your app in AI Studio: https://ai.studio/apps/drive/1E9mPN1SvnbmlyrLfD5PGsVsNw2oYAn9q
+```
+profolio/
+├── profolio-fe/     # Frontend application (React + TypeScript + Vite)
+└── profolio-be/     # Backend API (to be created)
+```
 
-## Run Locally
+## Frontend (profolio-fe)
 
-**Prerequisites:**  Node.js
+Frontend is built with:
+- React + TypeScript
+- Vite
+- Tailwind CSS
+- Custom UI components
 
+### Running the Frontend
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+cd profolio-fe
+npm install
+npm run dev
+```
+
+## Backend (profolio-be)
+
+Backend API will be created here.
+
+## License
+
+MIT
