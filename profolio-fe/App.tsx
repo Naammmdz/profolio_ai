@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/landing/Header';
 import Hero from './components/landing/Hero';
 import Comparison from './components/landing/Comparison';
@@ -10,15 +10,66 @@ import Footer from './components/landing/Footer';
 import AuthPage from './components/auth/AuthPage';
 import Dashboard from './components/dashboard/Dashboard';
 import PortfolioPreview from './components/portfolio/PortfolioPreview';
+import { authService } from './src/services/authService';
+import { oauth2Service } from './src/services/oauth2Service';
 
 type View = 'landing' | 'auth' | 'dashboard' | 'preview';
 
 const App: React.FC = () => {
-  const [currentView, setCurrentView] = useState<View>('landing');
+  // Check URL query param to determine initial view
+  const getInitialView = (): View => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab');
+    if (tab === 'signup') {
+      // Redirect to backend register page
+      window.location.href = 'http://localhost:9000/register';
+      return 'landing'; // Will redirect, so this won't be used
+    }
+    return 'landing';
+  };
 
-  const handleStart = () => {
-    setCurrentView('auth');
-    window.scrollTo(0, 0);
+  const [currentView, setCurrentView] = useState<View>(getInitialView());
+
+  // Update view when URL changes (e.g., when redirected from Authorization Server)
+  useEffect(() => {
+    const checkUrlAndUpdateView = () => {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab');
+      if (tab === 'signup') {
+        setCurrentView('auth');
+      }
+    };
+
+    // Check on mount and when URL changes
+    checkUrlAndUpdateView();
+
+    // Listen for browser back/forward navigation
+    window.addEventListener('popstate', checkUrlAndUpdateView);
+    return () => window.removeEventListener('popstate', checkUrlAndUpdateView);
+  }, []);
+
+  /**
+   * Handle "Get Started" / "Login" button clicks
+   * Standard OAuth2 flow: Check auth status → redirect to Authorization Server if not authenticated
+   */
+  const handleStart = async () => {
+    try {
+      // Check if user is already authenticated
+      const isAuth = await authService.isAuthenticated();
+      
+      if (isAuth) {
+        // Already authenticated → go to dashboard
+        setCurrentView('dashboard');
+        window.scrollTo(0, 0);
+      } else {
+        // Not authenticated → redirect to Authorization Server
+        oauth2Service.initiateLogin();
+      }
+    } catch (error) {
+      // If check fails, assume not authenticated → redirect to Authorization Server
+      console.error('Auth check failed:', error);
+      oauth2Service.initiateLogin();
+    }
   };
 
   const handleLogin = () => {
@@ -39,6 +90,7 @@ const App: React.FC = () => {
     return <Dashboard onPreview={handlePreview} />;
   }
 
+  // Auth page only for signup (login redirects directly to Authorization Server)
   if (currentView === 'auth') {
     return (
       <AuthPage 

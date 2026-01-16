@@ -55,42 +55,33 @@ const SignUp: React.FC<SignUpProps> = ({ onBack, onLogin, onSwitchToLogin }) => 
     };
 
     return (
-        <div className="relative min-h-screen w-full bg-background text-primary font-sans antialiased overflow-hidden flex flex-col">
-            {/* Background Effects */}
-            <div className="fixed inset-0 w-full h-full z-0 pointer-events-none">
-                <div className="absolute inset-0 bg-grid-pattern opacity-60"></div>
-            </div>
-
+        <div className="auth-page">
             {/* Navigation Bar */}
-            <nav className="w-full py-2 px-6 md:px-12 flex justify-between items-center z-50 relative">
-                <button onClick={onBack} className="flex items-center gap-3 group">
-                    <div className="size-10 flex items-center justify-center text-primary border border-primary/10 rounded bg-primary/5 font-serif italic text-2xl group-hover:scale-105 transition-transform duration-300">
-                        P
-                    </div>
-                    <span className="text-xl font-serif tracking-tight text-primary font-medium group-hover:opacity-80 transition-opacity">Profolio</span>
+            <nav>
+                <button onClick={onBack}>
+                    <div>P</div>
+                    <span>Profolio</span>
                 </button>
-                <button onClick={onBack} className="text-sm font-mono text-text-muted hover:text-primary transition-colors flex items-center gap-2 group">
+                <button onClick={onBack}>
                     <span>// Return Home</span>
-                    <span className="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                    <span className="material-symbols-outlined">arrow_forward</span>
                 </button>
             </nav>
 
             {/* Main Content */}
-            <main className="flex-grow flex items-center justify-center px-4 py-12 relative z-10">
-                <div className="w-full max-w-md">
-                    <div className="bg-surface/80 backdrop-blur-xl border border-border rounded-xl p-8 shadow-2xl relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent opacity-70"></div>
-
-                        <div className="mb-8 text-center">
-                            <h1 className="text-3xl font-serif text-primary mb-2 tracking-tight">Sign Up</h1>
-                            <p className="text-sm text-text-muted font-light">Create your account to get started.</p>
+            <main className="auth-form-container">
+                <div className="auth-card">
+                    <div className="auth-card-inner">
+                        <div className="auth-header">
+                            <h1 className="auth-title">Sign Up</h1>
+                            <p className="auth-subtitle">Create your account to get started.</p>
                         </div>
 
                         {/* OAuth Buttons */}
-                        <div className="grid grid-cols-2 gap-4 mb-6">
+                        <div className="auth-oauth-buttons">
                             <button
                                 onClick={() => handleOAuthLogin('google')}
-                                className="flex items-center justify-center gap-2 py-2.5 px-4 bg-background hover:bg-surface-highlight border border-border hover:border-primary/20 rounded text-sm text-primary transition-all duration-200 font-medium"
+                                className="auth-oauth-button"
                             >
                                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
@@ -102,7 +93,7 @@ const SignUp: React.FC<SignUpProps> = ({ onBack, onLogin, onSwitchToLogin }) => 
                             </button>
                             <button
                                 onClick={() => handleOAuthLogin('linkedin')}
-                                className="flex items-center justify-center gap-2 py-2.5 px-4 bg-background hover:bg-surface-highlight border border-border hover:border-primary/20 rounded text-sm text-primary transition-all duration-200 font-medium"
+                                className="auth-oauth-button"
                             >
                                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                                     <path clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" fillRule="evenodd"></path>
@@ -112,97 +103,95 @@ const SignUp: React.FC<SignUpProps> = ({ onBack, onLogin, onSwitchToLogin }) => 
                         </div>
 
                         {/* Divider */}
-                        <div className="relative mb-6">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-border"></div>
-                            </div>
-                            <div className="relative flex justify-center text-[10px] uppercase tracking-wider">
-                                <span className="bg-surface px-2 text-text-muted font-mono">OR SIGN UP WITH EMAIL</span>
+                        <div className="auth-divider">
+                            <div className="auth-divider-line"></div>
+                            <div className="auth-divider-text">
+                                <span>OR SIGN UP WITH EMAIL</span>
                             </div>
                         </div>
 
                         {/* Error Message */}
                         {error && (
-                            <div className="mb-4 p-3 text-xs text-red-500 bg-red-500/10 border border-red-500/20 rounded font-mono">
+                            <div className="auth-error">
                                 {error}
                             </div>
                         )}
 
                         {/* Form */}
-                        <form onSubmit={handleSubmit} className="space-y-5">
-                            <div className="space-y-1.5">
-                                <label className="block text-xs font-mono text-text-muted font-bold uppercase tracking-wide ml-1">FULL NAME</label>
-                                <div className="relative group">
+                        <form onSubmit={handleSubmit} className="auth-form">
+                            <div className="auth-form-group">
+                                <label className="auth-label">FULL NAME</label>
+                                <div className="auth-input-wrapper">
                                     <input
-                                        className="w-full bg-background border border-border rounded px-4 py-3 pr-10 text-sm text-primary placeholder:text-text-muted/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all font-sans"
+                                        className="auth-input"
                                         placeholder="John Doe"
                                         type="text"
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
                                         required
                                     />
-                                    <span className="material-symbols-outlined absolute right-3 top-3 text-text-muted/50 text-sm group-focus-within:text-primary transition-colors pointer-events-none">person</span>
+                                    <span className="material-symbols-outlined auth-input-icon">person</span>
                                 </div>
                             </div>
 
-                            <div className="space-y-1.5">
-                                <label className="block text-xs font-mono text-text-muted font-bold uppercase tracking-wide ml-1">EMAIL ADDRESS</label>
-                                <div className="relative group">
+                            <div className="auth-form-group">
+                                <label className="auth-label">EMAIL ADDRESS</label>
+                                <div className="auth-input-wrapper">
                                     <input
-                                        className="w-full bg-background border border-border rounded px-4 py-3 pr-10 text-sm text-primary placeholder:text-text-muted/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all font-sans"
+                                        className="auth-input"
                                         placeholder="name@company.com"
                                         type="email"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
                                     />
-                                    <span className="material-symbols-outlined absolute right-3 top-3 text-text-muted/50 text-sm group-focus-within:text-primary transition-colors pointer-events-none">mail</span>
+                                    <span className="material-symbols-outlined auth-input-icon">mail</span>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1.5">
-                                    <label className="block text-xs font-mono text-text-muted font-bold uppercase tracking-wide ml-1">PASSWORD</label>
-                                    <div className="relative group">
+                                <div className="auth-form-group">
+                                    <label className="auth-label">PASSWORD</label>
+                                    <div className="auth-input-wrapper" data-password="true">
                                         <input
-                                            className="w-full bg-background border border-border rounded px-4 py-3 pr-20 text-sm text-primary placeholder:text-text-muted/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all font-sans"
+                                            className="auth-input"
                                             placeholder="••••••••"
                                             type={showPassword ? "text" : "password"}
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             required
                                         />
-                                        <span className="material-symbols-outlined absolute right-10 top-3 text-text-muted/50 text-sm group-focus-within:text-primary transition-colors pointer-events-none">lock</span>
+                                        <span className="material-symbols-outlined auth-input-icon">lock</span>
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-3 top-3 text-text-muted/50 hover:text-primary transition-colors"
+                                            className="auth-password-toggle"
                                         >
-                                            <span className="material-symbols-outlined text-sm">
+                                            <span className="material-symbols-outlined auth-password-toggle-icon">
                                                 {showPassword ? 'visibility_off' : 'visibility'}
                                             </span>
                                         </button>
                                     </div>
                                 </div>
 
-                                <div className="space-y-1.5">
-                                    <label className="block text-xs font-mono text-text-muted font-bold uppercase tracking-wide ml-1">CONFIRM</label>
-                                    <div className="relative group">
+                                <div className="auth-form-group">
+                                    <label className="auth-label">CONFIRM</label>
+                                    <div className="auth-input-wrapper" data-password="true">
                                         <input
-                                            className="w-full bg-background border border-border rounded px-4 py-3 pr-20 text-sm text-primary placeholder:text-text-muted/50 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all font-sans"
+                                            className="auth-input"
                                             placeholder="••••••••"
                                             type={showConfirmPassword ? "text" : "password"}
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                             required
                                         />
-                                        <span className="material-symbols-outlined absolute right-10 top-3 text-text-muted/50 text-sm group-focus-within:text-primary transition-colors pointer-events-none">lock</span>
+                                        <span className="material-symbols-outlined auth-input-icon">lock</span>
                                         <button
                                             type="button"
                                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                            className="absolute right-3 top-3 text-text-muted/50 hover:text-primary transition-colors"
+                                            className="auth-password-toggle"
                                         >
-                                            <span className="material-symbols-outlined text-sm">
+                                            <span className="material-symbols-outlined auth-password-toggle-icon">
                                                 {showConfirmPassword ? 'visibility_off' : 'visibility'}
                                             </span>
                                         </button>
@@ -252,30 +241,30 @@ const SignUp: React.FC<SignUpProps> = ({ onBack, onLogin, onSwitchToLogin }) => 
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full mt-2 bg-primary hover:opacity-90 text-primary-foreground font-bold py-3.5 rounded shadow-sm transition-all flex items-center justify-center gap-2 group font-mono text-sm uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="auth-button"
                             >
                                 <span>{isLoading ? 'CREATING ACCOUNT...' : 'SIGN UP'}</span>
                                 {!isLoading && (
-                                    <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                    <span className="material-symbols-outlined" style={{ fontSize: '0.875rem' }}>arrow_forward</span>
                                 )}
                             </button>
                         </form>
 
-                        <div className="mt-8 text-center pt-6 border-t border-border">
-                            <p className="text-sm text-text-muted">
+                        <div className="auth-footer">
+                            <p className="auth-footer-text">
                                 Already have an account?{' '}
-                                <button onClick={onSwitchToLogin} className="text-primary hover:opacity-80 font-semibold font-mono transition-opacity underline decoration-primary/20 underline-offset-4 hover:decoration-primary/50">Log In</button>
+                                <button onClick={onSwitchToLogin} className="auth-footer-link">Log In</button>
                             </p>
                         </div>
                     </div>
+                </div>
 
-                    <div className="mt-8 flex justify-center gap-6 text-xs text-text-muted/60 font-mono">
-                        <a className="hover:text-text-muted transition-colors cursor-pointer">Terms of Service</a>
-                        <span className="text-text-muted/30">|</span>
-                        <a className="hover:text-text-muted transition-colors cursor-pointer">Privacy Policy</a>
-                        <span className="text-text-muted/30">|</span>
-                        <a className="hover:text-text-muted transition-colors cursor-pointer">Help</a>
-                    </div>
+                <div className="bottom-links">
+                    <a>Terms of Service</a>
+                    <span>|</span>
+                    <a>Privacy Policy</a>
+                    <span>|</span>
+                    <a>Help</a>
                 </div>
             </main>
         </div>

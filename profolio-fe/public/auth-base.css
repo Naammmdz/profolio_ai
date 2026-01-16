@@ -1,0 +1,538 @@
+/**
+ * Auth UI Base Styles - Shared between Frontend and Backend
+ * This file ensures consistent styling across React app and Auth Server login page
+ * 
+ * IMPORTANT: This CSS is loaded in both:
+ * - Frontend: index.html
+ * - Backend: login.html (via Thymeleaf)
+ * 
+ * This ensures 100% visual consistency between SignUp (React) and Login (Thymeleaf)
+ * 
+ * NOTE: All styles are scoped to .auth-page to avoid conflicts with global Tailwind styles
+ */
+
+/* ============================================
+   1. CSS RESET (Scoped to auth pages only)
+   ============================================ */
+.auth-page *,
+.auth-page *::before,
+.auth-page *::after {
+    box-sizing: border-box;
+}
+
+/* ============================================
+   2. BASE STYLES (Scoped to .auth-page)
+   ============================================ */
+/* 
+ * IMPORTANT: These variables are scoped to .auth-page only
+ * They do NOT override global CSS variables in index.html
+ */
+.auth-page {
+    /* Auth-specific CSS variables (scoped) */
+    --auth-bg-primary: #0a0a0a;
+    --auth-bg-surface: #141414;
+    --auth-text-primary: #e5e5e5;
+    --auth-text-muted: #a0a0a0;
+    --auth-border-color: rgba(229, 229, 229, 0.1);
+    --auth-primary: #e5e5e5;
+    --auth-primary-foreground: #0a0a0a;
+    --auth-error: #ef4444;
+
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    background: var(--auth-bg-primary);
+    color: var(--auth-text-primary);
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+}
+
+/* ============================================
+   3. AUTH FORM CONTAINER
+   ============================================ */
+.auth-form-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    position: relative;
+    z-index: 10;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 28rem;
+}
+
+.auth-card-inner {
+    width: 100%;
+    background: rgba(20, 20, 20, 0.8);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--auth-border-color);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-card-inner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--auth-primary), transparent);
+    opacity: 0.7;
+}
+
+/* ============================================
+   4. AUTH HEADER
+   ============================================ */
+.auth-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.auth-title {
+    font-size: 1.875rem;
+    font-family: 'Playfair Display', serif;
+    color: var(--auth-text-primary);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+    font-weight: 500;
+}
+
+.auth-subtitle {
+    font-size: 0.875rem;
+    color: var(--auth-text-muted);
+    font-weight: 300;
+}
+
+/* ============================================
+   5. AUTH FORM
+   ============================================ */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.auth-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.auth-label {
+    display: block;
+    font-size: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--auth-text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-left: 0.25rem;
+}
+
+.auth-input-wrapper {
+    position: relative;
+}
+
+.auth-page .auth-input {
+    width: 100%;
+    background: var(--auth-bg-primary);
+    border: 1px solid var(--auth-border-color);
+    border-radius: 0.25rem;
+    padding: 0.75rem 1rem;
+    padding-right: 2.5rem;
+    font-size: 0.875rem;
+    color: var(--auth-text-primary);
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+
+/* Password input specific styling */
+.auth-input[type="password"] {
+    padding-right: 5rem;
+}
+
+/* 
+ * FIX: When password visibility is toggled (type becomes "text"), 
+ * we still need the extra padding because the icons are still there.
+ * We target the input inside the wrapper with data-password="true"
+ */
+.auth-input-wrapper[data-password="true"] .auth-input {
+    padding-right: 5rem;
+}
+
+.auth-page .auth-input:focus {
+    outline: none;
+    border-color: rgba(229, 229, 229, 0.5);
+    box-shadow: 0 0 0 1px rgba(229, 229, 229, 0.5);
+}
+
+.auth-page .auth-input::placeholder {
+    color: rgba(160, 160, 160, 0.5);
+}
+
+.auth-input-icon {
+    position: absolute;
+    right: 0.75rem;
+    top: 0.75rem;
+    color: rgba(160, 160, 160, 0.5);
+    font-size: 0.875rem;
+    pointer-events: none;
+    transition: color 0.2s;
+}
+
+.auth-input-wrapper:focus-within .auth-input-icon {
+    color: var(--auth-text-primary);
+}
+
+.auth-input-wrapper[data-password="true"] .auth-input-icon {
+    right: 2.5rem;
+    top: 0.75rem;
+}
+
+/* ============================================
+   6. AUTH BUTTONS
+   ============================================ */
+.auth-button {
+    width: 100%;
+    margin-top: 0.5rem;
+    background: var(--auth-primary);
+    color: var(--auth-primary-foreground);
+    font-weight: 700;
+    padding: 0.875rem 0;
+    border-radius: 0.25rem;
+    border: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+}
+
+.auth-button:hover:not(:disabled) {
+    opacity: 0.9;
+}
+
+.auth-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.auth-button .material-symbols-outlined {
+    font-size: 0.875rem;
+    transition: transform 0.2s;
+}
+
+.auth-button:hover:not(:disabled) .material-symbols-outlined {
+    transform: translateX(4px);
+}
+
+/* ============================================
+   7. AUTH DIVIDER
+   ============================================ */
+.auth-divider {
+    position: relative;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.auth-divider-line {
+    flex: 1;
+    height: 1px;
+    background: var(--auth-border-color);
+}
+
+.auth-divider-text {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.625rem;
+    /* 10px - matches text-[10px] */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    /* matches tracking-wider */
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 400;
+    line-height: 1;
+    padding: 0 0.5rem;
+    color: var(--auth-text-muted);
+    background: rgba(20, 20, 20, 0.8);
+    /* bg-surface */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   8. AUTH OAUTH BUTTONS
+   ============================================ */
+.auth-oauth-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.auth-oauth-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    background: var(--auth-bg-primary);
+    border: 1px solid var(--auth-border-color);
+    border-radius: 0.25rem;
+    color: var(--auth-text-primary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+}
+
+.auth-oauth-button:hover {
+    background: rgba(20, 20, 20, 0.9);
+    border-color: rgba(229, 229, 229, 0.2);
+}
+
+.auth-oauth-button svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* ============================================
+   9. AUTH FOOTER
+   ============================================ */
+.auth-footer {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--auth-border-color);
+    text-align: center;
+}
+
+.auth-footer-text {
+    font-size: 0.875rem;
+    color: var(--auth-text-muted);
+}
+
+.auth-footer-link {
+    color: var(--auth-text-primary);
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(229, 229, 229, 0.2);
+    padding-bottom: 1px;
+    transition: all 0.2s;
+}
+
+.auth-footer-link:hover {
+    opacity: 0.8;
+    border-bottom-color: rgba(229, 229, 229, 0.5);
+}
+
+/* ============================================
+   10. AUTH ERROR MESSAGE
+   ============================================ */
+.auth-error {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    font-size: 0.75rem;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 0.25rem;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* ============================================
+   11. UTILITY CLASSES
+   ============================================ */
+.auth-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 0.25rem;
+    margin-bottom: 0;
+}
+
+.auth-forgot-link {
+    font-size: 0.75rem;
+    color: rgba(229, 229, 229, 0.8);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    transition: color 0.2s;
+    padding: 0;
+    text-decoration: none;
+}
+
+.auth-forgot-link:hover {
+    color: var(--auth-text-primary);
+}
+
+.auth-password-toggle {
+    position: absolute;
+    right: 0.75rem;
+    top: 0.75rem;
+    background: none;
+    border: none;
+    color: rgba(160, 160, 160, 0.5);
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+}
+
+.auth-password-toggle:hover {
+    color: var(--auth-text-primary);
+}
+
+.auth-password-toggle-icon {
+    font-size: 0.875rem;
+}
+
+/* ============================================
+   12. NAVIGATION (Scoped to auth pages)
+   ============================================ */
+.auth-page nav {
+    width: 100%;
+    padding: 0.5rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 50;
+    position: relative;
+}
+
+@media (min-width: 768px) {
+    .auth-page nav {
+        padding: 0.5rem 3rem;
+    }
+}
+
+/* Navigation Logo */
+.auth-page nav button:first-child {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--auth-text-primary);
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+}
+
+.auth-page nav button:first-child:hover {
+    opacity: 0.8;
+}
+
+.auth-page nav button:first-child>div:first-child {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--auth-text-primary);
+    border: 1px solid var(--auth-border-color);
+    border-radius: 0.25rem;
+    background: rgba(229, 229, 229, 0.05);
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.5rem;
+    transition: transform 0.3s;
+}
+
+.auth-page nav button:first-child:hover>div:first-child {
+    transform: scale(1.05);
+}
+
+.auth-page nav button:first-child>span {
+    font-size: 1.25rem;
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    transition: opacity 0.2s;
+}
+
+/* Navigation Back Button */
+.auth-page nav button:last-child {
+    font-size: 0.875rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--auth-text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.2s;
+    text-decoration: none;
+    padding: 0;
+}
+
+.auth-page nav button:last-child:hover {
+    color: var(--auth-text-primary);
+}
+
+.auth-page nav button:last-child .material-symbols-outlined {
+    font-size: 1rem;
+    transition: transform 0.2s;
+}
+
+.auth-page nav button:last-child:hover .material-symbols-outlined {
+    transform: translateX(4px);
+}
+
+/* ============================================
+   13. BOTTOM LINKS (Scoped to auth pages)
+   ============================================ */
+.auth-page .bottom-links {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    font-size: 0.75rem;
+    color: rgba(160, 160, 160, 0.6);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.auth-page .bottom-links a {
+    color: rgba(160, 160, 160, 0.6);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.auth-page .bottom-links a:hover {
+    color: var(--auth-text-muted);
+}
+
+.auth-page .bottom-links span {
+    color: rgba(160, 160, 160, 0.3);
+}

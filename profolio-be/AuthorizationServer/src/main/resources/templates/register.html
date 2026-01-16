@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log In - Profolio</title>
+    <title>Sign Up - Profolio</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
@@ -297,6 +297,11 @@
             border: 1px solid rgba(239, 68, 68, 0.2);
             border-radius: 0.25rem;
             font-family: 'JetBrains Mono', monospace;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
         }
         
         /* Form */
@@ -413,34 +418,6 @@
             font-size: 0.875rem;
         }
         
-        .label-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-left: 0.25rem;
-            margin-bottom: 0;
-        }
-        
-        .forgot-password {
-            font-size: 0.75rem;
-            color: rgba(0, 0, 0, 0.8);
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-family: 'JetBrains Mono', monospace;
-            transition: color 0.2s;
-            padding: 0;
-            text-decoration: none;
-        }
-        
-        .dark .forgot-password {
-            color: rgba(255, 255, 255, 0.8);
-        }
-        
-        .forgot-password:hover {
-            color: var(--primary);
-        }
-        
         .submit-btn {
             width: 100%;
             margin-top: 0.5rem;
@@ -549,6 +526,70 @@
         .dark .bottom-links span {
             color: rgba(255, 255, 255, 0.3);
         }
+        
+        .password-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .password-strength {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+        
+        .strength-bars {
+            display: flex;
+            gap: 0.25rem;
+        }
+        
+        .strength-bar {
+            height: 0.375rem;
+            width: 2rem;
+            border-radius: 0.25rem;
+            background: var(--border);
+        }
+        
+        .strength-bar.weak {
+            background: #ef4444;
+        }
+        
+        .strength-bar.fair {
+            background: #f97316;
+        }
+        
+        .strength-bar.good {
+            background: #eab308;
+        }
+        
+        .strength-bar.strong {
+            background: #22c55e;
+        }
+        
+        .strength-label {
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .strength-label.weak {
+            color: #ef4444;
+        }
+        
+        .strength-label.fair {
+            color: #f97316;
+        }
+        
+        .strength-label.good {
+            color: #eab308;
+        }
+        
+        .strength-label.strong {
+            color: #22c55e;
+        }
     </style>
 </head>
 <body class="dark">
@@ -574,8 +615,8 @@
         <div class="main-wrapper">
             <div class="auth-card">
                 <div class="auth-header">
-                    <h1 class="auth-title">Log In</h1>
-                    <p class="auth-subtitle">Enter your credentials to continue.</p>
+                    <h1 class="auth-title">Sign Up</h1>
+                    <p class="auth-subtitle">Create your account to get started.</p>
                 </div>
 
                 <!-- OAuth Buttons -->
@@ -603,71 +644,104 @@
                         <div class="divider-line"></div>
                     </div>
                     <div class="divider-text">
-                        <span>OR SIGN IN WITH EMAIL</span>
+                        <span>OR SIGN UP WITH EMAIL</span>
                     </div>
                 </div>
 
                 <!-- Error Message -->
-                <div th:if="${param.error}" class="error-message">
-                    Invalid email or password. Please try again.
-                </div>
+                <div class="error-message" id="errorMessage"></div>
 
-                <div th:if="${param.logout}" style="color: #10b981; font-size: 0.875rem; margin-bottom: 1rem; padding: 0.75rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 0.25rem;">
-                    You have been logged out successfully.
-                </div>
-
-                <!-- Login Form -->
-                <form action="/login" method="post" id="loginForm">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <!-- Register Form -->
+                <form id="registerForm" onsubmit="handleRegister(event)">
                     <div class="form-group">
-                        <label for="username" class="form-label">EMAIL OR USERNAME</label>
+                        <label for="name" class="form-label">FULL NAME</label>
                         <div class="input-wrapper">
                             <input 
                                 type="text" 
-                                id="username" 
-                                name="username" 
+                                id="name" 
+                                name="name" 
                                 class="form-input" 
-                                placeholder="name@company.com"
+                                placeholder="John Doe"
                                 required 
-                                autofocus 
                             />
                             <span class="material-symbols-outlined input-icon">person</span>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <div class="label-row">
-                            <label for="password" class="form-label">PASSWORD</label>
-                            <button type="button" class="forgot-password" onclick="alert('Forgot password feature coming soon')">
-                                Forgot Password?
-                            </button>
-                        </div>
-                        <div class="input-wrapper" data-password="true">
+                        <label for="email" class="form-label">EMAIL ADDRESS</label>
+                        <div class="input-wrapper">
                             <input 
-                                type="password" 
-                                id="password" 
-                                name="password" 
+                                type="email" 
+                                id="email" 
+                                name="email" 
                                 class="form-input" 
-                                placeholder="••••••••"
+                                placeholder="name@company.com"
                                 required 
                             />
-                            <span class="material-symbols-outlined input-icon">lock</span>
-                            <button type="button" class="password-toggle" onclick="togglePassword()">
-                                <span class="material-symbols-outlined password-toggle-icon" id="passwordToggleIcon">visibility</span>
-                            </button>
+                            <span class="material-symbols-outlined input-icon">mail</span>
                         </div>
                     </div>
 
+                    <div class="password-grid">
+                        <div class="form-group">
+                            <label for="password" class="form-label">PASSWORD</label>
+                            <div class="input-wrapper" data-password="true">
+                                <input 
+                                    type="password" 
+                                    id="password" 
+                                    name="password" 
+                                    class="form-input" 
+                                    placeholder="••••••••"
+                                    required 
+                                />
+                                <span class="material-symbols-outlined input-icon">lock</span>
+                                <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                                    <span class="material-symbols-outlined password-toggle-icon" id="passwordToggleIcon">visibility</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmPassword" class="form-label">CONFIRM</label>
+                            <div class="input-wrapper" data-password="true">
+                                <input 
+                                    type="password" 
+                                    id="confirmPassword" 
+                                    name="confirmPassword" 
+                                    class="form-input" 
+                                    placeholder="••••••••"
+                                    required 
+                                />
+                                <span class="material-symbols-outlined input-icon">lock</span>
+                                <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                                    <span class="material-symbols-outlined password-toggle-icon" id="confirmPasswordToggleIcon">visibility</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Password Strength Indicator -->
+                    <div class="password-strength" id="passwordStrength" style="display: none;">
+                        <div class="strength-bars">
+                            <div class="strength-bar" id="bar1"></div>
+                            <div class="strength-bar" id="bar2"></div>
+                            <div class="strength-bar" id="bar3"></div>
+                            <div class="strength-bar" id="bar4"></div>
+                        </div>
+                        <span class="strength-label" id="strengthLabel"></span>
+                    </div>
+
                     <button type="submit" class="submit-btn" id="submitBtn">
-                        <span id="submitText">LOG IN</span>
+                        <span id="submitText">SIGN UP</span>
                         <span class="material-symbols-outlined submit-btn-icon">arrow_forward</span>
                     </button>
                 </form>
 
                 <div class="auth-footer">
                     <p class="footer-text">
-                        Don't have an account? 
-                        <a href="/register" class="footer-link">Sign Up</a>
+                        Already have an account? 
+                        <a href="/login" class="footer-link">Log In</a>
                     </p>
                 </div>
             </div>
@@ -683,9 +757,9 @@
     </main>
 
     <script>
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const toggleIcon = document.getElementById('passwordToggleIcon');
+        function togglePassword(fieldId) {
+            const passwordInput = document.getElementById(fieldId);
+            const toggleIcon = document.getElementById(fieldId + 'ToggleIcon');
             
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
@@ -695,6 +769,52 @@
                 toggleIcon.textContent = 'visibility';
             }
         }
+
+        function getPasswordStrength(pwd) {
+            if (pwd.length === 0) return { strength: 0, label: '' };
+            if (pwd.length < 6) return { strength: 1, label: 'WEAK' };
+            if (pwd.length < 10) return { strength: 2, label: 'FAIR' };
+            if (!/[A-Z]/.test(pwd) || !/[0-9]/.test(pwd)) return { strength: 3, label: 'GOOD' };
+            return { strength: 4, label: 'STRONG' };
+        }
+
+        function updatePasswordStrength() {
+            const password = document.getElementById('password').value;
+            const strengthDiv = document.getElementById('passwordStrength');
+            const strength = getPasswordStrength(password);
+            
+            if (password.length === 0) {
+                strengthDiv.style.display = 'none';
+                return;
+            }
+            
+            strengthDiv.style.display = 'flex';
+            
+            // Update bars
+            for (let i = 1; i <= 4; i++) {
+                const bar = document.getElementById('bar' + i);
+                bar.className = 'strength-bar';
+                if (i <= strength.strength) {
+                    if (strength.strength <= 1) bar.classList.add('weak');
+                    else if (strength.strength <= 2) bar.classList.add('fair');
+                    else if (strength.strength <= 3) bar.classList.add('good');
+                    else bar.classList.add('strong');
+                }
+            }
+            
+            // Update label
+            const label = document.getElementById('strengthLabel');
+            label.textContent = strength.label;
+            label.className = 'strength-label';
+            if (strength.strength > 0) {
+                if (strength.strength <= 1) label.classList.add('weak');
+                else if (strength.strength <= 2) label.classList.add('fair');
+                else if (strength.strength <= 3) label.classList.add('good');
+                else label.classList.add('strong');
+            }
+        }
+
+        document.getElementById('password').addEventListener('input', updatePasswordStrength);
 
         function handleOAuthLogin(provider) {
             const params = new URLSearchParams({
@@ -707,14 +827,58 @@
             window.location.href = '/oauth2/authorize?' + params.toString();
         }
 
-        // Handle form submission
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        async function handleRegister(event) {
+            event.preventDefault();
+            
+            const errorDiv = document.getElementById('errorMessage');
             const submitBtn = document.getElementById('submitBtn');
             const submitText = document.getElementById('submitText');
             
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Validate passwords match
+            if (password !== confirmPassword) {
+                errorDiv.textContent = 'Passwords do not match';
+                errorDiv.classList.add('show');
+                return;
+            }
+            
+            errorDiv.classList.remove('show');
             submitBtn.disabled = true;
-            submitText.textContent = 'SIGNING IN...';
-        });
+            submitText.textContent = 'CREATING ACCOUNT...';
+            
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: document.getElementById('name').value,
+                        email: document.getElementById('email').value,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Redirect to login page
+                    window.location.href = '/login?registered=true';
+                } else {
+                    errorDiv.textContent = data.message || 'Registration failed. Please try again.';
+                    errorDiv.classList.add('show');
+                    submitBtn.disabled = false;
+                    submitText.textContent = 'SIGN UP';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'An error occurred. Please try again.';
+                errorDiv.classList.add('show');
+                submitBtn.disabled = false;
+                submitText.textContent = 'SIGN UP';
+            }
+        }
     </script>
 </body>
 </html>

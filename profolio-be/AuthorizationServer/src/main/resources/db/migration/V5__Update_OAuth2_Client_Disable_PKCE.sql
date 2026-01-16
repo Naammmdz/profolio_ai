@@ -1,0 +1,3 @@
+-- This migration was removed and replaced by V6
+-- Migration V5 was applied to database but file was deleted
+-- V6 now handles disabling PKCE requirement

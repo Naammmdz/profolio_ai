@@ -1,6 +1,4 @@
-import React, { useState } from 'react';
-import Login from './Login';
-import SignUp from './SignUp';
+import React, { useEffect } from 'react';
 
 interface AuthPageProps {
   onBack: () => void;
@@ -8,32 +6,15 @@ interface AuthPageProps {
 }
 
 const AuthPage: React.FC<AuthPageProps> = ({ onBack, onLogin }) => {
-  const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login');
-
-  const handleSwitchToSignUp = () => {
-    setActiveTab('signup');
-  };
-
-  const handleSwitchToLogin = () => {
-    setActiveTab('login');
-  };
-
-  if (activeTab === 'login') {
-    return (
-      <Login
-        onBack={onBack}
-        onLogin={onLogin}
-        onSwitchToSignUp={handleSwitchToSignUp}
-      />
-    );
-  }
+  // Redirect to backend register page
+  useEffect(() => {
+    window.location.href = 'http://localhost:9000/register';
+  }, []);
 
   return (
-    <SignUp
-      onBack={onBack}
-      onLogin={onLogin}
-      onSwitchToLogin={handleSwitchToLogin}
-    />
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+      <p>Redirecting to register page...</p>
+    </div>
   );
 };
 

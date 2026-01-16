@@ -59,7 +59,7 @@ public class ClientInitializer implements CommandLineRunner {
                     .scope("read")
                     .scope("write")
                     .clientSettings(ClientSettings.builder()
-                            .requireProofKey(true)
+                            .requireProofKey(false)  // Disable PKCE for easier testing (enable in production)
                             .requireAuthorizationConsent(false)
                             .build())
                     .tokenSettings(TokenSettings.builder()

@@ -1,5 +1,6 @@
 package com.naammm.authorizationserver.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -23,6 +24,9 @@ public class WebSecurityConfig {
 
     private final CorsConfigurationSource corsConfigurationSource;
 
+    @Value("${app.frontend.base-url:http://localhost:3000}")
+    private String frontendBaseUrl;
+
     public WebSecurityConfig(CorsConfigurationSource corsConfigurationSource) {
         this.corsConfigurationSource = corsConfigurationSource;
     }
@@ -37,8 +41,8 @@ public class WebSecurityConfig {
                 )
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/register", "/api/auth/exchange").permitAll()
-                        .requestMatchers("/login", "/login/**", "/actuator/health", "/css/**", "/js/**", "/images/**", "/error").permitAll()
-                        .requestMatchers("/api/auth/me", "/api/auth/logout").authenticated()
+                        .requestMatchers("/login", "/login/**", "/register", "/register/**", "/actuator/health", "/css/**", "/js/**", "/images/**", "/error").permitAll()
+                        .requestMatchers("/api/auth/me", "/api/auth/refresh", "/api/auth/logout").authenticated()
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
@@ -58,7 +62,14 @@ public class WebSecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(frameOptions -> frameOptions.deny())
                         .xssProtection(Customizer.withDefaults())
-                        .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'"))
+                        .contentSecurityPolicy(csp -> csp.policyDirectives(
+                                "default-src 'self'; " +
+                                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+                                "font-src 'self' https://fonts.gstatic.com data:; " +
+                                "script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+                                "img-src 'self' data: https:; " +
+                                "connect-src 'self'"
+                        ))
                 );
         return http.build();
     }

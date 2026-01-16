@@ -101,6 +101,22 @@ public class BFFAuthService {
     }
 
     /**
+     * Update tokens for a session
+     * Used when refreshing tokens
+     */
+    public void updateTokens(String sessionId, String accessToken, String refreshToken) {
+        TokenStorage.storeTokens(sessionId, accessToken, refreshToken);
+    }
+
+    /**
+     * Remove tokens for a session
+     * Used when logging out
+     */
+    public void removeTokens(String sessionId) {
+        TokenStorage.removeTokens(sessionId);
+    }
+
+    /**
      * In-memory token storage
      * TODO: Replace with Redis in production
      */
