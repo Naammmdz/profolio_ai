@@ -9,13 +9,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+/**
+ * User Registration Controller
+ * 
+ * Note: Authentication endpoints are handled by:
+ * - OAuth2 endpoints: /oauth2/authorize, /oauth2/token (Authorization Server)
+ * - BFF endpoints: /api/auth/exchange, /api/auth/me, /api/auth/logout (BFFAuthController)
+ */
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -27,15 +31,22 @@ public class AuthController {
         this.userService = userService;
     }
 
+    /**
+     * Register new user
+     * After registration, user should use OAuth2 flow to login
+     */
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
         log.info("Registration request received for email: {}", registerRequest.getEmail());
         User user = userService.registerUser(registerRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Map.of(
-                        "message", "User registered successfully",
-                        "email", user.getEmail(),
-                        "id", user.getId()
+                        "success", true,
+                        "message", "User registered successfully. Please login using OAuth2 flow.",
+                        "data", Map.of(
+                                "email", user.getEmail(),
+                                "id", user.getId()
+                        )
                 ));
     }
 }

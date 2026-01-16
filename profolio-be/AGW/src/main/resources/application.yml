@@ -44,18 +44,14 @@ spring:
             locator:
               enabled: true
           routes:
-            # Authorization Server Route - OAuth2 endpoints
-            - id: authorization-server-oauth2
+            # BFF Auth endpoints - Exchange code, get user info, etc.
+            # Note: Authorization Server OAuth2 endpoints (/oauth2/authorize, /login) 
+            #       should be called DIRECTLY by browser (NOT through Gateway)
+            # Gateway only routes BFF endpoints
+            - id: bff-auth
               uri: lb://authorization-server
               predicates:
-                - Path=/oauth2/**
-              filters:
-                - StripPrefix=0
-            # Authorization Server Route - Custom auth endpoints (if any)
-            - id: authorization-server-auth
-              uri: lb://authorization-server
-              predicates:
-                - Path=/auth/**
+                - Path=/api/auth/exchange,/api/auth/me,/api/auth/logout
               filters:
                 - StripPrefix=0
             # Add your other service routes here
@@ -88,6 +84,6 @@ spring:
         max-attempts: 6
 
 server:
-  port: 8443
+  port: ${SERVER_PORT:8080}
   ssl:
     enabled: false

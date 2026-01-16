@@ -40,6 +40,14 @@ public class UserService {
         User user = new User();
         user.setEmail(registerRequest.getEmail());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        user.setProvider("email"); // Email-based registration
+        user.setEmailVerified(false); // Email verification required
+        if (registerRequest.getName() != null) {
+            user.setName(registerRequest.getName());
+        }
+        if (registerRequest.getUsername() != null) {
+            user.setUsername(registerRequest.getUsername());
+        }
         user.getRoles().add(roleRepository.findByName("USER")
                 .orElseThrow(() -> new ResourceNotFoundException("Default role USER not found")));
         

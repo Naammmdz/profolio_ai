@@ -12,14 +12,12 @@ const apiClient: AxiosInstance = axios.create({
   },
 });
 
-// Request interceptor - Add authentication token
+// Request interceptor - Include cookies for BFF pattern
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // Get token from localStorage
-    const token = localStorage.getItem('auth_token');
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    // ⭐ BFF Pattern: Use HttpOnly cookie instead of Bearer token
+    // Browser automatically sends cookie, no need to set Authorization header
+    config.withCredentials = true; // Include cookies in requests
     return config;
   },
   (error: AxiosError) => {
@@ -37,8 +35,8 @@ apiClient.interceptors.response.use(
     if (error.response) {
       switch (error.response.status) {
         case 401:
-          // Unauthorized - Clear token and redirect to login page
-          localStorage.removeItem('auth_token');
+          // Unauthorized - Redirect to login page
+          // Cookie will be cleared by server on logout
           window.location.href = '/auth';
           break;
         case 403:

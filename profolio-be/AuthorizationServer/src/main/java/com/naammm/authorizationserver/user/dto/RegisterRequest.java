@@ -5,6 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+/**
+ * User registration request DTO
+ * Matches DATABASE_DESIGN.md user entity specification
+ */
 @Data
 public class RegisterRequest {
     @NotBlank(message = "Email is required")
@@ -14,4 +18,8 @@ public class RegisterRequest {
     @NotBlank(message = "Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
+
+    // Optional fields
+    private String username;
+    private String name;
 }

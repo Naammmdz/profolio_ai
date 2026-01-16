@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { authService } from '../../src/services/authService';
+import { oauth2Service } from '../../src/services/oauth2Service';
 
 interface LoginProps {
     onBack: () => void;
@@ -20,11 +20,11 @@ const Login: React.FC<LoginProps> = ({ onBack, onLogin, onSwitchToSignUp }) => {
         setIsLoading(true);
 
         try {
-            await authService.login({ email, password });
-            onLogin();
+            // Redirect to Authorization Server for OAuth2 Authorization Code flow
+            oauth2Service.initiateLogin();
+            // Note: onLogin() will be called after callback handling
         } catch (err: any) {
             setError(err.message || 'Authentication failed. Please try again.');
-        } finally {
             setIsLoading(false);
         }
     };

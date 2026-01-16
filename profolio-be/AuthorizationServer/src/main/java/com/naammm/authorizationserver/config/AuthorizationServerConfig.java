@@ -63,7 +63,7 @@ public class AuthorizationServerConfig {
                 // 6. Exception Handling: If not logged in and call Auth endpoint -> Redirect to Login page
                 .exceptionHandling(exceptions -> exceptions
                         .defaultAuthenticationEntryPointFor(
-                                new LoginUrlAuthenticationEntryPoint("${app.frontend.login-url}"),  // Redirect to React login page from config
+                                new LoginUrlAuthenticationEntryPoint("/login"),  // Use default Spring Security login page
                                 new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
                         )
                 )
