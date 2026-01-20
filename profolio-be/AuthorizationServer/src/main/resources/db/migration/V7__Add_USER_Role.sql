@@ -1,0 +1,4 @@
+INSERT INTO roles (id, name)
+VALUES (4, 'USER')
+ON CONFLICT (id) DO NOTHING;
+
