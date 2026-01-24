@@ -43,7 +43,7 @@ public class ClientInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         log.info("Initializing OAuth2 clients...");
 
-        // OAuth2 client for Authorization Code flow with PKCE
+        // OAuth2 client for Authorization Code flow (confidential client, used by BFF, etc.)
         if (registeredClientRepository.findByClientId(clientId) == null) {
             RegisteredClient.Builder clientBuilder = RegisteredClient.withId(UUID.randomUUID().toString())
                     .clientId(clientId)
@@ -78,6 +78,41 @@ public class ClientInitializer implements CommandLineRunner {
             log.info("OAuth2 client '{}' registered successfully", clientId);
         } else {
             log.info("OAuth2 client '{}' already exists", clientId);
+        }
+
+        // Public SPA client using Authorization Code + PKCE (no client secret)
+        String spaClientId = "spa-client";
+        if (registeredClientRepository.findByClientId(spaClientId) == null) {
+            RegisteredClient.Builder spaClientBuilder = RegisteredClient.withId(UUID.randomUUID().toString())
+                    .clientId(spaClientId)
+                    .clientName("React SPA Client")
+                    // Public client: no client secret, use PKCE instead
+                    .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
+                    .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                    .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                    .scope("openid")
+                    .scope("profile")
+                    .scope("email")
+                    .scope("read")
+                    .scope("write")
+                    .clientSettings(ClientSettings.builder()
+                            .requireProofKey(true)  // Enable PKCE for SPA
+                            .requireAuthorizationConsent(false)
+                            .build())
+                    .tokenSettings(TokenSettings.builder()
+                            .accessTokenTimeToLive(Duration.ofHours(1))
+                            .refreshTokenTimeToLive(Duration.ofDays(7))
+                            .reuseRefreshTokens(false)
+                            .build())
+                    // SPA redirect URI (can be overridden later via DB migration if needed)
+                    .redirectUri("http://localhost:3000/callback")
+                    .postLogoutRedirectUri("http://localhost:3000/");
+
+            RegisteredClient spaClient = spaClientBuilder.build();
+            registeredClientRepository.save(spaClient);
+            log.info("OAuth2 SPA client '{}' registered successfully", spaClientId);
+        } else {
+            log.info("OAuth2 SPA client '{}' already exists", spaClientId);
         }
 
         // OAuth2 client for Client Credentials flow

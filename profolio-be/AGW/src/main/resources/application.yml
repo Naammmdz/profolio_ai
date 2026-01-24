@@ -38,22 +38,13 @@ spring:
                   - PATCH
                 allowedHeaders: 
                   - "*"
+                  - "Authorization"
                 allowCredentials: true
                 maxAge: 3600
           discovery:
             locator:
               enabled: true
           routes:
-            # BFF Auth endpoints - Exchange code, get user info, etc.
-            # Note: Authorization Server OAuth2 endpoints (/oauth2/authorize, /login) 
-            #       should be called DIRECTLY by browser (NOT through Gateway)
-            # Gateway only routes BFF endpoints
-            - id: bff-auth
-              uri: lb://authorization-server
-              predicates:
-                - Path=/api/auth/exchange,/api/auth/me,/api/auth/logout
-              filters:
-                - StripPrefix=0
             # Add your other service routes here
             # Example:
             # - id: profolio-service
@@ -82,6 +73,12 @@ spring:
         enabled: true
         initial-interval: 1000
         max-attempts: 6
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AUTH_SERVER_ISSUER_URI:http://localhost:9000}
 
 server:
   port: ${SERVER_PORT:8080}

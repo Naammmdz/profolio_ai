@@ -37,21 +37,17 @@ public class WebSecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/auth/**", "/actuator/**", "/oauth2/token")
+                        .ignoringRequestMatchers("/api/auth/register", "/actuator/**", "/oauth2/token")
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/register", "/api/auth/exchange").permitAll()
+                        .requestMatchers("/api/auth/register").permitAll()
                         .requestMatchers("/login", "/login/**", "/register", "/register/**", "/actuator/health", "/css/**", "/js/**", "/images/**", "/error").permitAll()
-                        .requestMatchers("/api/auth/me", "/api/auth/refresh", "/api/auth/logout").authenticated()
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/auth/exchange") // BFF endpoint needs CSRF exemption
-                )
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
-                        .defaultSuccessUrl("/", true)
+                        .defaultSuccessUrl(frontendBaseUrl, false)
                         .permitAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

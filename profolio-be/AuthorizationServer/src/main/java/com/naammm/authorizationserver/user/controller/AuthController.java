@@ -17,8 +17,8 @@ import java.util.Map;
  * User Registration Controller
  * 
  * Note: Authentication endpoints are handled by:
- * - OAuth2 endpoints: /oauth2/authorize, /oauth2/token (Authorization Server)
- * - BFF endpoints: /api/auth/exchange, /api/auth/me, /api/auth/logout (BFFAuthController)
+ * - OAuth2 endpoints: /oauth2/authorize, /oauth2/token, /oauth2/userinfo (Authorization Server)
+ * - Frontend uses SPA OIDC flow with react-oidc-context (no BFF pattern)
  */
 @RestController
 @RequestMapping("/api/auth")

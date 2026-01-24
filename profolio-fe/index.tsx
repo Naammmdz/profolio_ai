@@ -1,8 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider as OidcAuthProvider } from 'react-oidc-context';
 import App from './App';
-import { AuthProvider } from './src/contexts/AuthContext';
+import { oidcConfig } from './src/config/oidcConfig';
+import { OidcTokenSync } from './src/config/OidcTokenSync';
+import { OidcAuthEventsHandler } from './src/config/OidcAuthEventsHandler';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -18,9 +21,11 @@ root.render(
         v7_relativeSplatPath: true,
       }}
     >
-      <AuthProvider>
+      <OidcAuthProvider {...oidcConfig}>
+        <OidcTokenSync />
+        <OidcAuthEventsHandler />
         <App />
-      </AuthProvider>
+      </OidcAuthProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

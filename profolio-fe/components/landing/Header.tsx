@@ -52,12 +52,14 @@ const Header: React.FC<HeaderProps> = ({
           <AnimatedThemeToggler />
 
           <div className="flex items-center gap-3">
-            <button 
-              onClick={handleCtaClick}
-              className="flex cursor-pointer items-center justify-center overflow-hidden rounded-md h-9 px-5 bg-primary text-primary-foreground hover:opacity-90 transition-all text-xs font-bold uppercase tracking-wide"
-            >
-              {isAuthenticated ? 'Go to Dashboard' : 'Get Started'}
-            </button>
+            {!isAuthenticated && (
+              <button 
+                onClick={handleCtaClick}
+                className="flex cursor-pointer items-center justify-center overflow-hidden rounded-md h-9 px-5 bg-primary text-primary-foreground hover:opacity-90 transition-all text-xs font-bold uppercase tracking-wide"
+              >
+                Get Started
+              </button>
+            )}
 
             {isAuthenticated && (
               <div className="relative">

@@ -29,9 +29,16 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 public class AuthorizationServerConfig {
+
+    private final CorsConfigurationSource corsConfigurationSource;
+
+    public AuthorizationServerConfig(CorsConfigurationSource corsConfigurationSource) {
+        this.corsConfigurationSource = corsConfigurationSource;
+    }
 
     @Bean
     @Order(1)
@@ -45,15 +52,21 @@ public class AuthorizationServerConfig {
                 // 2. Only apply this Security Filter to Auth Server endpoints (like /oauth2/token)
                 .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
 
-                // 3. Configure Auth Server (Enable OIDC)
+                // 3. Configure CORS for OIDC discovery endpoints
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+
+                // 4. Configure Auth Server (Enable OIDC)
                 .with(authorizationServerConfigurer, authorizationServer ->
                         authorizationServer
                                 .oidc(Customizer.withDefaults())	// Enable OpenID Connect 1.0
                 )
 
-                // 4. Other security configurations
+                // 5. Other security configurations
                 .authorizeHttpRequests(authorize ->
-                        authorize.anyRequest().authenticated()
+                        authorize
+                                // Permit OIDC discovery endpoints (public metadata)
+                                .requestMatchers("/.well-known/**").permitAll()
+                                .anyRequest().authenticated()
                 )
                 // 5. Skip CSRF for token endpoints (Client sends POST without CSRF token)
                 .csrf(csrf -> csrf.ignoringRequestMatchers(

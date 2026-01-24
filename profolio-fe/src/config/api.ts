@@ -1,4 +1,6 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { authTokenStore } from './authTokenStore';
+import { emitLoginRequired } from './authEvents';
 
 // API base configuration
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
@@ -12,12 +14,14 @@ const apiClient: AxiosInstance = axios.create({
   },
 });
 
-// Request interceptor - Include cookies for BFF pattern
+// Request interceptor - Add Bearer token for SPA OIDC
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // ⭐ BFF Pattern: Use HttpOnly cookie instead of Bearer token
-    // Browser automatically sends cookie, no need to set Authorization header
-    config.withCredentials = true; // Include cookies in requests
+    const token = authTokenStore.getToken();
+    if (token) {
+      (config.headers as any) = config.headers ?? {};
+      (config.headers as any).Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error: AxiosError) => {
@@ -35,9 +39,8 @@ apiClient.interceptors.response.use(
     if (error.response) {
       switch (error.response.status) {
         case 401:
-          // Unauthorized - Redirect to login page
-          // Cookie will be cleared by server on logout
-          window.location.href = '/auth';
+          // Unauthorized - trigger OIDC login redirect (handled by OidcAuthEventsHandler)
+          emitLoginRequired();
           break;
         case 403:
           console.error('Access denied');

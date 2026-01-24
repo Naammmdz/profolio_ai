@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { oauth2Service } from '../../src/services/oauth2Service';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from 'react-oidc-context';
 
 const Callback: React.FC = () => {
     const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
     const [error, setError] = useState<string>('');
     const navigate = useNavigate();
+    const auth = useAuth();
 
     useEffect(() => {
         const handleCallback = async () => {
             try {
-                await oauth2Service.handleCallback();
+                await auth.signinRedirectCallback();
                 setStatus('success');
                 // Redirect to dashboard after successful login
                 setTimeout(() => {
@@ -20,13 +21,13 @@ const Callback: React.FC = () => {
                 setStatus('error');
                 setError(err.message || 'Authentication failed');
                 setTimeout(() => {
-                    navigate('/auth');
+                    navigate('/');
                 }, 3000);
             }
         };
 
         handleCallback();
-    }, [navigate]);
+    }, [auth, navigate]);
 
     return (
         <div className="relative min-h-screen w-full bg-background text-primary font-sans antialiased overflow-hidden flex items-center justify-center">

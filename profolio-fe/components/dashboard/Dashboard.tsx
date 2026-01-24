@@ -222,7 +222,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onPreview }) => {
       <DashboardSidebar currentTab={currentTab} onTabChange={setCurrentTab} />
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto bg-background relative transition-colors duration-300">
+      <main className="flex-1 overflow-y-auto bg-background dark:bg-zinc-950 bg-grid relative transition-colors duration-300">
         {currentTab === 'dashboard' && (
           <DashboardTab 
             onPreview={onPreview}

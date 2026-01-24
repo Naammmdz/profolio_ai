@@ -8,28 +8,28 @@ import UseCases from './UseCases';
 import Showcase from './Showcase';
 import Pricing from './Pricing';
 import Footer from './Footer';
-import { useAuth } from '../../src/contexts/AuthContext';
-import { oauth2Service } from '../../src/services/oauth2Service';
+import { useAuth } from 'react-oidc-context';
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user, authLoading, logout } = useAuth();
+  const auth = useAuth();
 
   const handleStart = () => {
-    if (authLoading) return;
-    if (user) {
+    if (auth.isLoading) return;
+    if (auth.isAuthenticated) {
       navigate('/dashboard');
       return;
     }
-    oauth2Service.initiateLogin();
+    auth.signinRedirect();
   };
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full bg-background text-primary">
       {/* Background Grid - Hero Only */}
       <div
-        className="absolute top-0 left-0 w-full h-[120vh] z-0 bg-grid-pattern opacity-60 pointer-events-none transition-opacity duration-300"
+        className="absolute top-0 left-0 w-full h-[120vh] z-0 opacity-60 pointer-events-none transition-opacity duration-300"
         style={{
+          backgroundImage: 'linear-gradient(to right, var(--border) 1px, transparent 1px), linear-gradient(to bottom, var(--border) 1px, transparent 1px)',
           backgroundSize: '40px 40px',
           maskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)',
           WebkitMaskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)',
@@ -38,11 +38,11 @@ const LandingPage: React.FC = () => {
 
       <Header
         onGetStarted={handleStart}
-        isAuthenticated={!!user}
-        userEmail={user?.email || user?.username || user?.name}
+        isAuthenticated={auth.isAuthenticated}
+        userEmail={auth.user?.profile?.email || auth.user?.profile?.preferred_username || auth.user?.profile?.name}
         onGoDashboard={() => navigate('/dashboard')}
         onLogout={async () => {
-          await logout();
+          await auth.signoutRedirect();
           navigate('/');
         }}
       />

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { oauth2Service } from '../../src/services/oauth2Service';
+import { useAuth } from 'react-oidc-context';
 
 interface LoginProps {
     onBack: () => void;
@@ -13,10 +13,11 @@ interface LoginProps {
  * This follows OAuth2 Authorization Code Flow standard
  */
 const Login: React.FC<LoginProps> = ({ onBack, onLogin, onSwitchToSignUp }) => {
+    const auth = useAuth();
     // Auto-redirect to Authorization Server immediately when component mounts
     useEffect(() => {
-        oauth2Service.initiateLogin();
-    }, []);
+        auth.signinRedirect();
+    }, [auth]);
 
     // Minimal loading UI (will redirect immediately)
     return (

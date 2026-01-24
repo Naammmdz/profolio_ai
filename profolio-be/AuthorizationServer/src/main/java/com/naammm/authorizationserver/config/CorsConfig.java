@@ -45,13 +45,11 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         
         // Apply CORS to endpoints called directly by browser
+        // OIDC discovery endpoint (required for SPA OIDC clients)
+        source.registerCorsConfiguration("/.well-known/**", configuration);
         source.registerCorsConfiguration("/oauth2/**", configuration);
         source.registerCorsConfiguration("/login", configuration);
         source.registerCorsConfiguration("/register", configuration);
-        
-        // Apply CORS to BFF endpoints (/api/auth/**)
-        // These endpoints are called directly from frontend when Gateway is not available
-        source.registerCorsConfiguration("/api/auth/**", configuration);
         
         return source;
     }
