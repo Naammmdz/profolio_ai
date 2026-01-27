@@ -9,25 +9,42 @@ const Callback: React.FC = () => {
     const auth = useAuth();
 
     useEffect(() => {
-        const handleCallback = async () => {
-            try {
-                await auth.signinRedirectCallback();
-                setStatus('success');
-                // Redirect to dashboard after successful login
-                setTimeout(() => {
-                    navigate('/dashboard');
-                }, 1500);
-            } catch (err: any) {
-                setStatus('error');
-                setError(err.message || 'Authentication failed');
-                setTimeout(() => {
-                    navigate('/');
-                }, 3000);
-            }
-        };
+        // react-oidc-context v3 automatically handles the callback via AuthProvider
+        // We just need to wait for authentication to complete and then redirect
+        
+        if (auth.isLoading) {
+            return; // Still loading, wait
+        }
 
-        handleCallback();
-    }, [auth, navigate]);
+        if (auth.isAuthenticated) {
+            // Authentication successful, redirect to dashboard
+            setStatus('success');
+            setTimeout(() => {
+                navigate('/dashboard');
+            }, 500);
+        } else if (auth.error) {
+            // Authentication failed
+            setStatus('error');
+            setError(auth.error.message || 'Authentication failed');
+            setTimeout(() => {
+                navigate('/');
+            }, 3000);
+        } else {
+            // Not authenticated yet, but no error - might still be processing
+            // Wait a bit more or check if we're in a callback state
+            const timeout = setTimeout(() => {
+                if (!auth.isAuthenticated && !auth.isLoading) {
+                    setStatus('error');
+                    setError('Authentication timeout. Please try again.');
+                    setTimeout(() => {
+                        navigate('/');
+                    }, 3000);
+                }
+            }, 5000);
+
+            return () => clearTimeout(timeout);
+        }
+    }, [auth.isLoading, auth.isAuthenticated, auth.error, navigate]);
 
     return (
         <div className="relative min-h-screen w-full bg-background text-primary font-sans antialiased overflow-hidden flex items-center justify-center">

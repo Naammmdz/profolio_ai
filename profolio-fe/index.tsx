@@ -21,7 +21,14 @@ root.render(
         v7_relativeSplatPath: true,
       }}
     >
-      <OidcAuthProvider {...oidcConfig}>
+      <OidcAuthProvider 
+        {...oidcConfig}
+        onSigninCallback={() => {
+          // Callback is automatically handled by react-oidc-context
+          // This is just a hook for additional logic if needed
+          console.log('Sign-in callback completed');
+        }}
+      >
         <OidcTokenSync />
         <OidcAuthEventsHandler />
         <App />

@@ -169,10 +169,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onPreview }) => {
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
         input:checked + .slider {
-            background-color: #4f46e5;
+            background-color: #18181b;
         }
         input:focus + .slider {
-            box-shadow: 0 0 1px #4f46e5;
+            box-shadow: 0 0 1px #18181b;
         }
         input:checked + .slider:before {
             -webkit-transform: translateX(20px);

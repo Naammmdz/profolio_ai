@@ -1,6 +1,4 @@
 import React from 'react';
-import DashboardHeader from '../DashboardHeader';
-import DashboardFooter from '../shared/DashboardFooter';
 
 interface PublishTabProps {
   onPreview: () => void;
@@ -9,107 +7,154 @@ interface PublishTabProps {
 
 const PublishTab: React.FC<PublishTabProps> = ({ onPreview, onNavigate }) => {
   return (
-    <div className="p-8 lg:p-12 max-w-5xl mx-auto pb-32">
-      <DashboardHeader 
-        onPreview={onPreview} 
-        onPublish={() => console.log('Publish')}
-      />
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-primary mb-2">Preview &amp; Publish</h1>
-        <p className="text-text-muted text-sm">Review your portfolio and make it live</p>
-      </div>
-      <div className="space-y-6">
-        <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
-          <div className="mb-6">
-            <h2 className="text-base font-bold text-primary mb-1">Portfolio Checklist</h2>
-            <p className="text-sm text-text-muted">Your portfolio is ready to publish!</p>
+    <div className="p-8 lg:p-12 max-w-7xl mx-auto pb-32">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
+        <div className="hidden sm:block">
+          <button className="p-2 -ml-2 text-text-muted hover:text-primary dark:hover:text-white transition-colors rounded-md hover:bg-surface dark:hover:bg-zinc-800">
+            <span className="material-symbols-outlined">dock_to_left</span>
+          </button>
+        </div>
+        <div className="flex items-center gap-3 self-end sm:self-auto">
+          <div className="bg-background dark:bg-zinc-800 border border-border text-text-muted px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 shadow-sm">
+            <span className="size-1.5 rounded-full bg-orange-500"></span>
+            Draft Mode
           </div>
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="size-5 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-green-600 text-[16px]">check</span>
-              </div>
-              <span className="text-sm font-medium text-primary">Basic Information</span>
+          <button 
+            onClick={onPreview}
+            className="bg-background dark:bg-zinc-800 hover:bg-surface dark:hover:bg-zinc-700 border border-border text-primary dark:text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm flex items-center gap-2"
+          >
+            <span className="material-symbols-outlined text-[16px]">visibility</span>
+            Preview
+          </button>
+          <button 
+            onClick={() => console.log('Publish Changes')}
+            className="bg-primary dark:bg-zinc-700 hover:opacity-90 dark:hover:bg-zinc-600 text-primary-foreground dark:text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors shadow-lg"
+          >
+            Publish Changes
+          </button>
+        </div>
+      </div>
+      <div className="mb-10">
+        <h1 className="text-4xl md:text-5xl font-serif font-normal text-primary dark:text-white tracking-tight mb-2">Preview &amp; Publish</h1>
+        <p className="text-text-muted text-sm font-light">Review your settings and launch your portfolio.</p>
+      </div>
+      <div className="grid gap-6">
+        {/* Portfolio Checklist */}
+        <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm border border-border dark:border-zinc-800 rounded-xl p-0 shadow-sm overflow-hidden">
+          <div className="px-6 py-5 border-b border-border dark:border-zinc-800 flex justify-between items-center">
+            <div>
+              <h2 className="text-base font-semibold text-primary dark:text-white">Portfolio Checklist</h2>
+              <p className="text-xs text-text-muted mt-0.5">Your portfolio is ready to publish</p>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="size-5 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-green-600 text-[16px]">check</span>
-              </div>
-              <span className="text-sm font-medium text-primary">AI Personality</span>
+            <div className="size-6 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 flex items-center justify-center">
+              <span className="material-symbols-outlined text-[16px]">check</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="size-5 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-green-600 text-[16px]">check</span>
+          </div>
+          <div className="p-2">
+            <div className="space-y-1">
+              <div className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-zinc-800/50 rounded-lg transition-colors cursor-default group">
+                <div className="flex items-center gap-3">
+                  <div className="size-5 rounded-full bg-primary dark:bg-white text-primary-foreground dark:text-primary flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-[14px] font-bold">check</span>
+                  </div>
+                  <span className="text-sm font-medium text-primary dark:text-white">Basic Information</span>
+                </div>
+                <button className="text-xs font-medium text-gray-400 dark:text-gray-500 opacity-0 group-hover:opacity-100 hover:text-primary dark:hover:text-white transition-all">Edit</button>
               </div>
-              <span className="text-sm font-medium text-primary">Tools</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="size-5 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-green-600 text-[16px]">check</span>
+              <div className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-zinc-800/50 rounded-lg transition-colors cursor-default group">
+                <div className="flex items-center gap-3">
+                  <div className="size-5 rounded-full bg-primary dark:bg-white text-primary-foreground dark:text-primary flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-[14px] font-bold">check</span>
+                  </div>
+                  <span className="text-sm font-medium text-primary dark:text-white">AI Personality</span>
+                </div>
+                <button className="text-xs font-medium text-gray-400 dark:text-gray-500 opacity-0 group-hover:opacity-100 hover:text-primary dark:hover:text-white transition-all">Edit</button>
               </div>
-              <span className="text-sm font-medium text-primary">Suggested Questions</span>
-              <span className="bg-surface-highlight text-text-muted text-[10px] font-bold px-1.5 py-0.5 rounded ml-1">8</span>
+              <div className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-zinc-800/50 rounded-lg transition-colors cursor-default group">
+                <div className="flex items-center gap-3">
+                  <div className="size-5 rounded-full bg-primary dark:bg-white text-primary-foreground dark:text-primary flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-[14px] font-bold">check</span>
+                  </div>
+                  <span className="text-sm font-medium text-primary dark:text-white">Tools</span>
+                </div>
+                <button className="text-xs font-medium text-gray-400 dark:text-gray-500 opacity-0 group-hover:opacity-100 hover:text-primary dark:hover:text-white transition-all">Edit</button>
+              </div>
+              <div className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-zinc-800/50 rounded-lg transition-colors cursor-default group">
+                <div className="flex items-center gap-3">
+                  <div className="size-5 rounded-full bg-primary dark:bg-white text-primary-foreground dark:text-primary flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-[14px] font-bold">check</span>
+                  </div>
+                  <span className="text-sm font-medium text-primary dark:text-white">Suggested Questions</span>
+                  <span className="bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400 text-[10px] font-bold px-1.5 py-0.5 rounded ml-1 border border-border dark:border-zinc-700">8</span>
+                </div>
+                <button className="text-xs font-medium text-gray-400 dark:text-gray-500 opacity-0 group-hover:opacity-100 hover:text-primary dark:hover:text-white transition-all">Edit</button>
+              </div>
             </div>
           </div>
         </div>
-        <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="material-symbols-outlined text-[20px]">language</span>
-            <h2 className="text-base font-bold text-primary">Custom Domain</h2>
-            <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-              <span className="material-symbols-outlined text-[10px]">crown</span> Pro
-            </span>
-          </div>
-          <p className="text-sm text-text-muted mb-6">Use your own domain instead of profol.io/giang-nam</p>
-          <div className="mb-6">
-            <div className="bg-background border border-border rounded-lg px-4 py-3 text-sm text-text-muted flex justify-between items-center bg-opacity-50 cursor-not-allowed">
-              <span>Custom domains are available for Pro users.</span>
+
+        {/* Custom Domain */}
+        <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm border border-border dark:border-zinc-800 rounded-xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="material-symbols-outlined text-[20px] text-gray-400 dark:text-gray-500">language</span>
+              <h2 className="text-base font-semibold text-primary dark:text-white">Custom Domain</h2>
+              <span className="bg-primary dark:bg-white text-primary-foreground dark:text-primary text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 uppercase tracking-wide">
+                Pro
+              </span>
+            </div>
+            <p className="text-sm text-text-muted mb-3">Use your own domain instead of profol.io/giang-nam</p>
+            <div className="inline-flex items-center bg-gray-50 dark:bg-zinc-800 border border-border dark:border-zinc-700 rounded-md px-3 py-1.5 text-xs text-gray-400 dark:text-gray-500 font-mono">
+              <span>https://yourdomain.com</span>
             </div>
           </div>
-          <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
+          <button className="shrink-0 bg-primary dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-primary-foreground dark:text-primary px-5 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
             Upgrade to Pro
           </button>
         </div>
-        <div className="bg-surface border border-border rounded-xl p-6 shadow-sm flex items-center justify-between">
+
+        {/* Portfolio Preview */}
+        <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm border border-border dark:border-zinc-800 rounded-xl p-6 shadow-sm flex items-center justify-between">
           <div>
-            <h2 className="text-base font-bold text-primary mb-1">Portfolio Preview</h2>
-            <div className="mt-4">
-              <h3 className="text-sm font-medium text-primary">Show Profolio Badge</h3>
-              <p className="text-xs text-text-muted mt-1">Required for free plan</p>
+            <h2 className="text-base font-semibold text-primary dark:text-white mb-1">Portfolio Preview</h2>
+            <div className="mt-1">
+              <h3 className="text-sm font-medium text-primary dark:text-white">Show Profolio Badge</h3>
+              <p className="text-xs text-text-muted mt-0.5">Required for free plan</p>
             </div>
           </div>
-          <div className="self-end mb-1">
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input className="sr-only peer" disabled={true} defaultChecked={true} type="checkbox" />
-              <div className="w-11 h-6 bg-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 opacity-60 cursor-not-allowed"></div>
+          <div>
+            <label className="relative inline-flex items-center cursor-not-allowed opacity-60" htmlFor="badge-toggle">
+              <input checked className="sr-only peer" disabled id="badge-toggle" type="checkbox"/>
+              <div className="w-11 h-6 bg-gray-200 dark:bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 dark:after:border-zinc-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary dark:peer-checked:bg-white"></div>
             </label>
           </div>
         </div>
-        <div className="bg-indigo-500/5 border border-indigo-500/20 rounded-xl p-0 overflow-hidden shadow-sm relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/0 via-indigo-500/10 to-blue-500/5 pointer-events-none"></div>
-          <div className="relative z-10 p-6">
-            <div className="flex items-center gap-2 mb-2">
-              <h2 className="text-base font-bold text-primary">Publish</h2>
-              <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                <span className="material-symbols-outlined text-[10px]">crown</span> Pro
-              </span>
+
+        {/* Publish Section */}
+        <div className="bg-white dark:bg-zinc-900 border border-border dark:border-zinc-800 rounded-xl p-0 overflow-hidden shadow-md relative mt-4">
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 dark:from-zinc-900/50 via-white dark:via-zinc-900 to-white dark:to-zinc-900 pointer-events-none"></div>
+          <div className="relative z-10 p-10 text-center">
+            <div className="size-12 mx-auto bg-primary dark:bg-white text-primary-foreground dark:text-primary rounded-full flex items-center justify-center mb-4 shadow-lg shadow-black/10">
+              <span className="material-symbols-outlined text-[24px]">rocket_launch</span>
             </div>
-            <p className="text-sm text-text-muted mb-6">Your portfolio is ready!</p>
-            <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
+            <h2 className="text-2xl font-serif text-primary dark:text-white mb-2">Your portfolio is ready!</h2>
+            <p className="text-sm text-text-muted mb-8 max-w-sm mx-auto leading-relaxed">Everything looks great. You are just one click away from launching your AI portfolio.</p>
+            <button className="w-full sm:w-auto min-w-[200px] bg-primary dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-primary-foreground dark:text-primary py-3 px-6 rounded-lg text-sm font-medium transition-colors shadow-lg shadow-gray-200 dark:shadow-zinc-800">
               Publish now
             </button>
           </div>
         </div>
-        <div className="flex justify-center pt-4">
+
+        {/* Go to Dashboard Link */}
+        <div className="flex justify-center pt-8">
           <button 
             onClick={() => onNavigate('dashboard')}
-            className="text-sm font-medium text-primary hover:text-indigo-600 transition-colors"
+            className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors border-b border-transparent hover:border-gray-300 dark:hover:border-zinc-600 pb-0.5"
           >
             Go to Dashboard
           </button>
         </div>
       </div>
-      <DashboardFooter />
     </div>
   );
 };
