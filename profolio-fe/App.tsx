@@ -5,6 +5,7 @@ import Dashboard from './components/dashboard/Dashboard';
 import PortfolioPreview from './components/portfolio/PortfolioPreview';
 import Callback from './components/auth/Callback';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import NotFoundPage from './components/common/NotFoundPage';
 
 const App: React.FC = () => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ const App: React.FC = () => {
         }
       />
 
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 };
