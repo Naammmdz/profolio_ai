@@ -88,6 +88,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onPreview }) => {
     setEditingSkillCategory(null);
   };
 
+  // Tab navigation handler to keep typing simple for children
+  const handleNavigate = (tab: Tab) => {
+    setCurrentTab(tab);
+  };
+
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({
       ...prev,
@@ -226,32 +231,32 @@ const Dashboard: React.FC<DashboardProps> = ({ onPreview }) => {
         {currentTab === 'dashboard' && (
           <DashboardTab 
             onPreview={onPreview}
-            onNavigate={setCurrentTab}
+            onNavigate={handleNavigate}
           />
         )}
 
         {currentTab === 'analytics' && (
-          <AnalyticsTab onNavigate={setCurrentTab} />
+          <AnalyticsTab onNavigate={handleNavigate} />
         )}
 
         {currentTab === 'publish' && (
           <PublishTab 
             onPreview={onPreview}
-            onNavigate={setCurrentTab}
+            onNavigate={handleNavigate}
           />
         )}
 
         {currentTab === 'basic-info' && (
           <BasicInfoTab 
             onPreview={onPreview}
-            onNavigate={setCurrentTab}
+            onNavigate={handleNavigate}
           />
         )}
 
         {currentTab === 'ai-personality' && (
           <AIPersonalityTab 
             onPreview={onPreview}
-            onNavigate={setCurrentTab}
+            onNavigate={handleNavigate}
             expandedSections={expandedSections}
             onToggleSection={toggleSection}
           />
@@ -260,7 +265,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onPreview }) => {
         {currentTab === 'tools' && (
           <ToolsTab 
             onPreview={onPreview}
-            onNavigate={setCurrentTab}
+            onNavigate={handleNavigate}
             expandedTools={expandedTools}
             onToggleTool={toggleTool}
             onCreateProject={handleCreateProject}
@@ -273,7 +278,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onPreview }) => {
         {currentTab === 'questions' && (
           <QuestionsTab 
             onPreview={onPreview}
-            onNavigate={setCurrentTab}
+            onNavigate={handleNavigate}
           />
         )}
       </main>
