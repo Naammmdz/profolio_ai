@@ -292,7 +292,7 @@ const AIPersonalityTab: React.FC<AIPersonalityTabProps> = ({
       {/* Save Button */}
       <hr className="border-gray-200 dark:border-zinc-800 mb-8"/>
       <div className="flex justify-end">
-        <button className="bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-white dark:text-black px-8 py-2.5 rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md">
+        <button className="bg-primary dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-primary-foreground dark:text-black px-8 py-2.5 rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md">
           Save
         </button>
       </div>

@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from 'react-oidc-context';
 import AnimatedThemeToggler from '../common/AnimatedThemeToggler';
 
 type Tab = 'dashboard' | 'analytics' | 'publish' | 'basic-info' | 'ai-personality' | 'tools' | 'questions';
@@ -9,14 +11,50 @@ interface DashboardSidebarProps {
 }
 
 const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ currentTab, onTabChange }) => {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const navigate = useNavigate();
+  const auth = useAuth();
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        buttonRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        !buttonRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showDropdown]);
+
+  const handleLogout = async () => {
+    await auth.signoutRedirect();
+    navigate('/');
+  };
+
   return (
     <aside className="w-72 bg-background dark:bg-zinc-900 border-r border-border flex flex-col justify-between shrink-0 h-full overflow-y-auto transition-colors duration-300">
       <div className="p-6">
         <div className="flex items-center justify-between mb-10">
-          <div className="flex items-center gap-3">
+          <button 
+            onClick={() => navigate('/')}
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer"
+          >
             <div className="size-8 flex items-center justify-center text-primary-foreground bg-primary border border-primary rounded-md font-serif italic text-lg shadow-sm dark:bg-primary dark:border-primary">P</div>
             <span className="text-primary dark:text-white font-serif text-2xl tracking-tight">Profolio</span>
-          </div>
+          </button>
           <AnimatedThemeToggler />
         </div>
         <nav className="space-y-1 mb-10">
@@ -133,7 +171,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ currentTab, onTabCh
             <div className="h-full bg-primary dark:bg-zinc-600 w-[12%] rounded-full"></div>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 relative">
           <div className="size-9 rounded-full bg-surface-highlight dark:bg-zinc-800 border border-border flex items-center justify-center text-xs font-serif italic text-text-muted shrink-0">
             gn
           </div>
@@ -141,7 +179,79 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ currentTab, onTabCh
             <p className="text-sm font-medium text-primary dark:text-white truncate">Giang Nam</p>
             <p className="text-xs text-text-muted truncate">tagiangnamttg@gmail.com</p>
           </div>
-          <span className="material-symbols-outlined text-text-muted text-[18px] cursor-pointer hover:text-primary dark:hover:text-white">more_vert</span>
+          <button
+            ref={buttonRef}
+            onClick={() => setShowDropdown(!showDropdown)}
+            className="material-symbols-outlined text-text-muted text-[18px] cursor-pointer hover:text-primary dark:hover:text-white transition-colors p-1 rounded hover:bg-surface dark:hover:bg-zinc-800"
+          >
+            more_vert
+          </button>
+
+          {/* Dropdown Menu */}
+          {showDropdown && (
+            <div
+              ref={dropdownRef}
+              className="absolute bottom-full right-0 mb-2 w-56 bg-white dark:bg-zinc-900 rounded-lg shadow-lg border border-gray-200 dark:border-zinc-800 overflow-hidden z-50"
+            >
+              {/* User Info Section */}
+              <div className="p-4 border-b border-gray-200 dark:border-zinc-800">
+                <div className="flex items-center gap-3">
+                  <div className="size-10 rounded-full bg-surface-highlight dark:bg-zinc-800 border border-border flex items-center justify-center text-xs font-serif italic text-text-muted shrink-0">
+                    gn
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-primary dark:text-white truncate">Giang Nam</p>
+                    <p className="text-xs text-text-muted truncate">tagiangnamttg@gmail.com</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Menu Items */}
+              <div className="py-1">
+                <button
+                  onClick={() => {
+                    setShowDropdown(false);
+                    // Handle upgrade to pro
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-primary dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors text-left"
+                >
+                  <span className="material-symbols-outlined text-[18px]">workspace_premium</span>
+                  <span>Upgrade to Pro</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setShowDropdown(false);
+                    // Handle billing
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-primary dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors text-left"
+                >
+                  <span className="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+                  <span>Billing</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setShowDropdown(false);
+                    // Handle settings
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-primary dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors text-left"
+                >
+                  <span className="material-symbols-outlined text-[18px]">settings</span>
+                  <span>Settings</span>
+                </button>
+                <div className="border-t border-gray-200 dark:border-zinc-800 my-1"></div>
+                <button
+                  onClick={() => {
+                    setShowDropdown(false);
+                    handleLogout();
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-primary dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors text-left"
+                >
+                  <span className="material-symbols-outlined text-[18px]">logout</span>
+                  <span>Log out</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </aside>

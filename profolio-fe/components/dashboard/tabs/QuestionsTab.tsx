@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import DashboardHeader from '../DashboardHeader';
-import DashboardFooter from '../shared/DashboardFooter';
 import QuestionModal from '../modals/QuestionModal';
 
 interface Question {
@@ -182,60 +180,85 @@ const QuestionsTab: React.FC<QuestionsTabProps> = ({ onPreview, onNavigate }) =>
 
   return (
     <div className="p-8 lg:p-12 max-w-5xl mx-auto pb-32">
-      <DashboardHeader 
-        onPreview={onPreview} 
-        onPublish={() => onNavigate('publish')}
-      />
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-primary mb-2">Suggested Questions</h1>
-        <p className="text-text-muted text-sm">Customize the questions visitors can ask your AI</p>
-      </div>
-      
-      <div className="bg-surface border border-border rounded-xl mb-8 shadow-sm h-[320px] flex flex-col items-center justify-center relative overflow-hidden bg-[radial-gradient(var(--border)_1px,transparent_1px)] [background-size:16px_16px]">
-        <div className="absolute inset-0 bg-background/50 pointer-events-none"></div>
-        <div className="relative z-10 flex flex-col items-center">
-          <div className="size-16 bg-primary rounded-full mb-6 shadow-lg flex items-center justify-center overflow-hidden">
-            <img alt="AI Avatar" className="w-full h-full object-cover grayscale opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAetz8sCmxvzkl24KNevlS8HwWmfU9lD35sOrf4b7CG0-7XxJR3nLfQtgVyJDOV2tgKOMPu2MwzLfFS20gW0hIXQkY5PNETd0uyh77Sp7fAyFLOuD1HzARlekzEiUJWir6Zb1Rdu4cJ_fRZV7xrI79iVXZriPNSrf0FDx8a3ApiVX_fHJztLYqcyF7EGU8E0d2Ocx6CckcWg_xraBXejginXoiQ1uiKx2x_EQRg_Zl0XXGt6gTk4TmZvDBKbm1Hq0qxfECi_ry1vg"/>
+      {/* Header with Draft Mode, Preview, Publish Changes */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
+        <div className="hidden sm:block">
+        </div>
+        <div className="flex items-center gap-3 self-end sm:self-auto w-full sm:w-auto justify-end">
+          <div className="bg-yellow-50/50 dark:bg-yellow-900/20 border border-yellow-200/60 dark:border-yellow-800/60 text-yellow-700 dark:text-yellow-400 px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5">
+            <span className="size-1.5 rounded-full bg-yellow-500 dark:bg-yellow-400"></span>
+            Draft Mode
           </div>
-          <div className="w-80 sm:w-96 bg-background rounded-full border border-border shadow-md p-1.5 pl-5 flex items-center gap-2 transition-shadow hover:shadow-lg hover:border-indigo-100 group">
-            <span className="text-sm text-text-muted w-full bg-transparent outline-none cursor-text flex items-center">
-              Ask me anything
-              <span className="w-[1.5px] h-4 bg-primary ml-0.5 animate-pulse"></span>
+          <div className="h-6 w-px bg-gray-200 dark:bg-zinc-700 mx-1"></div>
+          <button 
+            onClick={onPreview}
+            className="bg-white dark:bg-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-700 text-zinc-700 dark:text-gray-300 border border-gray-200 dark:border-zinc-700 px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 shadow-sm"
+          >
+            <span className="material-symbols-outlined text-[18px]">visibility</span>
+            Preview
+          </button>
+          <button 
+            onClick={() => onNavigate('publish')}
+            className="bg-primary dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-primary-foreground dark:text-black px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+          >
+            Publish Changes
+          </button>
+        </div>
+      </div>
+
+      {/* Title */}
+      <div className="mb-10 max-w-2xl">
+        <h1 className="text-4xl font-serif text-zinc-900 dark:text-white mb-3 tracking-tight">Suggested Questions</h1>
+        <p className="text-zinc-500 dark:text-gray-400 text-sm leading-relaxed">Customize the conversation starters visitors see when they open your AI chat. These help guide the interaction and showcase your best self.</p>
+      </div>
+
+      {/* Preview Section */}
+      <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl mb-10 shadow-[0_2px_10px_-2px_rgba(0,0,0,0.03)] dark:shadow-[0_2px_10px_-2px_rgba(0,0,0,0.1)] h-[300px] flex flex-col items-center justify-center relative overflow-hidden group">
+        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(rgb(63,63,70)_1px,transparent_1px)] [background-size:20px_20px] opacity-50"></div>
+        <div className="relative z-10 flex flex-col items-center w-full max-w-md px-6">
+          <div className="size-16 bg-zinc-900 dark:bg-white rounded-full mb-6 shadow-xl ring-4 ring-white dark:ring-zinc-900 flex items-center justify-center overflow-hidden">
+            <img alt="AI Avatar" className="w-full h-full object-cover grayscale opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAetz8sCmxvzkl24KNevlS8HwWmfU9lD35sOrf4b7CG0-7XxJR3nLfQtgVyJDOV2tgKOMPu2MwzLfFS20gW0hIXQkY5PNETd0uyh77Sp7fAyFLOuD1HzARlekzEiUJWir6Zb1Rdu4cJ_fRZV7xrI79iVXZriPNSrf0FDx8a3ApiVX_fHJztLYqcyF7EGU8E0d2Ocx6CckcWg_xraBXejginXoiQ1uiKx2x_EQRg_Zl0XXGt6gTk4TmZvDBKbm1Hq0qxfECi_ry1vg"/>
+          </div>
+          <div className="w-full bg-white dark:bg-zinc-800 rounded-full border border-gray-200 dark:border-zinc-700 shadow-sm p-1.5 pl-5 flex items-center gap-2 transition-all group-hover:shadow-md group-hover:border-zinc-300 dark:group-hover:border-zinc-600">
+            <span className="text-sm text-zinc-400 dark:text-gray-500 w-full bg-transparent outline-none cursor-default flex items-center">
+              Ask me anything...
+              <span className="w-[1.5px] h-4 bg-zinc-900 dark:bg-white ml-0.5 animate-pulse"></span>
             </span>
-            <button className="size-8 rounded-full bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-sm group-hover:bg-indigo-700 transition-colors">
+            <button className="size-8 rounded-full bg-primary dark:bg-white text-primary-foreground dark:text-black flex items-center justify-center shrink-0 shadow-sm hover:bg-zinc-800 dark:hover:bg-gray-100 transition-colors">
               <span className="material-symbols-outlined text-[16px]">arrow_upward</span>
             </button>
           </div>
         </div>
       </div>
 
+      {/* Question Categories */}
       <div className="space-y-6">
         {questionCategories.map((category, catIndex) => (
-          <div key={catIndex} className="bg-surface border border-border rounded-xl p-6 shadow-sm">
-            <div className="mb-4">
-              <h3 className="text-base font-bold text-primary">{category.title}</h3>
-              <p className="text-xs text-text-muted">{category.count} question{category.count !== 1 ? 's' : ''}</p>
+          <div key={catIndex} className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-2xl p-8 shadow-[0_2px_8px_rgba(0,0,0,0.02)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.1)] hover:border-gray-200 dark:hover:border-zinc-700 transition-colors">
+            <div className="flex justify-between items-baseline mb-6">
+              <h3 className="text-lg font-medium text-zinc-900 dark:text-white">{category.title}</h3>
+              <span className="text-xs font-medium text-zinc-400 dark:text-gray-500 bg-zinc-50 dark:bg-zinc-800 px-2 py-1 rounded-md border border-zinc-100 dark:border-zinc-700">{category.count} question{category.count !== 1 ? 's' : ''}</span>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {category.questions.map((questionItem) => (
                 <div key={questionItem.id} className="relative group">
                   <input 
-                    className="w-full py-2.5 pl-4 pr-20 rounded-lg border border-border text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-primary bg-background" 
+                    className="w-full py-3 pl-4 pr-20 rounded-xl border-gray-200 dark:border-zinc-700 text-sm text-zinc-800 dark:text-white bg-white dark:bg-zinc-900 placeholder-zinc-400 dark:placeholder-gray-500 focus:border-zinc-900 dark:focus:border-white focus:ring-0 transition-all shadow-sm group-hover:border-gray-300 dark:group-hover:border-zinc-600" 
                     readOnly 
                     type="text" 
                     value={questionItem.question}
                   />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
                     {questionItem.isDefault && (
-                      <span className="bg-surface-highlight text-text-muted text-[10px] font-medium px-1.5 py-0.5 rounded border border-border">Default</span>
+                      <span className="bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-gray-400 text-[10px] uppercase tracking-wide font-semibold px-2 py-1 rounded border border-zinc-200/50 dark:border-zinc-700/50">Default</span>
                     )}
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => handleEditQuestion(questionItem)}
-                        className="p-1 hover:bg-surface-highlight rounded transition-colors"
+                        className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded transition-colors"
                         title="Edit question"
                       >
-                        <span className="material-symbols-outlined text-text-muted hover:text-primary text-[16px]">edit</span>
+                        <span className="material-symbols-outlined text-zinc-500 dark:text-gray-400 hover:text-zinc-800 dark:hover:text-white text-[16px]">edit</span>
                       </button>
                       {!questionItem.isDefault && (
                         <button
@@ -243,7 +266,7 @@ const QuestionsTab: React.FC<QuestionsTabProps> = ({ onPreview, onNavigate }) =>
                           className="p-1 hover:bg-red-500/10 rounded transition-colors"
                           title="Delete question"
                         >
-                          <span className="material-symbols-outlined text-text-muted hover:text-red-500 text-[16px]">delete</span>
+                          <span className="material-symbols-outlined text-zinc-500 dark:text-gray-400 hover:text-red-500 text-[16px]">delete</span>
                         </button>
                       )}
                     </div>
@@ -255,24 +278,42 @@ const QuestionsTab: React.FC<QuestionsTabProps> = ({ onPreview, onNavigate }) =>
         ))}
       </div>
 
-      <div className="mt-8 flex gap-3">
+      {/* Action Buttons */}
+      <div className="mt-8 flex gap-4">
         <button 
           onClick={handleCreateQuestion}
-          className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center justify-center gap-2"
+          className="flex-1 bg-white dark:bg-zinc-900 hover:bg-gray-50 dark:hover:bg-zinc-800 text-zinc-900 dark:text-white border border-gray-200 dark:border-zinc-700 py-3 rounded-xl text-sm font-medium transition-all shadow-sm flex items-center justify-center gap-2 group hover:border-zinc-300 dark:hover:border-zinc-600"
         >
-          <span className="material-symbols-outlined text-[18px]">add</span>
+          <span className="material-symbols-outlined text-[20px] text-zinc-400 dark:text-gray-500 group-hover:text-zinc-800 dark:group-hover:text-white transition-colors">add</span>
           Add Question
         </button>
         <button 
           onClick={handleResetToDefaults}
-          className="px-6 border border-border bg-background hover:bg-surface-highlight text-primary py-3 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2"
+          className="px-6 border border-transparent text-zinc-400 dark:text-gray-500 hover:text-zinc-600 dark:hover:text-gray-300 py-3 rounded-xl text-xs font-medium transition-colors flex items-center gap-2"
         >
-          <span className="material-symbols-outlined text-[18px]">refresh</span>
+          <span className="material-symbols-outlined text-[16px]">restart_alt</span>
           Reset to Defaults
         </button>
       </div>
 
-      <DashboardFooter />
+      {/* Footer */}
+      <footer className="mt-20 border-t border-gray-200 dark:border-zinc-800 pt-8 pb-4">
+        <div className="flex flex-col md:flex-row justify-between items-center text-xs text-zinc-400 dark:text-gray-500 gap-4">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-zinc-800 dark:text-white font-serif tracking-tight text-sm">Profolio</span>
+            <span>© 2025</span>
+          </div>
+          <div className="flex gap-6">
+            <a className="hover:text-black dark:hover:text-white transition-colors" href="#">Dashboard</a>
+            <a className="hover:text-black dark:hover:text-white transition-colors" href="#">Billing</a>
+            <a className="hover:text-black dark:hover:text-white transition-colors" href="#">Support</a>
+          </div>
+          <div className="flex gap-6">
+            <a className="hover:text-black dark:hover:text-white transition-colors" href="#">Terms</a>
+            <a className="hover:text-black dark:hover:text-white transition-colors" href="#">Privacy</a>
+          </div>
+        </div>
+      </footer>
 
       {/* Question Modal */}
       {editingQuestion && (
@@ -294,4 +335,3 @@ const QuestionsTab: React.FC<QuestionsTabProps> = ({ onPreview, onNavigate }) =>
 };
 
 export default QuestionsTab;
-

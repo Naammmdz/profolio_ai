@@ -125,7 +125,7 @@ const PublishTab: React.FC<PublishTabProps> = ({ onPreview, onNavigate }) => {
           <div>
             <label className="relative inline-flex items-center cursor-not-allowed opacity-60" htmlFor="badge-toggle">
               <input checked className="sr-only peer" disabled id="badge-toggle" type="checkbox"/>
-              <div className="w-11 h-6 bg-gray-200 dark:bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 dark:after:border-zinc-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary dark:peer-checked:bg-white"></div>
+              <div className="w-11 h-6 bg-gray-200 dark:bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:after:bg-zinc-900 after:border-gray-300 dark:after:border-zinc-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary dark:peer-checked:bg-white dark:peer-checked:after:bg-zinc-900"></div>
             </label>
           </div>
         </div>

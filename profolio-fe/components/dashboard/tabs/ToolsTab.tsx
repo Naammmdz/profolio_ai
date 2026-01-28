@@ -120,7 +120,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
         <div className="relative z-10 flex flex-col items-center mb-8">
           <div className="mb-6 relative size-20 bg-white dark:bg-zinc-800 rounded-2xl shadow-lg border border-gray-100 dark:border-zinc-700 flex items-center justify-center apple-float">
             <span className="material-symbols-outlined text-[40px] text-primary dark:text-white">smart_toy</span>
-            <div className="absolute -right-2 -bottom-2 bg-black dark:bg-white text-white dark:text-black p-1.5 rounded-lg shadow-lg">
+            <div className="absolute -right-2 -bottom-2 bg-primary dark:bg-white text-primary-foreground dark:text-black p-1.5 rounded-lg shadow-lg">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
               </svg>
@@ -133,7 +133,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-full max-w-md px-6">
           <div className="bg-white/90 dark:bg-zinc-800/90 backdrop-blur-xl rounded-full border border-gray-200 dark:border-zinc-700 shadow-lg p-2 pl-6 flex items-center hover:border-gray-300 dark:hover:border-zinc-600 transition-colors group-hover:shadow-xl group-hover:-translate-y-1 duration-300">
             <span className="text-sm text-gray-400 dark:text-gray-500 flex-1 font-light">Ask me anything about my work...</span>
-            <button className="size-9 bg-black dark:bg-white rounded-full flex items-center justify-center text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-gray-100 transition-colors shadow-md">
+            <button className="size-9 bg-primary dark:bg-white rounded-full flex items-center justify-center text-primary-foreground dark:text-black hover:bg-zinc-800 dark:hover:bg-gray-100 transition-colors shadow-md">
               <span className="material-symbols-outlined text-[18px]">arrow_upward</span>
             </button>
           </div>
@@ -251,7 +251,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
                   ))}
                 </div>
               </div>
-              <button className="w-full bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-white dark:text-black py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
+              <button className="w-full bg-primary dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-primary-foreground dark:text-black py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
                 Save Presentation Information
               </button>
             </div>
@@ -312,7 +312,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
               </div>
               <button
                 onClick={onCreateProject}
-                className="w-full bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-white dark:text-black py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center justify-center gap-2"
+                className="w-full bg-primary dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-primary-foreground dark:text-black py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center justify-center gap-2"
               >
                 <span className="material-symbols-outlined text-[18px]">add</span>
                 Add Project
@@ -381,7 +381,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
               </div>
               <button
                 onClick={onCreateSkillCategory}
-                className="w-full bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-white dark:text-black py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center justify-center gap-2"
+                className="w-full bg-primary dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-primary-foreground dark:text-black py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center justify-center gap-2"
               >
                 <span className="material-symbols-outlined text-[18px]">add</span>
                 Add Category
@@ -445,7 +445,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
                   </div>
                 </div>
               </div>
-              <button className="w-full bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-white dark:text-black py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
+              <button className="w-full bg-primary dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-primary-foreground dark:text-black py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
                 Save Fun Section
               </button>
             </div>
@@ -526,7 +526,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
                   </button>
                 </div>
               </div>
-              <button className="w-full bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-white dark:text-black py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
+              <button className="w-full bg-primary dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-primary-foreground dark:text-black py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
                 Save Contact Information
               </button>
             </div>
@@ -591,7 +591,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
                   <input className="w-full py-2 px-3 rounded-lg border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white focus:border-black dark:focus:border-white text-black dark:text-white shadow-sm transition-shadow" defaultValue="Backend Developer with a passion for solving technical challenges" />
                 </div>
               </div>
-              <button className="w-full bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-white dark:text-black py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
+              <button className="w-full bg-primary dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-primary-foreground dark:text-black py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
                 Save Resume Information
               </button>
             </div>
@@ -650,7 +650,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
                   </div>
                 </div>
               </div>
-              <button className="w-full bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-white dark:text-black py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
+              <button className="w-full bg-primary dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-primary-foreground dark:text-black py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
                 Save Video
               </button>
             </div>
@@ -709,7 +709,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
                   </div>
                 </div>
               </div>
-              <button className="w-full bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-white dark:text-black py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
+              <button className="w-full bg-primary dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-primary-foreground dark:text-black py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
                 Save Location
               </button>
             </div>

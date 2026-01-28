@@ -62,9 +62,9 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ onPreview, onNavigate }) =>
               Hello everyone <span className="not-italic">👋</span>
             </div>
             <h2 className="text-5xl md:text-6xl font-serif text-primary dark:text-white tracking-tight mb-8">James Martin</h2>
-            <div className="size-32 bg-zinc-900 dark:bg-zinc-800 rounded-2xl mx-auto flex items-center justify-center mb-10 shadow-2xl shadow-black/10 relative group cursor-pointer transition-transform hover:scale-[1.02] duration-300">
-              <span className="text-white/80 dark:text-white/70 font-serif text-2xl italic">JM</span>
-              <div className="absolute inset-0 border border-white/10 dark:border-white/20 rounded-2xl"></div>
+            <div className="size-32 bg-primary dark:bg-zinc-800 rounded-2xl mx-auto flex items-center justify-center mb-10 shadow-2xl shadow-black/10 dark:shadow-white/5 relative group cursor-pointer transition-transform hover:scale-[1.02] duration-300">
+              <span className="text-primary-foreground/80 dark:text-white/70 font-serif text-2xl italic">JM</span>
+              <div className="absolute inset-0 border border-primary-foreground/10 dark:border-white/20 rounded-2xl"></div>
             </div>
             <div className="w-full max-w-md mx-auto relative group">
               <input 
@@ -73,7 +73,7 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ onPreview, onNavigate }) =>
                 placeholder="Ask me anything..." 
                 type="text"
               />
-              <button className="absolute right-2 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center bg-black dark:bg-white rounded-full text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-gray-100 transition-colors">
+              <button className="absolute right-2 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center bg-primary dark:bg-white rounded-full text-primary-foreground dark:text-black hover:bg-zinc-800 dark:hover:bg-gray-100 transition-colors">
                 <span className="material-symbols-outlined text-[16px]">arrow_upward</span>
               </button>
             </div>
@@ -91,7 +91,7 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ onPreview, onNavigate }) =>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input checked className="sr-only peer toggle-switch-input" type="checkbox"/>
-              <div className="w-10 h-6 bg-gray-200 dark:bg-zinc-700 peer-focus:outline-none rounded-full peer toggle-switch-label transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:shadow-sm after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black dark:peer-checked:bg-white"></div>
+              <div className="w-10 h-6 bg-gray-200 dark:bg-zinc-700 peer-focus:outline-none rounded-full peer toggle-switch-label transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:after:bg-zinc-900 after:shadow-sm after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black dark:peer-checked:bg-white dark:peer-checked:after:bg-zinc-900"></div>
             </label>
           </div>
           <div className="flex flex-col sm:flex-row items-center gap-10">
@@ -188,7 +188,7 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ onPreview, onNavigate }) =>
                 <label className="block text-sm font-medium text-primary dark:text-white">Welcome Modal</label>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input checked className="sr-only peer toggle-switch-input" type="checkbox"/>
-                  <div className="w-10 h-6 bg-gray-200 dark:bg-zinc-700 peer-focus:outline-none rounded-full peer toggle-switch-label transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:shadow-sm after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black dark:peer-checked:bg-white"></div>
+                  <div className="w-10 h-6 bg-gray-200 dark:bg-zinc-700 peer-focus:outline-none rounded-full peer toggle-switch-label transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:after:bg-zinc-900 after:shadow-sm after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black dark:peer-checked:bg-white dark:peer-checked:after:bg-zinc-900"></div>
                 </label>
               </div>
               <div className="space-y-4 p-5 bg-gray-50/50 dark:bg-zinc-800/50 rounded-xl border border-gray-100 dark:border-zinc-700">
@@ -211,7 +211,7 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ onPreview, onNavigate }) =>
             </div>
           </div>
           <div className="flex justify-end pt-4">
-            <button className="w-full sm:w-auto bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-white dark:text-black py-2.5 px-8 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg">
+            <button className="w-full sm:w-auto bg-primary dark:bg-white hover:bg-zinc-800 dark:hover:bg-gray-100 text-primary-foreground dark:text-black py-2.5 px-8 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg">
               Save Changes
             </button>
           </div>

@@ -173,12 +173,24 @@ const Dashboard: React.FC<DashboardProps> = ({ onPreview }) => {
             border-radius: 50%;
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
-        input:checked + .slider {
+        .dark .slider:before {
             background-color: #18181b;
         }
-        input:focus + .slider {
-            box-shadow: 0 0 1px #18181b;
-        }
+               input:checked + .slider {
+                   background-color: #18181b;
+               }
+               .dark input:checked + .slider {
+                   background-color: white;
+               }
+               .dark input:checked + .slider:before {
+                   background-color: #18181b;
+               }
+               input:focus + .slider {
+                   box-shadow: 0 0 1px #18181b;
+               }
+               .dark input:focus + .slider {
+                   box-shadow: 0 0 1px white;
+               }
         input:checked + .slider:before {
             -webkit-transform: translateX(20px);
             -ms-transform: translateX(20px);
