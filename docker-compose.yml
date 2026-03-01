@@ -1,7 +1,7 @@
-# Docker Compose cho Dokploy Stack (Chỉ dùng cho Infrastructure)
 services:
   consul:
     image: hashicorp/consul:1.15
+    container_name: consul
     ports:
       - "8500:8500"
     command: "agent -dev -client=0.0.0.0"
@@ -10,6 +10,7 @@ services:
 
   postgres:
     image: postgres:15-alpine
+    container_name: postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -18,6 +19,76 @@ services:
     volumes:
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - profolio-network
+
+  auth-server:
+    build:
+      context: ./profolio-be/AuthorizationServer
+    container_name: auth-server
+    environment:
+      SERVER_PORT: 9000
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/authdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_CLOUD_CONSUL_HOST: consul
+      SPRING_CLOUD_CONSUL_PORT: 8500
+      ISSUER_URL: http://auth-server:9000
+      FRONTEND_BASE_URL: http://profolio-fe:80
+    ports:
+      - "9000:9000"
+    depends_on:
+      - postgres
+      - consul
+    networks:
+      - profolio-network
+
+  portfolio-service:
+    build:
+      context: ./profolio-be/PortfolioService
+    container_name: portfolio-service
+    environment:
+      SERVER_PORT: 8081
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/portfoliodb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_CLOUD_CONSUL_HOST: consul
+      SPRING_CLOUD_CONSUL_PORT: 8500
+      GOOGLE_AI_API_KEY: ${GOOGLE_AI_API_KEY}
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+      - consul
+    networks:
+      - profolio-network
+
+  agw:
+    build:
+      context: ./profolio-be/AGW
+    container_name: agw
+    environment:
+      SERVER_PORT: 8080
+      SPRING_CLOUD_CONSUL_HOST: consul
+      SPRING_CLOUD_CONSUL_PORT: 8500
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://auth-server:9000
+    ports:
+      - "8080:8080"
+    depends_on:
+      - auth-server
+      - portfolio-service
+      - consul
+    networks:
+      - profolio-network
+
+  profolio-fe:
+    build:
+      context: ./profolio-fe
+    container_name: profolio-fe
+    ports:
+      - "3000:80"
+    depends_on:
+      - agw
     networks:
       - profolio-network
 
