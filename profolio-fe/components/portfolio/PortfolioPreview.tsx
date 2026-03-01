@@ -1,24 +1,90 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { apiService } from '../../src/services/apiService';
+import { useAuth } from 'react-oidc-context';
+
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
 
 interface PortfolioPreviewProps {
   onBack: () => void;
 }
 
 const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({ onBack }) => {
-  // Sample data - should come from props or API in real app
-  const userName = "fsdfsff"; // This should come from user data
-  const userTitle = "Backend Developer";
+  const auth = useAuth();
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputValue, setInputValue] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [portfolio, setPortfolio] = useState<any>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
+    // Initial fetch to get the user's portfolio slug
+    const fetchPortfolio = async () => {
+      try {
+        const data = await apiService.get<any>('/api/v1/portfolio');
+        setPortfolio(data);
+        setMessages([
+          { role: 'assistant', content: `Hi! I'm ${data.headline || 'the AI representative'}. How can I help you today?` }
+        ]);
+      } catch (err) {
+        console.error('Error fetching portfolio:', err);
+      }
+    };
+
+    if (auth.isAuthenticated) {
+      fetchPortfolio();
+    }
+  }, [auth.isAuthenticated]);
+
+  const handleSendMessage = async (text?: string) => {
+    const messageText = text || inputValue;
+    if (!messageText.trim() || !portfolio?.slug) return;
+
+    const userMessage: Message = { role: 'user', content: messageText };
+    setMessages(prev => [...prev, userMessage]);
+    setInputValue('');
+    setIsLoading(true);
+
+    try {
+      const history = messages.map(m => ({ role: m.role, content: m.content }));
+      const response = await apiService.post<any>(`/api/v1/public/chat/${portfolio.slug}`, {
+        message: messageText,
+        history
+      });
+
+      setMessages(prev => [...prev, { role: 'assistant', content: response.reply }]);
+    } catch (err) {
+      console.error('Chat error:', err);
+      setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, I encountered an error. Please try again." }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const userName = portfolio?.headline || "Profolio AI";
+  const userTitle = portfolio?.theme || "AI-Powered Professional";
 
   return (
     <div className="bg-background text-primary font-sans h-screen flex flex-col relative overflow-hidden dark:bg-zinc-950 transition-colors duration-300">
       {/* Banner Warning */}
-      <div className="bg-[#FEFCE8] dark:bg-yellow-900/20 w-full py-2.5 px-4 flex justify-center items-center gap-4 text-xs tracking-wide font-medium border-b border-[#FEF08A] dark:border-yellow-800/30 text-yellow-900/80 dark:text-yellow-200 shrink-0">
+      <div className="bg-[#FEFCE8] dark:bg-yellow-900/20 w-full py-2.5 px-4 flex justify-center items-center gap-4 text-xs tracking-wide font-medium border-b border-[#FEF08A] dark:border-yellow-800/30 text-yellow-900/80 dark:text-yellow-200 shrink-0 z-50">
         <div className="flex items-center gap-2">
           <span className="material-symbols-outlined text-[16px] text-yellow-600 dark:text-yellow-400">lock</span>
           <span>This portfolio is unpublished—only you can see it</span>
         </div>
         <div className="h-4 w-px bg-yellow-900/10 dark:bg-yellow-200/20"></div>
-        <a 
+        <a
           onClick={onBack}
           className="flex items-center gap-1 hover:text-yellow-950 dark:hover:text-yellow-100 transition-colors cursor-pointer"
         >
@@ -27,22 +93,16 @@ const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({ onBack }) => {
         </a>
       </div>
 
-      <main className="flex-1 overflow-y-auto flex flex-col items-center pt-4 pb-8 px-4 relative max-w-5xl mx-auto w-full">
-        {/* Info Button */}
-        <button className="absolute top-4 right-4 text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white transition-colors rounded-full hover:bg-surface dark:hover:bg-zinc-800 p-2">
-          <span className="material-symbols-outlined text-[20px]">info</span>
-        </button>
-
-        {/* Header Section */}
-        <div className="text-center mb-4 relative z-10 w-full max-w-3xl mx-auto">
+      <main className="flex-1 overflow-y-auto flex flex-col pt-4 pb-32 px-4 relative max-w-5xl mx-auto w-full custom-scrollbar">
+        {/* Profile Info (Smaller when messages exist) */}
+        <div className={`text-center relative z-10 w-full max-w-3xl mx-auto transition-all duration-500 ${messages.length > 0 ? 'mt-4 mb-8 scale-75' : 'mt-12 mb-4'}`}>
           <h2 className="text-2xl md:text-3xl font-serif italic text-black/70 dark:text-white/70 mb-2 flex items-center justify-center gap-2">
-            Hey, I'm {userName} <span className="text-2xl not-italic grayscale opacity-80">👋</span>
+            Hey, I'm {userName.split(' ')[0]} <span className="text-2xl not-italic grayscale opacity-80">👋</span>
           </h2>
           <h1 className="text-4xl md:text-6xl font-serif font-normal tracking-tight text-primary dark:text-white mb-4 leading-[1.1]">
             {userTitle}
           </h1>
-          
-          {/* Avatar SVG */}
+
           <div className="mb-4 flex justify-center">
             <div className="w-40 h-40 md:w-48 md:h-48 relative">
               <svg className="w-full h-full text-black dark:text-white drop-shadow-sm" fill="none" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -64,65 +124,95 @@ const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({ onBack }) => {
           </div>
         </div>
 
-        {/* Chat Input */}
-        <div className="w-full max-w-xl mb-6 relative z-20">
-          <div className="relative group">
-            <input 
-              className="custom-input w-full pl-6 pr-14 py-4 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 placeholder:font-light transition-all text-gray-800 dark:text-white" 
-              placeholder="Ask me anything..." 
-              type="text"
-            />
-            <button className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-primary dark:bg-white text-white dark:text-black rounded-lg hover:bg-black dark:hover:bg-gray-100 transition-all flex items-center justify-center size-9 shadow-sm hover:shadow-md active:scale-95">
-              <span className="material-symbols-outlined text-[18px]">arrow_upward</span>
-            </button>
-          </div>
+        {/* Chat History */}
+        <div className="w-full max-w-2xl mx-auto space-y-6 mb-12 relative z-10 px-4">
+          <AnimatePresence initial={false}>
+            {messages.map((m, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`max-w-[85%] px-5 py-3 rounded-2xl shadow-sm ${m.role === 'user'
+                      ? 'bg-primary text-primary-foreground rounded-tr-none'
+                      : 'bg-white dark:bg-zinc-900 border border-border text-primary dark:text-white rounded-tl-none font-light leading-relaxed'
+                    }`}
+                >
+                  {m.content}
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+          {isLoading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex justify-start"
+            >
+              <div className="bg-white dark:bg-zinc-900 border border-border px-5 py-3 rounded-2xl rounded-tl-none flex gap-1">
+                <span className="size-1.5 bg-text-muted rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                <span className="size-1.5 bg-text-muted rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                <span className="size-1.5 bg-text-muted rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+              </div>
+            </motion.div>
+          )}
+          <div ref={messagesEndRef} />
         </div>
 
-        {/* Quick Action Buttons Grid */}
-        <div className="w-full max-w-3xl relative z-20">
-          {/* First Row - 5 buttons */}
-          <div className="grid grid-cols-5 gap-3 md:gap-4 justify-items-center mb-3 md:mb-4">
-            <button className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md hover:bg-white/80 dark:hover:bg-zinc-900/80 border border-white/20 dark:border-zinc-800/50 hover:border-gray-200/50 dark:hover:border-zinc-700/50 rounded-xl w-full aspect-[4/3] flex flex-col items-center justify-center gap-3 transition-all shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 group">
-              <span className="material-symbols-outlined text-gray-500 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white transition-colors">face</span>
-              <span className="text-xs font-medium tracking-wide text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white">Me</span>
-            </button>
-            <button className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md hover:bg-white/80 dark:hover:bg-zinc-900/80 border border-white/20 dark:border-zinc-800/50 hover:border-gray-200/50 dark:hover:border-zinc-700/50 rounded-xl w-full aspect-[4/3] flex flex-col items-center justify-center gap-3 transition-all shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 group">
-              <span className="material-symbols-outlined text-gray-500 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white transition-colors">work</span>
-              <span className="text-xs font-medium tracking-wide text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white">Projects</span>
-            </button>
-            <button className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md hover:bg-white/80 dark:hover:bg-zinc-900/80 border border-white/20 dark:border-zinc-800/50 hover:border-gray-200/50 dark:hover:border-zinc-700/50 rounded-xl w-full aspect-[4/3] flex flex-col items-center justify-center gap-3 transition-all shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 group">
-              <span className="material-symbols-outlined text-gray-500 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white transition-colors">layers</span>
-              <span className="text-xs font-medium tracking-wide text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white">Skills</span>
-            </button>
-            <button className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md hover:bg-white/80 dark:hover:bg-zinc-900/80 border border-white/20 dark:border-zinc-800/50 hover:border-gray-200/50 dark:hover:border-zinc-700/50 rounded-xl w-full aspect-[4/3] flex flex-col items-center justify-center gap-3 transition-all shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 group">
-              <span className="material-symbols-outlined text-gray-500 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white transition-colors">celebration</span>
-              <span className="text-xs font-medium tracking-wide text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white">Fun</span>
-            </button>
-            <button className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md hover:bg-white/80 dark:hover:bg-zinc-900/80 border border-white/20 dark:border-zinc-800/50 hover:border-gray-200/50 dark:hover:border-zinc-700/50 rounded-xl w-full aspect-[4/3] flex flex-col items-center justify-center gap-3 transition-all shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 group">
-              <span className="material-symbols-outlined text-gray-500 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white transition-colors">person_search</span>
-              <span className="text-xs font-medium tracking-wide text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white">Contact</span>
-            </button>
+        {/* Action Grid (Always at bottom with Input) */}
+        <div className="sticky bottom-0 left-0 right-0 w-full max-w-3xl mx-auto pb-4 bg-gradient-to-t from-background via-background/95 to-transparent pt-12 z-40 px-4">
+
+          {/* Input Box */}
+          <div className="w-full max-w-xl mx-auto mb-6">
+            <form
+              onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
+              className="relative group"
+            >
+              <input
+                className="w-full pl-6 pr-14 py-4 rounded-xl border border-border bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm shadow-md focus:outline-none focus:border-primary/50 transition-all text-primary dark:text-white"
+                placeholder="Ask me anything..."
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                disabled={isLoading}
+              />
+              <button
+                type="submit"
+                disabled={isLoading || !inputValue.trim()}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-all flex items-center justify-center size-9 shadow-sm disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined text-[18px]">arrow_upward</span>
+              </button>
+            </form>
           </div>
-          {/* Second Row - 3 buttons */}
-          <div className="grid grid-cols-3 gap-3 md:gap-4 justify-items-center max-w-[60%] mx-auto">
-            <button className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md hover:bg-white/80 dark:hover:bg-zinc-900/80 border border-white/20 dark:border-zinc-800/50 hover:border-gray-200/50 dark:hover:border-zinc-700/50 rounded-xl w-full aspect-[4/3] flex flex-col items-center justify-center gap-3 transition-all shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 group">
-              <span className="material-symbols-outlined text-gray-500 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white transition-colors">videocam</span>
-              <span className="text-xs font-medium tracking-wide text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white">Video</span>
-            </button>
-            <button className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md hover:bg-white/80 dark:hover:bg-zinc-900/80 border border-white/20 dark:border-zinc-800/50 hover:border-gray-200/50 dark:hover:border-zinc-700/50 rounded-xl w-full aspect-[4/3] flex flex-col items-center justify-center gap-3 transition-all shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 group">
-              <span className="material-symbols-outlined text-gray-500 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white transition-colors">location_on</span>
-              <span className="text-xs font-medium tracking-wide text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white">Location</span>
-            </button>
-            <button className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md hover:bg-white/80 dark:hover:bg-zinc-900/80 border border-white/20 dark:border-zinc-800/50 hover:border-gray-200/50 dark:hover:border-zinc-700/50 rounded-xl w-full aspect-[4/3] flex flex-col items-center justify-center gap-3 transition-all shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 group">
-              <span className="material-symbols-outlined text-gray-500 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white transition-colors">description</span>
-              <span className="text-xs font-medium tracking-wide text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white">Resume</span>
-            </button>
+
+          {/* Quick Actions */}
+          <div className="grid grid-cols-5 gap-3 max-w-2xl mx-auto">
+            {[
+              { icon: 'face', label: 'Me', q: 'Tell me about yourself' },
+              { icon: 'work', label: 'Projects', q: 'What projects have you worked on?' },
+              { icon: 'layers', label: 'Skills', q: 'What are your technical skills?' },
+              { icon: 'celebration', label: 'Fun', q: 'What do you do for fun?' },
+              { icon: 'person_search', label: 'Contact', q: 'How can I contact you?' }
+            ].map((btn, i) => (
+              <button
+                key={i}
+                onClick={() => handleSendMessage(btn.q)}
+                disabled={isLoading}
+                className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md hover:bg-white/80 border border-border rounded-xl aspect-[4/3] flex flex-col items-center justify-center gap-2 transition-all hover:shadow-md hover:-translate-y-0.5 group disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined text-text-muted group-hover:text-primary dark:group-hover:text-white transition-colors text-[20px]">{btn.icon}</span>
+                <span className="text-[10px] font-medium tracking-wide text-text-muted group-hover:text-primary dark:group-hover:text-white">{btn.label}</span>
+              </button>
+            ))}
           </div>
         </div>
 
         {/* Background Watermark */}
-        <div className="fixed bottom-0 left-0 right-0 flex items-end justify-center pb-0 pointer-events-none -z-0 opacity-[0.04] dark:opacity-[0.02] overflow-hidden select-none">
-          <h1 className="text-[18vw] font-serif italic leading-[0.8] tracking-tight whitespace-nowrap text-black dark:text-white">
+        <div className="fixed bottom-0 left-0 right-0 flex items-end justify-center pb-0 pointer-events-none -z-0 opacity-[0.03] dark:opacity-[0.01] overflow-hidden select-none">
+          <h1 className="text-[18vw] font-serif italic leading-[0.8] tracking-tight whitespace-nowrap text-primary dark:text-white">
             {userName}
           </h1>
         </div>

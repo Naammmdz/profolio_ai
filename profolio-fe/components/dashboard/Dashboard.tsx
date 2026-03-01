@@ -9,6 +9,7 @@ import BasicInfoTab from './tabs/BasicInfoTab';
 import AIPersonalityTab from './tabs/AIPersonalityTab';
 import ToolsTab from './tabs/ToolsTab';
 import QuestionsTab from './tabs/QuestionsTab';
+import OnboardingModal from './modals/OnboardingModal';
 
 type Tab = 'dashboard' | 'analytics' | 'publish' | 'basic-info' | 'ai-personality' | 'tools' | 'questions';
 
@@ -18,6 +19,10 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ onPreview }) => {
   const [currentTab, setCurrentTab] = useState<Tab>('dashboard');
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    // Show onboarding only if not completed before
+    return localStorage.getItem('profolio_onboarding_completed') !== 'true';
+  });
   const [editingProject, setEditingProject] = useState<any>(null);
   const [editingSkillCategory, setEditingSkillCategory] = useState<any>(null);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
@@ -241,7 +246,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onPreview }) => {
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto bg-background dark:bg-zinc-950 bg-grid relative transition-colors duration-300">
         {currentTab === 'dashboard' && (
-          <DashboardTab 
+          <DashboardTab
             onPreview={onPreview}
             onNavigate={handleNavigate}
           />
@@ -252,21 +257,21 @@ const Dashboard: React.FC<DashboardProps> = ({ onPreview }) => {
         )}
 
         {currentTab === 'publish' && (
-          <PublishTab 
+          <PublishTab
             onPreview={onPreview}
             onNavigate={handleNavigate}
           />
         )}
 
         {currentTab === 'basic-info' && (
-          <BasicInfoTab 
+          <BasicInfoTab
             onPreview={onPreview}
             onNavigate={handleNavigate}
           />
         )}
 
         {currentTab === 'ai-personality' && (
-          <AIPersonalityTab 
+          <AIPersonalityTab
             onPreview={onPreview}
             onNavigate={handleNavigate}
             expandedSections={expandedSections}
@@ -275,7 +280,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onPreview }) => {
         )}
 
         {currentTab === 'tools' && (
-          <ToolsTab 
+          <ToolsTab
             onPreview={onPreview}
             onNavigate={handleNavigate}
             expandedTools={expandedTools}
@@ -288,7 +293,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onPreview }) => {
         )}
 
         {currentTab === 'questions' && (
-          <QuestionsTab 
+          <QuestionsTab
             onPreview={onPreview}
             onNavigate={handleNavigate}
           />
@@ -311,6 +316,15 @@ const Dashboard: React.FC<DashboardProps> = ({ onPreview }) => {
           onSave={handleSaveSkillCategory}
         />
       )}
+
+      <OnboardingModal
+        isOpen={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
+        onComplete={() => {
+          localStorage.setItem('profolio_onboarding_completed', 'true');
+          setShowOnboarding(false);
+        }}
+      />
     </div>
   );
 };

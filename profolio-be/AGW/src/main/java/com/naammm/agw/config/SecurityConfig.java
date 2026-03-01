@@ -28,14 +28,17 @@ public class SecurityConfig {
                 })
             )
             
-            // Configure authorization rules
             .authorizeExchange(exchanges -> exchanges
                 // Allow actuator endpoints (health checks, metrics)
                 .pathMatchers("/actuator/**").permitAll()
                 
                 // Allow OAuth2 endpoints to be called directly (not through Gateway)
+                .pathMatchers("/api/auth/**").permitAll()
                 .pathMatchers("/oauth2/**").permitAll()
                 .pathMatchers("/.well-known/**").permitAll()
+                
+                // Allow Portfolio public endpoints (visitors)
+                .pathMatchers("/api/v1/public/**").permitAll()
                 
                 // All other routes require authentication
                 .anyExchange().authenticated()

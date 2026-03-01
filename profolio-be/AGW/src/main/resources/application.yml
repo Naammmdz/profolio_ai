@@ -45,14 +45,15 @@ spring:
             locator:
               enabled: true
           routes:
-            # Add your other service routes here
-            # Example:
-            # - id: profolio-service
-            #   uri: lb://profolio-service
-            #   predicates:
-            #     - Path=/api/**
-            #   filters:
-            #     - StripPrefix=1
+            - id: auth-server
+              uri: lb://AuthorizationServer
+              predicates:
+                - Path=/api/auth/**, /oauth2/**, /login/**, /userinfo/**
+            
+            - id: portfolio-service
+              uri: lb://PortfolioService
+              predicates:
+                - Path=/api/v1/portfolio/**, /api/v1/cv/**, /api/v1/personality/**, /api/v1/questions/**, /api/v1/public/**
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
     loadbalancer:
