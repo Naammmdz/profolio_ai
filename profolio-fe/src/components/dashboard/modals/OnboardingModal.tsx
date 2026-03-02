@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import axios from 'axios';
+import apiClient from '../../../config/api';
 
 interface OnboardingModalProps {
     isOpen: boolean;
@@ -41,12 +41,10 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose, onCo
         formData.append('file', file);
 
         try {
-            // Assuming AGW is at localhost:8080
-            await axios.post('http://localhost:8080/api/v1/cv/ingest', formData, {
+            await apiClient.post('/v1/cv/ingest', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
-                withCredentials: true // For JWT from cookie if BFF, or we might need to add Auth header
             });
             setStep('success');
         } catch (err: any) {
