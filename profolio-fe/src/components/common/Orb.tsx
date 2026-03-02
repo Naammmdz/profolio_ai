@@ -6,6 +6,7 @@ interface OrbProps {
   rotateOnHover?: boolean;
   forceHoverState?: boolean;
   backgroundColor?: string;
+  colors?: [string, string, string];
 }
 
 const VERT = `
@@ -29,6 +30,9 @@ const FRAG = `
   uniform float rot;
   uniform float hoverIntensity;
   uniform vec3 backgroundColor;
+  uniform vec3 baseColor1;
+  uniform vec3 baseColor2;
+  uniform vec3 baseColor3;
   varying vec2 vUv;
 
   vec3 rgb2yiq(vec3 c) {
@@ -98,9 +102,6 @@ const FRAG = `
     return vec4(colorIn.rgb / (a + 1e-5), a);
   }
   
-  const vec3 baseColor1 = vec3(0.611765, 0.262745, 0.996078);
-  const vec3 baseColor2 = vec3(0.298039, 0.760784, 0.913725);
-  const vec3 baseColor3 = vec3(0.062745, 0.078431, 0.600000);
   const float innerRadius = 0.6;
   const float noiseScale = 0.65;
   
@@ -187,6 +188,7 @@ export default function Orb({
   rotateOnHover = true,
   forceHoverState = false,
   backgroundColor = '#000000',
+  colors = ['#9c43fe', '#4cc2e9', '#101499'],
 }: OrbProps) {
   const ctnDom = useRef<HTMLDivElement>(null);
 
@@ -242,6 +244,9 @@ export default function Orb({
     const rotLoc = gl.getUniformLocation(program, 'rot');
     const hoverIntensityLoc = gl.getUniformLocation(program, 'hoverIntensity');
     const backgroundColorLoc = gl.getUniformLocation(program, 'backgroundColor');
+    const baseColor1Loc = gl.getUniformLocation(program, 'baseColor1');
+    const baseColor2Loc = gl.getUniformLocation(program, 'baseColor2');
+    const baseColor3Loc = gl.getUniformLocation(program, 'baseColor3');
 
     let targetHover = 0;
     let currentHover = 0;
@@ -297,6 +302,9 @@ export default function Orb({
       }
 
       const bg = colorToRgb(backgroundColor);
+      const c1 = colorToRgb(colors[0]);
+      const c2 = colorToRgb(colors[1]);
+      const c3 = colorToRgb(colors[2]);
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.useProgram(program);
@@ -306,6 +314,9 @@ export default function Orb({
       gl.uniform1f(rotLoc, currentRot);
       gl.uniform1f(hoverIntensityLoc, hoverIntensity);
       gl.uniform3f(backgroundColorLoc, bg[0], bg[1], bg[2]);
+      gl.uniform3f(baseColor1Loc, c1[0], c1[1], c1[2]);
+      gl.uniform3f(baseColor2Loc, c2[0], c2[1], c2[2]);
+      gl.uniform3f(baseColor3Loc, c3[0], c3[1], c3[2]);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     };
     rafId = requestAnimationFrame(render);
@@ -320,7 +331,7 @@ export default function Orb({
       gl.deleteProgram(program);
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
-  }, [hue, hoverIntensity, rotateOnHover, forceHoverState, backgroundColor]);
+  }, [hue, hoverIntensity, rotateOnHover, forceHoverState, backgroundColor, colors]);
 
   return <div ref={ctnDom} className="w-full h-full" />;
 }
@@ -400,4 +411,3 @@ function colorToRgb(color: string): [number, number, number] {
 
   return [0, 0, 0];
 }
-
