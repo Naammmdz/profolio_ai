@@ -10,17 +10,17 @@ const Hero: React.FC<HeroProps> = ({ onStart }) => {
   return (
     <section className="relative pt-20 pb-24 lg:pt-28 lg:pb-40 px-6 overflow-hidden bg-background">
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute left-1/2 top-[-50px] md:top-[-80px] -translate-x-1/2 w-[720px] h-[720px] md:w-[980px] md:h-[980px] opacity-85 [mask-image:radial-gradient(circle_at_center,black_58%,transparent_80%)] block dark:hidden">
+        <div className="absolute left-1/2 top-[0px] md:top-[-30px] -translate-x-1/2 w-[720px] h-[720px] md:w-[980px] md:h-[980px] opacity-80 [mask-image:radial-gradient(circle_at_center,black_50%,transparent_72%)] block dark:hidden">
           <Orb
             hue={-12}
             hoverIntensity={0.24}
             rotateOnHover={true}
             forceHoverState={true}
             backgroundColor="#ffffff"
-            colors={['#6f8dff', '#79d7d0', '#ffc27f']}
+            colors={['#a8b4ff', '#9ae4de', '#ffd9a3']}
           />
         </div>
-        <div className="absolute left-1/2 top-[-50px] md:top-[-80px] -translate-x-1/2 w-[720px] h-[720px] md:w-[980px] md:h-[980px] opacity-85 [mask-image:radial-gradient(circle_at_center,black_58%,transparent_80%)] hidden dark:block">
+        <div className="absolute left-1/2 top-[0px] md:top-[-30px] -translate-x-1/2 w-[720px] h-[720px] md:w-[980px] md:h-[980px] opacity-85 [mask-image:radial-gradient(circle_at_center,black_58%,transparent_80%)] hidden dark:block">
           <Orb
             hue={32}
             hoverIntensity={0.28}
