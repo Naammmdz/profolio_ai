@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { apiService } from '../../src/services/apiService';
+import { apiService } from '../../services/apiService';
 import { useAuth } from 'react-oidc-context';
 
 interface Message {
@@ -136,8 +136,8 @@ const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({ onBack }) => {
               >
                 <div
                   className={`max-w-[85%] px-5 py-3 rounded-2xl shadow-sm ${m.role === 'user'
-                      ? 'bg-primary text-primary-foreground rounded-tr-none'
-                      : 'bg-white dark:bg-zinc-900 border border-border text-primary dark:text-white rounded-tl-none font-light leading-relaxed'
+                    ? 'bg-primary text-primary-foreground rounded-tr-none'
+                    : 'bg-white dark:bg-zinc-900 border border-border text-primary dark:text-white rounded-tl-none font-light leading-relaxed'
                     }`}
                 >
                   {m.content}

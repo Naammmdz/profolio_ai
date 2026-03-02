@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { authService } from '../../src/services/authService';
+import { authService } from '../../services/authService';
 
 interface SignUpProps {
     onBack: () => void;
@@ -206,31 +206,29 @@ const SignUp: React.FC<SignUpProps> = ({ onBack, onLogin, onSwitchToLogin }) => 
                                         {[1, 2, 3, 4].map((level) => (
                                             <div
                                                 key={level}
-                                                className={`h-1.5 w-8 rounded ${
-                                                    level <= passwordStrength.strength
+                                                className={`h-1.5 w-8 rounded ${level <= passwordStrength.strength
                                                         ? passwordStrength.strength <= 1
                                                             ? 'bg-red-500'
                                                             : passwordStrength.strength <= 2
-                                                            ? 'bg-orange-500'
-                                                            : passwordStrength.strength <= 3
-                                                            ? 'bg-yellow-500'
-                                                            : 'bg-green-500'
+                                                                ? 'bg-orange-500'
+                                                                : passwordStrength.strength <= 3
+                                                                    ? 'bg-yellow-500'
+                                                                    : 'bg-green-500'
                                                         : 'bg-border'
-                                                }`}
+                                                    }`}
                                             />
                                         ))}
                                     </div>
                                     {passwordStrength.label && (
                                         <span
-                                            className={`text-xs font-mono uppercase tracking-wide ${
-                                                passwordStrength.strength <= 1
+                                            className={`text-xs font-mono uppercase tracking-wide ${passwordStrength.strength <= 1
                                                     ? 'text-red-500'
                                                     : passwordStrength.strength <= 2
-                                                    ? 'text-orange-500'
-                                                    : passwordStrength.strength <= 3
-                                                    ? 'text-yellow-500'
-                                                    : 'text-green-500'
-                                            }`}
+                                                        ? 'text-orange-500'
+                                                        : passwordStrength.strength <= 3
+                                                            ? 'text-yellow-500'
+                                                            : 'text-green-500'
+                                                }`}
                                         >
                                             {passwordStrength.label}
                                         </span>

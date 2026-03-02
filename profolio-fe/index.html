@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Profolio - AI Portfolio Builder</title>
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
     <style>
         :root {
             --background: #ffffff;
@@ -29,26 +33,46 @@
             --accent: #f59e0b;
         }
 
-        body { font-family: "Inter", sans-serif; background-color: var(--background); color: var(--primary); transition: background-color 0.3s, color 0.3s; }
-        h1, h2, h3, h4, .font-serif { font-family: "Instrument Serif", serif; }
-        .font-mono { font-family: "JetBrains Mono", monospace; }
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: var(--background);
+            color: var(--primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        .font-serif {
+            font-family: "Instrument Serif", serif;
+        }
+
+        .font-mono {
+            font-family: "JetBrains Mono", monospace;
+        }
+
         .bg-grid {
             background-size: 40px 40px;
         }
+
         /* Custom scrollbar to match theme */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
+
         ::-webkit-scrollbar-track {
-            background: var(--surface); 
+            background: var(--surface);
         }
+
         ::-webkit-scrollbar-thumb {
-            background: var(--border); 
+            background: var(--border);
             border-radius: 4px;
         }
+
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-muted); 
+            background: var(--text-muted);
         }
 
         /* View Transitions */
@@ -57,6 +81,7 @@
             animation: none;
             mix-blend-mode: normal;
         }
+
         ::view-transition-new(root) {
             z-index: 2147483646;
         }
@@ -66,17 +91,20 @@
             box-shadow: 0 0 0 2px rgba(24, 24, 27, 0.05);
             border-color: #d4d4d8;
         }
+
         .dark .custom-input:focus {
             box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
             border-color: #52525b;
         }
     </style>
-<link rel="stylesheet" href="/index.css">
-<!-- Shared Auth Base CSS - Ensures consistency with Auth Server login page -->
-<link rel="stylesheet" href="/auth-base.css">
+
+    <!-- Shared Auth Base CSS - Ensures consistency with Auth Server login page -->
+    <link rel="stylesheet" href="/auth-base.css">
 </head>
+
 <body class="bg-background text-primary overflow-x-hidden selection:bg-primary/10">
     <div id="root"></div>
-<script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="/src/main.tsx"></script>
 </body>
+
 </html>
