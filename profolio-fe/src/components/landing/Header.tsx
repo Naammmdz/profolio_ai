@@ -32,7 +32,7 @@ const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border/50 transition-colors duration-300">
+    <header className="sticky top-0 z-50 w-full bg-background border-b border-border/50 transition-colors duration-300">
       <div className="px-6 lg:px-12 py-4 flex items-center justify-between max-w-7xl mx-auto">
         <div className="flex items-center gap-3">
           <div className="size-8 flex items-center justify-center text-primary border border-primary/10 rounded bg-primary/5 font-serif italic text-xl">
