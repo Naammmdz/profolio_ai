@@ -46,7 +46,7 @@ spring:
               enabled: true
           routes:
             - id: auth-server
-              uri: lb://AuthorizationServer
+              uri: lb://authorization-server
               predicates:
                 - Path=/.well-known/**, /api/auth/**, /oauth2/**, /login/**, /userinfo/**
             

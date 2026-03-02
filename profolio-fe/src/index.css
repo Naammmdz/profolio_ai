@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+:root {
+    --background: #ffffff;
+    --surface: #f9fafb;
+    --surface-highlight: #f3f4f6;
+    --border: #e5e7eb;
+    --primary: #18181b;
+    --primary-foreground: #ffffff;
+    --text-muted: #52525b;
+    --accent: #d97706;
+}
+
+.dark {
+    --background: #050505;
+    --surface: #0a0a0a;
+    --surface-highlight: #171717;
+    --border: #27272a;
+    --primary: #d4d4d8;
+    --primary-foreground: #09090b;
+    --text-muted: #a1a1aa;
+    --accent: #f59e0b;
+}
+
+@theme {
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-accent: var(--accent);
+    --color-background: var(--background);
+    --color-surface: var(--surface);
+    --color-surface-highlight: var(--surface-highlight);
+    --color-border: var(--border);
+    --color-text-muted: var(--text-muted);
+
+    --font-serif: "Instrument Serif", serif;
+    --font-sans: "Inter", sans-serif;
+    --font-mono: "JetBrains Mono", monospace;
+
+    --animate-marquee: marquee var(--duration) linear infinite;
+    --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+
+    @keyframes marquee {
+        from { transform: translateX(0); }
+        to { transform: translateX(calc(-100% - var(--gap))); }
+    }
+    @keyframes marquee-vertical {
+        from { transform: translateY(0); }
+        to { transform: translateY(calc(-100% - var(--gap))); }
+    }
+}
+
+body { 
+    font-family: var(--font-sans); 
+    background-color: var(--background); 
+    color: var(--primary); 
+    transition: background-color 0.3s, color 0.3s; 
+}
+h1, h2, h3, h4, .font-serif { font-family: var(--font-serif); }
+.font-mono { font-family: var(--font-mono); }
+.bg-grid {
+    background-size: 40px 40px;
+    background-image: linear-gradient(to right, var(--border) 1px, transparent 1px), 
+                      linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--surface); 
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border); 
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted); 
+}
+
+/* View Transitions */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+    z-index: 2147483646;
+}
+
+/* Custom Input Focus Effect */
+.custom-input:focus {
+    box-shadow: 0 0 0 2px rgba(24, 24, 27, 0.05);
+    border-color: #d4d4d8;
+}
+.dark .custom-input:focus {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
+    border-color: #52525b;
+}
