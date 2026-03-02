@@ -34,10 +34,11 @@ public class WebSecurityConfig {
     @Bean
     @Order(2)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        String successUrl = frontendBaseUrl;
-        if (successUrl != null && !successUrl.startsWith("/") && !successUrl.startsWith("http")) {
-            successUrl = "http://" + successUrl;
+        String base = frontendBaseUrl;
+        if (base != null && !base.startsWith("/") && !base.startsWith("http")) {
+            base = "http://" + base;
         }
+        final String successUrl = (base != null) ? base : "/";
 
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
@@ -52,7 +53,7 @@ public class WebSecurityConfig {
                 )
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
-                        .defaultSuccessUrl(successUrl != null ? successUrl : "/", false)
+                        .defaultSuccessUrl(successUrl, false)
                         .permitAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
