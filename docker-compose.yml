@@ -86,7 +86,7 @@ services:
       context: ./profolio-fe
     container_name: profolio-fe
     ports:
-      - "3000:80"
+      - "4000:80"
     depends_on:
       - agw
     networks:
