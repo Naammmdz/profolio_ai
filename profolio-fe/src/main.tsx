@@ -3,7 +3,7 @@ import './index.css';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider as OidcAuthProvider } from 'react-oidc-context';
-import App from '../App';
+import App from './App';
 import { oidcConfig } from './config/oidcConfig';
 import { OidcTokenSync } from './config/OidcTokenSync';
 import { OidcAuthEventsHandler } from './config/OidcAuthEventsHandler';

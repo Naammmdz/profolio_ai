@@ -33,10 +33,10 @@ services:
       SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_CLOUD_CONSUL_HOST: consul
       SPRING_CLOUD_CONSUL_PORT: 8500
-      ISSUER_URL: http://auth-server:9000
-      FRONTEND_BASE_URL: http://profolio-fe:80
-    ports:
-      - "9000:9000"
+      ISSUER_URL: ${PUBLIC_URL:-http://localhost:4000}
+      FRONTEND_BASE_URL: ${PUBLIC_URL:-http://localhost:4000}
+    # ports:
+    #   - "9000:9000"
     depends_on:
       - postgres
       - consul
@@ -54,9 +54,12 @@ services:
       SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_CLOUD_CONSUL_HOST: consul
       SPRING_CLOUD_CONSUL_PORT: 8500
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: ${PUBLIC_URL:-http://localhost:4000}
+      # Tell service to reach auth-server internally for jwks validation
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://auth-server:9000/oauth2/jwks
       GOOGLE_AI_API_KEY: ${GOOGLE_AI_API_KEY}
-    ports:
-      - "8081:8081"
+    # ports:
+    #   - "8081:8081"
     depends_on:
       - postgres
       - consul
@@ -71,9 +74,10 @@ services:
       SERVER_PORT: 8080
       SPRING_CLOUD_CONSUL_HOST: consul
       SPRING_CLOUD_CONSUL_PORT: 8500
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://auth-server:9000
-    ports:
-      - "8080:8080"
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: ${PUBLIC_URL:-http://localhost:4000}
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://auth-server:9000/oauth2/jwks
+    # ports:
+    #   - "8080:8080"
     depends_on:
       - auth-server
       - portfolio-service
