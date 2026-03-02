@@ -8,9 +8,9 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ onStart }) => {
   return (
-    <section className="relative -mt-[72px] pt-[152px] pb-24 lg:pt-[184px] lg:pb-40 px-6 overflow-hidden">
+    <section className="relative pt-20 pb-24 lg:pt-28 lg:pb-40 px-6 overflow-hidden bg-background">
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute left-1/2 top-[-95px] md:top-[-135px] -translate-x-1/2 w-[720px] h-[720px] md:w-[980px] md:h-[980px] opacity-85 [mask-image:radial-gradient(circle_at_center,black_58%,transparent_80%)] block dark:hidden">
+        <div className="absolute left-1/2 top-[-50px] md:top-[-80px] -translate-x-1/2 w-[720px] h-[720px] md:w-[980px] md:h-[980px] opacity-85 [mask-image:radial-gradient(circle_at_center,black_58%,transparent_80%)] block dark:hidden">
           <Orb
             hue={-12}
             hoverIntensity={0.24}
@@ -20,7 +20,7 @@ const Hero: React.FC<HeroProps> = ({ onStart }) => {
             colors={['#6f8dff', '#79d7d0', '#ffc27f']}
           />
         </div>
-        <div className="absolute left-1/2 top-[-95px] md:top-[-135px] -translate-x-1/2 w-[720px] h-[720px] md:w-[980px] md:h-[980px] opacity-85 [mask-image:radial-gradient(circle_at_center,black_58%,transparent_80%)] hidden dark:block">
+        <div className="absolute left-1/2 top-[-50px] md:top-[-80px] -translate-x-1/2 w-[720px] h-[720px] md:w-[980px] md:h-[980px] opacity-85 [mask-image:radial-gradient(circle_at_center,black_58%,transparent_80%)] hidden dark:block">
           <Orb
             hue={32}
             hoverIntensity={0.28}
