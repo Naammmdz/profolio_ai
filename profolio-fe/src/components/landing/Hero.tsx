@@ -10,7 +10,7 @@ const Hero: React.FC<HeroProps> = ({ onStart }) => {
   return (
     <section className="relative pt-20 pb-24 lg:pt-28 lg:pb-40 px-6 bg-background">
       <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center">
-        <div className="relative w-[800px] h-[800px] md:w-[1000px] md:h-[1000px] lg:w-[1100px] lg:h-[1100px] opacity-70 [mask-image:radial-gradient(circle_at_center,black_30%,transparent_58%)] block dark:hidden">
+        <div className="relative w-[560px] h-[560px] md:w-[680px] md:h-[680px] lg:w-[760px] lg:h-[760px] shrink-0 opacity-70 [mask-image:radial-gradient(circle_at_center,black_30%,transparent_58%)] block dark:hidden">
           <Orb
             hue={-12}
             hoverIntensity={0.2}
@@ -20,7 +20,7 @@ const Hero: React.FC<HeroProps> = ({ onStart }) => {
             colors={['#c5cfff', '#b5f0ea', '#ffe8c5']}
           />
         </div>
-        <div className="relative w-[800px] h-[800px] md:w-[1000px] md:h-[1000px] lg:w-[1100px] lg:h-[1100px] opacity-85 [mask-image:radial-gradient(circle_at_center,black_55%,transparent_78%)] hidden dark:block">
+        <div className="relative w-[560px] h-[560px] md:w-[680px] md:h-[680px] lg:w-[760px] lg:h-[760px] shrink-0 opacity-85 [mask-image:radial-gradient(circle_at_center,black_55%,transparent_78%)] hidden dark:block">
           <Orb
             hue={32}
             hoverIntensity={0.28}
