@@ -125,8 +125,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onPreview }) => {
             height: 20px;
             width: 20px;
             border-radius: 50%;
-            background: #ffffff;
-            border: 2px solid #4f46e5;
+            background: var(--background);
+            border: 2px solid var(--primary);
             cursor: pointer;
             margin-top: -8px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
@@ -172,30 +172,21 @@ const Dashboard: React.FC<DashboardProps> = ({ onPreview }) => {
             width: 20px;
             left: 2px;
             bottom: 2px;
-            background-color: white;
+            background-color: var(--background);
             -webkit-transition: .4s;
             transition: .4s;
             border-radius: 50%;
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
-        .dark .slider:before {
-            background-color: #18181b;
+        input:checked + .slider {
+            background-color: var(--primary);
         }
-               input:checked + .slider {
-                   background-color: #18181b;
-               }
-               .dark input:checked + .slider {
-                   background-color: white;
-               }
-               .dark input:checked + .slider:before {
-                   background-color: #18181b;
-               }
-               input:focus + .slider {
-                   box-shadow: 0 0 1px #18181b;
-               }
-               .dark input:focus + .slider {
-                   box-shadow: 0 0 1px white;
-               }
+        input:checked + .slider:before {
+            background-color: var(--background);
+        }
+        input:focus + .slider {
+            box-shadow: 0 0 1px var(--primary);
+        }
         input:checked + .slider:before {
             -webkit-transform: translateX(20px);
             -ms-transform: translateX(20px);
@@ -244,7 +235,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onPreview }) => {
       <DashboardSidebar currentTab={currentTab} onTabChange={setCurrentTab} />
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto bg-background dark:bg-zinc-950 bg-grid relative transition-colors duration-300">
+      <main className="flex-1 overflow-y-auto bg-background bg-grid relative transition-colors duration-300">
         {currentTab === 'dashboard' && (
           <DashboardTab
             onPreview={onPreview}

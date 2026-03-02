@@ -23,7 +23,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         </div>
         <button 
           onClick={onPreview}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
         >
           <span className="material-symbols-outlined text-[16px]">open_in_new</span>
           View portfolio
