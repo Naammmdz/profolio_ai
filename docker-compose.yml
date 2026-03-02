@@ -35,6 +35,9 @@ services:
       SPRING_CLOUD_CONSUL_PORT: 8500
       ISSUER_URL: ${PUBLIC_URL:-http://localhost:4000}
       FRONTEND_BASE_URL: ${PUBLIC_URL:-http://localhost:4000}
+      ALLOWED_ORIGINS: ${PUBLIC_URL:-http://localhost:4000},http://localhost:3000,http://localhost:5173
+      SPA_REDIRECT_URIS: ${PUBLIC_URL:-http://localhost:4000}/callback,http://localhost:3000/callback
+      SPA_POST_LOGOUT_REDIRECT_URIS: ${PUBLIC_URL:-http://localhost:4000}/,http://localhost:3000/
     # ports:
     #   - "9000:9000"
     depends_on:

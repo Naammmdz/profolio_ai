@@ -817,9 +817,10 @@
         document.getElementById('password').addEventListener('input', updatePasswordStrength);
 
         function handleOAuthLogin(provider) {
+            const frontendBase = /*[[${frontendBaseUrl}]]*/ 'http://localhost:3000';
             const params = new URLSearchParams({
                 client_id: 'auth-code-client',
-                redirect_uri: 'http://localhost:3000/callback',
+                redirect_uri: frontendBase + '/callback',
                 response_type: 'code',
                 scope: 'openid profile email',
                 state: Math.random().toString(36).substring(7)

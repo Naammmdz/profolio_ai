@@ -34,6 +34,12 @@ public class ClientInitializer implements CommandLineRunner {
     @Value("${app.oauth.client.redirect-uris}")
     private String redirectUris;
 
+    @Value("${app.oauth.spa.redirect-uris:http://localhost:3000/callback}")
+    private String spaRedirectUris;
+
+    @Value("${app.oauth.spa.post-logout-redirect-uris:http://localhost:3000/}")
+    private String spaPostLogoutRedirectUris;
+
     public ClientInitializer(RegisteredClientRepository registeredClientRepository, PasswordEncoder passwordEncoder) {
         this.registeredClientRepository = registeredClientRepository;
         this.passwordEncoder = passwordEncoder;
@@ -103,10 +109,17 @@ public class ClientInitializer implements CommandLineRunner {
                             .accessTokenTimeToLive(Duration.ofHours(1))
                             .refreshTokenTimeToLive(Duration.ofDays(7))
                             .reuseRefreshTokens(false)
-                            .build())
-                    // SPA redirect URI (can be overridden later via DB migration if needed)
-                    .redirectUri("http://localhost:3000/callback")
-                    .postLogoutRedirectUri("http://localhost:3000/");
+                            .build());
+
+            // Add redirect URIs from config (supports multiple: comma-separated)
+            Arrays.stream(spaRedirectUris.split(","))
+                    .map(String::trim)
+                    .forEach(spaClientBuilder::redirectUri);
+
+            // Add post-logout redirect URIs from config
+            Arrays.stream(spaPostLogoutRedirectUris.split(","))
+                    .map(String::trim)
+                    .forEach(spaClientBuilder::postLogoutRedirectUri);
 
             RegisteredClient spaClient = spaClientBuilder.build();
             registeredClientRepository.save(spaClient);

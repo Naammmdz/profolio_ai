@@ -66,16 +66,19 @@ spring:
 # Application specific configuration
 app:
   cors:
-    allowed-origins: ${ALLOWED_ORIGINS:http://localhost:3000,http://localhost:8081}
+    allowed-origins: ${ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173,http://localhost:4000}
   oauth:
     client:
       id: ${OAUTH_CLIENT_ID:auth-code-client}
       secret: ${OAUTH_CLIENT_SECRET:secret123}
       redirect-uris: ${OAUTH_REDIRECT_URIS:http://localhost:3000/callback,http://localhost:8081/}
+    spa:
+      redirect-uris: ${SPA_REDIRECT_URIS:http://localhost:3000/callback,http://localhost:4000/callback}
+      post-logout-redirect-uris: ${SPA_POST_LOGOUT_REDIRECT_URIS:http://localhost:3000/,http://localhost:4000/}
   frontend:
-    base-url: ${FRONTEND_BASE_URL:http://localhost:3000}
-    login-url: ${FRONTEND_LOGIN_URL:http://localhost:3000/login}
-    register-url: ${FRONTEND_REGISTER_URL:http://localhost:3000/?tab=signup}
+    base-url: ${FRONTEND_BASE_URL:http://localhost:4000}
+    login-url: ${FRONTEND_LOGIN_URL:http://localhost:4000/login}
+    register-url: ${FRONTEND_REGISTER_URL:http://localhost:4000/?tab=signup}
 
 # Logging configuration
 logging:

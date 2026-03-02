@@ -3,7 +3,9 @@ import { authTokenStore } from './authTokenStore';
 import { emitLoginRequired } from './authEvents';
 
 // API base configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+// In production (behind nginx reverse proxy), use relative path '/api'
+// In development, use the full URL to the backend
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:8080/api');
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
