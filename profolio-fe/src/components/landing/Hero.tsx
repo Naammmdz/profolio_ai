@@ -10,13 +10,22 @@ const Hero: React.FC<HeroProps> = ({ onStart }) => {
   return (
     <section className="relative pt-20 pb-24 lg:pt-32 lg:pb-40 px-6 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute left-1/2 top-[-260px] -translate-x-1/2 w-[720px] h-[720px] md:w-[980px] md:h-[980px] opacity-85 [mask-image:radial-gradient(circle_at_center,black_56%,transparent_78%)]">
+        <div className="absolute left-1/2 top-[-260px] -translate-x-1/2 w-[720px] h-[720px] md:w-[980px] md:h-[980px] opacity-85 [mask-image:radial-gradient(circle_at_center,black_56%,transparent_78%)] block dark:hidden">
           <Orb
             hue={18}
             hoverIntensity={0.28}
             rotateOnHover={true}
             forceHoverState={true}
             backgroundColor="#ffffff"
+          />
+        </div>
+        <div className="absolute left-1/2 top-[-260px] -translate-x-1/2 w-[720px] h-[720px] md:w-[980px] md:h-[980px] opacity-85 [mask-image:radial-gradient(circle_at_center,black_56%,transparent_78%)] hidden dark:block">
+          <Orb
+            hue={220}
+            hoverIntensity={0.28}
+            rotateOnHover={true}
+            forceHoverState={true}
+            backgroundColor="#09090b"
           />
         </div>
       </div>
