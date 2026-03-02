@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { apiService } from '../../services/apiService';
 import { useAuth } from 'react-oidc-context';
+import apiClient from '../../config/api';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -19,6 +19,18 @@ const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({ onBack }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [portfolio, setPortfolio] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const hasConversation = messages.length > 0 || isLoading;
+
+  const quickActions = [
+    { icon: 'sentiment_satisfied', label: 'Me', q: 'Tell me about yourself' },
+    { icon: 'work', label: 'Projects', q: 'What projects have you worked on?' },
+    { icon: 'deployed_code', label: 'Skills', q: 'What are your technical skills?' },
+    { icon: 'celebration', label: 'Fun', q: 'What do you do for fun?' },
+    { icon: 'person_search', label: 'Contact', q: 'How can I contact you?' },
+    { icon: 'videocam', label: 'Video', q: 'Do you have a video introduction?' },
+    { icon: 'location_on', label: 'Location', q: 'Where are you based?' },
+    { icon: 'description', label: 'Resume', q: 'Can I get your resume?' },
+  ];
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -32,11 +44,9 @@ const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({ onBack }) => {
     // Initial fetch to get the user's portfolio slug
     const fetchPortfolio = async () => {
       try {
-        const data = await apiService.get<any>('/api/v1/portfolio');
-        setPortfolio(data);
-        setMessages([
-          { role: 'assistant', content: `Hi! I'm ${data.headline || 'the AI representative'}. How can I help you today?` }
-        ]);
+        const response = await apiClient.get('/v1/portfolio');
+        const payload = response.data?.data ?? response.data;
+        setPortfolio(payload);
       } catch (err) {
         console.error('Error fetching portfolio:', err);
       }
@@ -58,12 +68,13 @@ const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({ onBack }) => {
 
     try {
       const history = messages.map(m => ({ role: m.role, content: m.content }));
-      const response = await apiService.post<any>(`/api/v1/public/chat/${portfolio.slug}`, {
+      const response = await apiClient.post(`/v1/public/chat/${portfolio.slug}`, {
         message: messageText,
         history
       });
 
-      setMessages(prev => [...prev, { role: 'assistant', content: response.reply }]);
+      const payload = response.data?.data ?? response.data;
+      setMessages(prev => [...prev, { role: 'assistant', content: payload.reply }]);
     } catch (err) {
       console.error('Chat error:', err);
       setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, I encountered an error. Please try again." }]);
@@ -72,41 +83,49 @@ const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({ onBack }) => {
     }
   };
 
-  const userName = portfolio?.headline || "Profolio AI";
-  const userTitle = portfolio?.theme || "AI-Powered Professional";
+  const profileName =
+    auth.user?.profile?.name ||
+    auth.user?.profile?.preferred_username ||
+    auth.user?.profile?.email ||
+    'there';
+  const userTitle = portfolio?.headline || 'Backend Developer';
 
   return (
-    <div className="bg-background text-primary font-sans h-screen flex flex-col relative overflow-hidden dark:bg-zinc-950 transition-colors duration-300">
-      {/* Banner Warning */}
-      <div className="bg-[#FEFCE8] dark:bg-yellow-900/20 w-full py-2.5 px-4 flex justify-center items-center gap-4 text-xs tracking-wide font-medium border-b border-[#FEF08A] dark:border-yellow-800/30 text-yellow-900/80 dark:text-yellow-200 shrink-0 z-50">
-        <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-[16px] text-yellow-600 dark:text-yellow-400">lock</span>
-          <span>This portfolio is unpublished—only you can see it</span>
+    <div className="bg-[#f3f3f3] text-zinc-900 font-sans h-screen flex flex-col relative overflow-hidden transition-colors duration-300">
+      <div className="relative bg-[#f1e38b] border-b border-[#d7ca73] py-2.5 px-3 md:px-4 flex items-center justify-center text-xs md:text-sm font-medium shrink-0 z-50">
+        <div className="flex items-center gap-2 text-zinc-900">
+          <span className="material-symbols-outlined text-[18px]">info</span>
+          <span>This portfolio is unpublished- only you can see it</span>
         </div>
-        <div className="h-4 w-px bg-yellow-900/10 dark:bg-yellow-200/20"></div>
-        <a
+        <button
           onClick={onBack}
-          className="flex items-center gap-1 hover:text-yellow-950 dark:hover:text-yellow-100 transition-colors cursor-pointer"
+          className="ml-8 inline-flex items-center gap-1.5 hover:opacity-75 transition-opacity text-zinc-900"
         >
           Back to Dashboard
-          <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-        </a>
+          <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </button>
+        <span className="material-symbols-outlined absolute right-4 md:right-5 text-[22px] text-zinc-900/85">info</span>
       </div>
 
-      <main className="flex-1 overflow-y-auto flex flex-col pt-4 pb-32 px-4 relative max-w-5xl mx-auto w-full custom-scrollbar">
-        {/* Profile Info (Smaller when messages exist) */}
-        <div className={`text-center relative z-10 w-full max-w-3xl mx-auto transition-all duration-500 ${messages.length > 0 ? 'mt-4 mb-8 scale-75' : 'mt-12 mb-4'}`}>
-          <h2 className="text-2xl md:text-3xl font-serif italic text-black/70 dark:text-white/70 mb-2 flex items-center justify-center gap-2">
-            Hey, I'm {userName.split(' ')[0]} <span className="text-2xl not-italic grayscale opacity-80">👋</span>
+      <main className="relative flex-1 overflow-y-auto custom-scrollbar">
+        <div className="fixed bottom-0 left-0 right-0 flex items-end justify-center pointer-events-none -z-0 opacity-[0.06] overflow-hidden select-none">
+          <h1 className="text-[20vw] font-sans font-bold leading-[0.8] tracking-[-0.03em] whitespace-nowrap text-zinc-400/50">
+            {profileName}
+          </h1>
+        </div>
+
+        <div className="relative z-10 max-w-5xl mx-auto px-4 pt-3 pb-14 flex flex-col items-center">
+          <h2 className="text-2xl md:text-[44px] leading-tight font-sans font-semibold text-zinc-900 mb-2 text-center">
+            Hey, I'm <span className="font-bold">{profileName}</span> <span className="text-[44px] align-middle">👋</span>
           </h2>
-          <h1 className="text-4xl md:text-6xl font-serif font-normal tracking-tight text-primary dark:text-white mb-4 leading-[1.1]">
+          <h1 className="text-5xl md:text-[84px] leading-[0.95] tracking-[-0.03em] font-sans font-bold text-zinc-900 mb-6 text-center">
             {userTitle}
           </h1>
 
-          <div className="mb-4 flex justify-center">
-            <div className="w-40 h-40 md:w-48 md:h-48 relative">
-              <svg className="w-full h-full text-black dark:text-white drop-shadow-sm" fill="none" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                <path d="M100 140C125 140 145 130 145 100C145 70 125 40 100 40C75 40 55 70 55 100C55 130 75 140 100 140Z" fill="white" stroke="currentColor" strokeWidth="2.5"></path>
+          <div className="mb-6 flex justify-center">
+            <div className="w-[240px] h-[240px] md:w-[300px] md:h-[300px] relative">
+              <svg className="w-full h-full text-black" fill="none" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <path d="M100 140C125 140 145 130 145 100C145 70 125 40 100 40C75 40 55 70 55 100C55 130 75 140 100 140Z" fill="transparent" stroke="currentColor" strokeWidth="2.5"></path>
                 <path d="M70 100C70 100 80 105 100 105C120 105 130 100 130 100" stroke="currentColor" strokeLinecap="round" strokeWidth="2.5"></path>
                 <circle cx="80" cy="85" fill="currentColor" r="4"></circle>
                 <circle cx="120" cy="85" fill="currentColor" r="4"></circle>
@@ -122,56 +141,14 @@ const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({ onBack }) => {
               </svg>
             </div>
           </div>
-        </div>
 
-        {/* Chat History */}
-        <div className="w-full max-w-2xl mx-auto space-y-6 mb-12 relative z-10 px-4">
-          <AnimatePresence initial={false}>
-            {messages.map((m, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div
-                  className={`max-w-[85%] px-5 py-3 rounded-2xl shadow-sm ${m.role === 'user'
-                    ? 'bg-primary text-primary-foreground rounded-tr-none'
-                    : 'bg-white dark:bg-zinc-900 border border-border text-primary dark:text-white rounded-tl-none font-light leading-relaxed'
-                    }`}
-                >
-                  {m.content}
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-          {isLoading && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex justify-start"
-            >
-              <div className="bg-white dark:bg-zinc-900 border border-border px-5 py-3 rounded-2xl rounded-tl-none flex gap-1">
-                <span className="size-1.5 bg-text-muted rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                <span className="size-1.5 bg-text-muted rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                <span className="size-1.5 bg-text-muted rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
-              </div>
-            </motion.div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Action Grid (Always at bottom with Input) */}
-        <div className="sticky bottom-0 left-0 right-0 w-full max-w-3xl mx-auto pb-4 bg-gradient-to-t from-background via-background/95 to-transparent pt-12 z-40 px-4">
-
-          {/* Input Box */}
-          <div className="w-full max-w-xl mx-auto mb-6">
+          <div className="w-full max-w-3xl mx-auto">
             <form
               onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
-              className="relative group"
+              className="relative mb-8"
             >
               <input
-                className="w-full pl-6 pr-14 py-4 rounded-xl border border-border bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm shadow-md focus:outline-none focus:border-primary/50 transition-all text-primary dark:text-white"
+                className="w-full h-[68px] md:h-[72px] pl-6 md:pl-8 pr-20 rounded-full border border-zinc-300 bg-[#f2f2f2] text-zinc-800 text-base md:text-[22px] leading-none focus:outline-none focus:border-zinc-500"
                 placeholder="Ask me anything..."
                 type="text"
                 value={inputValue}
@@ -181,40 +158,76 @@ const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({ onBack }) => {
               <button
                 type="submit"
                 disabled={isLoading || !inputValue.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-all flex items-center justify-center size-9 shadow-sm disabled:opacity-50"
+                className="absolute right-3 top-1/2 -translate-y-1/2 size-12 rounded-full bg-zinc-600 text-white flex items-center justify-center hover:bg-zinc-700 transition-colors disabled:opacity-60"
               >
-                <span className="material-symbols-outlined text-[18px]">arrow_upward</span>
+                <span className="material-symbols-outlined text-[22px]">arrow_forward</span>
               </button>
             </form>
+
+            <div className="space-y-4 max-w-[800px] mx-auto">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-4">
+                {quickActions.slice(0, 5).map((btn) => (
+                  <button
+                    key={btn.label}
+                    onClick={() => handleSendMessage(btn.q)}
+                    disabled={isLoading}
+                    className="bg-[#f3f3f3] border border-zinc-300 rounded-3xl h-24 md:h-28 flex flex-col items-center justify-center gap-2 hover:bg-white transition-colors disabled:opacity-60"
+                  >
+                    <span className="material-symbols-outlined text-[24px] text-zinc-700">{btn.icon}</span>
+                    <span className="text-sm md:text-[28px] font-medium text-zinc-700 leading-none">{btn.label}</span>
+                  </button>
+                ))}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 max-w-[480px] mx-auto">
+                {quickActions.slice(5).map((btn) => (
+                  <button
+                    key={btn.label}
+                    onClick={() => handleSendMessage(btn.q)}
+                    disabled={isLoading}
+                    className="bg-[#f3f3f3] border border-zinc-300 rounded-3xl h-24 md:h-28 flex flex-col items-center justify-center gap-2 hover:bg-white transition-colors disabled:opacity-60"
+                  >
+                    <span className="material-symbols-outlined text-[24px] text-zinc-700">{btn.icon}</span>
+                    <span className="text-sm md:text-[28px] font-medium text-zinc-700 leading-none">{btn.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
-          {/* Quick Actions */}
-          <div className="grid grid-cols-5 gap-3 max-w-2xl mx-auto">
-            {[
-              { icon: 'face', label: 'Me', q: 'Tell me about yourself' },
-              { icon: 'work', label: 'Projects', q: 'What projects have you worked on?' },
-              { icon: 'layers', label: 'Skills', q: 'What are your technical skills?' },
-              { icon: 'celebration', label: 'Fun', q: 'What do you do for fun?' },
-              { icon: 'person_search', label: 'Contact', q: 'How can I contact you?' }
-            ].map((btn, i) => (
-              <button
-                key={i}
-                onClick={() => handleSendMessage(btn.q)}
-                disabled={isLoading}
-                className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md hover:bg-white/80 border border-border rounded-xl aspect-[4/3] flex flex-col items-center justify-center gap-2 transition-all hover:shadow-md hover:-translate-y-0.5 group disabled:opacity-50"
-              >
-                <span className="material-symbols-outlined text-text-muted group-hover:text-primary dark:group-hover:text-white transition-colors text-[20px]">{btn.icon}</span>
-                <span className="text-[10px] font-medium tracking-wide text-text-muted group-hover:text-primary dark:group-hover:text-white">{btn.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Background Watermark */}
-        <div className="fixed bottom-0 left-0 right-0 flex items-end justify-center pb-0 pointer-events-none -z-0 opacity-[0.03] dark:opacity-[0.01] overflow-hidden select-none">
-          <h1 className="text-[18vw] font-serif italic leading-[0.8] tracking-tight whitespace-nowrap text-primary dark:text-white">
-            {userName}
-          </h1>
+          {hasConversation && (
+            <div className="w-full max-w-3xl mx-auto mt-10 space-y-4">
+              <AnimatePresence initial={false}>
+                {messages.map((m, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div
+                      className={`max-w-[78%] px-5 py-3 rounded-2xl border text-sm md:text-lg leading-[1.45] ${
+                        m.role === 'user'
+                          ? 'bg-zinc-900 text-white border-zinc-900 rounded-tr-md'
+                          : 'bg-white text-zinc-900 border-zinc-300 rounded-tl-md'
+                      }`}
+                    >
+                      {m.content}
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+              {isLoading && (
+                <div className="flex justify-start">
+                  <div className="bg-white border border-zinc-300 px-5 py-3 rounded-2xl rounded-tl-md flex gap-1.5">
+                    <span className="size-2 bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                    <span className="size-2 bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                    <span className="size-2 bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+          )}
         </div>
       </main>
     </div>
