@@ -1,5 +1,6 @@
 import React from 'react';
 import Highlighter from '../common/Highlighter';
+import Orb from '../common/Orb';
 
 interface HeroProps {
   onStart?: () => void;
@@ -8,7 +9,18 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({ onStart }) => {
   return (
     <section className="relative pt-20 pb-24 lg:pt-32 lg:pb-40 px-6 overflow-hidden">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-primary/[0.05] rounded-full blur-[120px] pointer-events-none z-0"></div>
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute left-1/2 top-[-260px] -translate-x-1/2 w-[720px] h-[720px] md:w-[980px] md:h-[980px] opacity-85 [mask-image:radial-gradient(circle_at_center,black_56%,transparent_78%)]">
+          <Orb
+            hue={18}
+            hoverIntensity={0.28}
+            rotateOnHover={true}
+            forceHoverState={true}
+            backgroundColor="#ffffff"
+          />
+        </div>
+      </div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-primary/[0.04] rounded-full blur-[120px] pointer-events-none z-0"></div>
       
       <div className="max-w-4xl mx-auto flex flex-col items-center justify-center relative z-10 text-center">
         <div className="flex flex-col gap-8 items-center">
