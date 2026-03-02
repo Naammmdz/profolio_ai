@@ -57,7 +57,7 @@ public class ChatService {
         Prompt prompt = new Prompt(messages);
         
         try {
-            return chatModel.call(prompt).getResult().getOutput().getContent();
+            return chatModel.call(prompt).getResult().getOutput().getText();
         } catch (Exception e) {
             log.error("Error calling Gemini API", e);
             return "Sorry, I'm having trouble thinking right now. Please try again later.";
