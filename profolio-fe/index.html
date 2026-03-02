@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Profolio - AI Portfolio Builder</title>
+    <script>
+        // Prevent FOUC: apply saved theme before first paint
+        (function() {
+            var theme = localStorage.getItem('theme');
+            if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
     <link
         href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet" />
@@ -13,23 +22,25 @@
     <style>
         :root {
             --background: #ffffff;
-            --surface: #f9fafb;
-            --surface-highlight: #f3f4f6;
+            --surface: #ffffff;
+            --surface-highlight: #f9fafb;
             --border: #e5e7eb;
             --primary: #18181b;
             --primary-foreground: #ffffff;
             --text-muted: #52525b;
+            --text-subtle: #9ca3af;
             --accent: #d97706;
         }
 
         .dark {
-            --background: #050505;
-            --surface: #0a0a0a;
-            --surface-highlight: #171717;
+            --background: #09090b;
+            --surface: #18181b;
+            --surface-highlight: #27272a;
             --border: #27272a;
-            --primary: #d4d4d8;
+            --primary: #fafafa;
             --primary-foreground: #09090b;
             --text-muted: #a1a1aa;
+            --text-subtle: #71717a;
             --accent: #f59e0b;
         }
 

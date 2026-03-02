@@ -72,10 +72,10 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose, onCo
                         initial="hidden"
                         animate="visible"
                         exit="exit"
-                        className="bg-background dark:bg-zinc-900 border border-border rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl"
+                        className="bg-background border border-border rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl"
                     >
                         {/* Modal Header Progress */}
-                        <div className="h-1 w-full bg-zinc-100 dark:bg-zinc-800">
+                        <div className="h-1 w-full bg-surface-highlight">
                             <motion.div
                                 className="h-full bg-primary"
                                 initial={{ width: '25%' }}
@@ -91,7 +91,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose, onCo
                                     <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
                                         <span className="material-symbols-outlined text-primary text-3xl">magic_button</span>
                                     </div>
-                                    <h2 className="text-3xl font-serif text-primary dark:text-white mb-4">Welcome to Profolio AI</h2>
+                                    <h2 className="text-3xl font-serif text-primary mb-4">Welcome to Profolio AI</h2>
                                     <p className="text-text-muted mb-8 leading-relaxed">
                                         Build your conversational portfolio in seconds. We can automatically create your AI persona by analyzing your CV/Resume.
                                     </p>
@@ -105,7 +105,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose, onCo
                                         </button>
                                         <button
                                             onClick={onComplete}
-                                            className="w-full bg-transparent text-text-muted py-3 rounded-xl font-medium hover:text-primary dark:hover:text-white transition-all text-sm"
+                                            className="w-full bg-transparent text-text-muted py-3 rounded-xl font-medium hover:text-primary transition-all text-sm"
                                         >
                                             I'll set it up manually
                                         </button>
@@ -115,7 +115,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose, onCo
 
                             {step === 'upload' && (
                                 <div>
-                                    <h2 className="text-2xl font-serif text-primary dark:text-white mb-2">Upload your CV</h2>
+                                    <h2 className="text-2xl font-serif text-primary mb-2">Upload your CV</h2>
                                     <p className="text-sm text-text-muted mb-8">Supported formats: PDF, DOCX, DOC (Max 10MB)</p>
 
                                     <div
@@ -133,7 +133,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose, onCo
                                         <span className={`material-symbols-outlined text-4xl mb-4 ${file ? 'text-primary' : 'text-text-muted'}`}>
                                             {file ? 'description' : 'cloud_upload'}
                                         </span>
-                                        <p className="font-medium text-primary dark:text-white mb-1">
+                                        <p className="font-medium text-primary mb-1">
                                             {file ? file.name : 'Click or drag to upload'}
                                         </p>
                                         <p className="text-xs text-text-muted">
@@ -175,7 +175,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose, onCo
                                             </div>
                                         </div>
                                     </div>
-                                    <h2 className="text-2xl font-serif text-primary dark:text-white mb-3">AI is analyzing...</h2>
+                                    <h2 className="text-2xl font-serif text-primary mb-3">AI is analyzing...</h2>
                                     <p className="text-text-muted max-w-sm mx-auto">
                                         We're extracting your professional experience, skills, and personality traits to build your digital twin.
                                     </p>
@@ -187,7 +187,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose, onCo
                                     <div className="size-16 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-6">
                                         <span className="material-symbols-outlined text-green-500 text-3xl">check_circle</span>
                                     </div>
-                                    <h2 className="text-3xl font-serif text-primary dark:text-white mb-4">Magic happened!</h2>
+                                    <h2 className="text-3xl font-serif text-primary mb-4">Magic happened!</h2>
                                     <p className="text-text-muted mb-8">
                                         Your CV has been analyzed. We've pre-filled your profile and tuned your AI personality.
                                     </p>

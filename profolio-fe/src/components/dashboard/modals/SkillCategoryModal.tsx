@@ -39,7 +39,7 @@ const SkillCategoryModal: React.FC<SkillCategoryModalProps> = ({ category, onClo
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary/50 backdrop-blur-sm p-4 animate-fade-in">
       <div className="bg-surface w-full max-w-lg max-h-[90vh] rounded-xl shadow-2xl border border-border flex flex-col animate-zoom-in overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border bg-surface shrink-0 z-10">
@@ -85,7 +85,7 @@ const SkillCategoryModal: React.FC<SkillCategoryModalProps> = ({ category, onClo
               />
               <button 
                 onClick={handleAddSkill}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 rounded-lg text-sm font-bold transition-colors shrink-0"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 rounded-lg text-sm font-bold transition-colors shrink-0"
               >
                 Add
               </button>
@@ -96,7 +96,7 @@ const SkillCategoryModal: React.FC<SkillCategoryModalProps> = ({ category, onClo
         {/* Footer */}
         <div className="p-6 border-t border-border bg-surface shrink-0 z-10 flex justify-end gap-3">
           <button onClick={onClose} className="px-6 py-2.5 rounded-lg border border-border text-primary hover:bg-surface-highlight font-medium text-sm transition-colors">Cancel</button>
-          <button onClick={handleSubmit} className="px-6 py-2.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 font-medium text-sm transition-colors shadow-sm">
+          <button onClick={handleSubmit} className="px-6 py-2.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-medium text-sm transition-colors shadow-sm">
             Save Category
           </button>
         </div>
