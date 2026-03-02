@@ -48,7 +48,7 @@ spring:
             - id: auth-server
               uri: lb://AuthorizationServer
               predicates:
-                - Path=/api/auth/**, /oauth2/**, /login/**, /userinfo/**
+                - Path=/.well-known/**, /api/auth/**, /oauth2/**, /login/**, /userinfo/**
             
             - id: portfolio-service
               uri: lb://PortfolioService
