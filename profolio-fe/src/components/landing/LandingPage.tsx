@@ -25,17 +25,6 @@ const LandingPage: React.FC = () => {
 
   return (
     <div className="relative w-full bg-background text-primary">
-      {/* Background Grid - Hero Only */}
-      <div
-        className="absolute top-0 left-0 w-full h-[120vh] z-0 opacity-60 pointer-events-none transition-opacity duration-300"
-        style={{
-          backgroundImage: 'linear-gradient(to right, var(--border) 1px, transparent 1px), linear-gradient(to bottom, var(--border) 1px, transparent 1px)',
-          backgroundSize: '40px 40px',
-          maskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)',
-        }}
-      ></div>
-
       <Header
         onGetStarted={handleStart}
         isAuthenticated={auth.isAuthenticated}
@@ -62,4 +51,3 @@ const LandingPage: React.FC = () => {
 };
 
 export default LandingPage;
-
