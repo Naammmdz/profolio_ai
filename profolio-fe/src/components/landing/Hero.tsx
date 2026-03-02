@@ -8,19 +8,19 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ onStart }) => {
   return (
-    <section className="relative pt-20 pb-24 lg:pt-28 lg:pb-40 px-6 overflow-hidden bg-background">
-      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[640px] h-[640px] md:w-[820px] md:h-[820px] lg:w-[900px] lg:h-[900px] opacity-75 [mask-image:radial-gradient(circle_at_center,black_45%,transparent_68%)] block dark:hidden">
+    <section className="relative pt-20 pb-24 lg:pt-28 lg:pb-40 px-6 bg-background">
+      <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center">
+        <div className="relative w-[800px] h-[800px] md:w-[1000px] md:h-[1000px] lg:w-[1100px] lg:h-[1100px] opacity-70 [mask-image:radial-gradient(circle_at_center,black_30%,transparent_58%)] block dark:hidden">
           <Orb
             hue={-12}
             hoverIntensity={0.2}
             rotateOnHover={true}
             forceHoverState={true}
             backgroundColor="#ffffff"
-            colors={['#b8c4ff', '#a6ebe5', '#ffe2b8']}
+            colors={['#c5cfff', '#b5f0ea', '#ffe8c5']}
           />
         </div>
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[640px] h-[640px] md:w-[820px] md:h-[820px] lg:w-[900px] lg:h-[900px] opacity-85 [mask-image:radial-gradient(circle_at_center,black_55%,transparent_78%)] hidden dark:block">
+        <div className="relative w-[800px] h-[800px] md:w-[1000px] md:h-[1000px] lg:w-[1100px] lg:h-[1100px] opacity-85 [mask-image:radial-gradient(circle_at_center,black_55%,transparent_78%)] hidden dark:block">
           <Orb
             hue={32}
             hoverIntensity={0.28}
