@@ -10,50 +10,39 @@ spring:
     name: AGW
   cloud:
     gateway:
-      server:
-        webflux:
-          httpclient:
-            pool:
-              type: fixed
-              max-connections: 3000
-              acquire-timeout: 8000
-              max-life-time: 300s
-              max-idle-time: 10s
-            connect-timeout: 30000
-            response-timeout: 60s
-          globalcors:
-            cors-configurations:
-              '[/**]':
-                allowedOrigins: 
-                  - "http://localhost:3000"
-                  - "http://localhost:5173"
-                  # Add production domain here
-                  # - "https://profolio.yourdomain.com"
-                allowedMethods: 
-                  - GET
-                  - POST
-                  - PUT
-                  - DELETE
-                  - OPTIONS
-                  - PATCH
-                allowedHeaders: 
-                  - "*"
-                  - "Authorization"
-                allowCredentials: true
-                maxAge: 3600
-          discovery:
-            locator:
-              enabled: true
-          routes:
-            - id: auth-server
-              uri: lb://authorization-server
-              predicates:
-                - Path=/.well-known/**, /api/auth/**, /oauth2/**, /login/**, /userinfo/**
-            
-            - id: portfolio-service
-              uri: lb://PortfolioService
-              predicates:
-                - Path=/api/v1/portfolio/**, /api/v1/cv/**, /api/v1/personality/**, /api/v1/questions/**, /api/v1/public/**
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: 
+              - "http://localhost:3000"
+              - "http://localhost:5173"
+              - "http://localhost:4000"
+              - "https://profolio.naammmdz.id.vn"
+            allowedMethods: 
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - PATCH
+            allowedHeaders: 
+              - "*"
+              - "Authorization"
+            allowCredentials: true
+            maxAge: 3600
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: auth-server
+          uri: lb://authorization-server
+          predicates:
+            - Path=/.well-known/**, /api/auth/**, /oauth2/**, /login/**, /userinfo/**
+        
+        - id: portfolio-service
+          uri: lb://PortfolioService
+          predicates:
+            - Path=/api/v1/portfolio/**, /api/v1/cv/**, /api/v1/personality/**, /api/v1/questions/**, /api/v1/public/**
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
     loadbalancer:
