@@ -1,4 +1,6 @@
 import React from 'react';
+import { usePortfolio } from '../../../hooks/usePortfolio';
+import { useQuestions } from '../../../hooks/useQuestions';
 
 interface DashboardTabProps {
   onPreview: () => void;
@@ -6,6 +8,27 @@ interface DashboardTabProps {
 }
 
 const DashboardTab: React.FC<DashboardTabProps> = ({ onPreview, onNavigate }) => {
+  const { data: portfolio, isLoading } = usePortfolio();
+  const { data: questions = [] } = useQuestions();
+
+  const isPublished = portfolio?.status === 'PUBLISHED';
+
+  if (isLoading) {
+    return (
+      <div className="p-8 lg:p-12 max-w-7xl mx-auto pb-32">
+        <div className="animate-pulse space-y-6">
+          <div className="h-14 bg-surface-highlight rounded-lg w-1/3" />
+          <div className="h-80 bg-surface-highlight rounded-lg" />
+          <div className="grid grid-cols-3 gap-6">
+            <div className="h-32 bg-surface-highlight rounded-lg" />
+            <div className="h-32 bg-surface-highlight rounded-lg" />
+            <div className="h-32 bg-surface-highlight rounded-lg" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-8 lg:p-12 max-w-7xl mx-auto pb-32">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
@@ -16,17 +39,17 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ onPreview, onNavigate }) =>
         </div>
         <div className="flex items-center gap-3 self-end sm:self-auto">
           <div className="bg-background border border-border text-text-muted px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 shadow-sm">
-            <span className="size-1.5 rounded-full bg-orange-500"></span>
-            Draft Mode
+            <span className={`size-1.5 rounded-full ${isPublished ? 'bg-green-500' : 'bg-orange-500'}`}></span>
+            {isPublished ? 'Published' : 'Draft Mode'}
           </div>
-          <button 
+          <button
             onClick={onPreview}
             className="bg-background hover:bg-surface-highlight border border-border text-primary px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm flex items-center gap-2"
           >
             <span className="material-symbols-outlined text-[16px]">visibility</span>
             Preview
           </button>
-          <button 
+          <button
             onClick={() => onNavigate('publish')}
             className="bg-primary hover:opacity-90 text-primary-foreground px-5 py-2 rounded-lg text-sm font-medium transition-colors shadow-lg"
           >
@@ -35,49 +58,76 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ onPreview, onNavigate }) =>
         </div>
       </div>
       <div className="mb-10">
-        <h1 className="text-5xl font-serif text-primary mb-3 tracking-tight">Hello Giang!</h1>
+        <h1 className="text-5xl font-serif text-primary mb-3 tracking-tight">
+          Hello{portfolio?.tagline ? `, ${portfolio.tagline.split(' ')[0]}` : ''}!
+        </h1>
         <div className="flex items-center gap-3 text-sm text-text-muted font-mono bg-surface inline-flex px-3 py-1.5 rounded-md border border-border">
-          <span>profol.io/giang-nam</span>
-          <button className="hover:text-primary transition-colors">
+          <span>profol.io/{portfolio?.slug}</span>
+          <button
+            onClick={() => navigator.clipboard.writeText(`profol.io/${portfolio?.slug}`)}
+            className="hover:text-primary transition-colors"
+          >
             <span className="material-symbols-outlined text-[14px]">content_copy</span>
           </button>
         </div>
       </div>
-      <div className="bg-background border border-border rounded-lg p-10 mb-10 h-80 flex flex-col items-center justify-center relative overflow-hidden group shadow-sm">
-        <div className="absolute inset-0 bg-[radial-gradient(var(--border)_1px,transparent_1px)] [background-size:16px_16px] opacity-25"></div>
-        <div className="relative z-10 text-center max-w-md">
-          <div className="inline-flex items-center justify-center p-3 mb-4 rounded-full bg-surface border border-border">
-            <span className="material-symbols-outlined text-text-muted">edit_note</span>
+
+      {/* Status Banner */}
+      {isPublished ? (
+        <div className="bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800/40 rounded-lg p-10 mb-10 flex flex-col items-center justify-center relative overflow-hidden group shadow-sm">
+          <div className="relative z-10 text-center max-w-md">
+            <div className="inline-flex items-center justify-center p-3 mb-4 rounded-full bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800/50">
+              <span className="material-symbols-outlined text-green-600 dark:text-green-400">public</span>
+            </div>
+            <h2 className="text-3xl font-serif text-primary mb-3">Portfolio is Live</h2>
+            <p className="text-text-muted mb-8 leading-relaxed font-light">Your portfolio is accessible to the world at profol.io/{portfolio?.slug}</p>
+            <button
+              onClick={onPreview}
+              className="inline-flex items-center gap-2 bg-background hover:bg-surface-highlight border border-border hover:border-primary/20 text-primary px-5 py-2.5 rounded-lg text-sm font-medium transition-all shadow-sm group"
+            >
+              View Portfolio
+              <span className="material-symbols-outlined text-[16px] text-text-muted group-hover:text-primary transition-colors">arrow_forward</span>
+            </button>
           </div>
-          <h2 className="text-3xl font-serif text-primary mb-3">Portfolio in Draft Mode</h2>
-          <p className="text-text-muted mb-8 leading-relaxed font-light">Your portfolio is not yet accessible to the world. <br/>Publish it to share your work.</p>
-          <button 
-            onClick={onPreview}
-            className="inline-flex items-center gap-2 bg-background hover:bg-surface-highlight border border-border hover:border-primary/20 text-primary px-5 py-2.5 rounded-lg text-sm font-medium transition-all shadow-sm group"
-          >
-            View Draft
-            <span className="material-symbols-outlined text-[16px] text-text-muted group-hover:text-primary transition-colors">arrow_forward</span>
-          </button>
         </div>
-      </div>
+      ) : (
+        <div className="bg-background border border-border rounded-lg p-10 mb-10 h-80 flex flex-col items-center justify-center relative overflow-hidden group shadow-sm">
+          <div className="absolute inset-0 bg-[radial-gradient(var(--border)_1px,transparent_1px)] [background-size:16px_16px] opacity-25"></div>
+          <div className="relative z-10 text-center max-w-md">
+            <div className="inline-flex items-center justify-center p-3 mb-4 rounded-full bg-surface border border-border">
+              <span className="material-symbols-outlined text-text-muted">edit_note</span>
+            </div>
+            <h2 className="text-3xl font-serif text-primary mb-3">Portfolio in Draft Mode</h2>
+            <p className="text-text-muted mb-8 leading-relaxed font-light">Your portfolio is not yet accessible to the world. <br />Publish it to share your work.</p>
+            <button
+              onClick={onPreview}
+              className="inline-flex items-center gap-2 bg-background hover:bg-surface-highlight border border-border hover:border-primary/20 text-primary px-5 py-2.5 rounded-lg text-sm font-medium transition-all shadow-sm group"
+            >
+              View Draft
+              <span className="material-symbols-outlined text-[16px] text-text-muted group-hover:text-primary transition-colors">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <div className="bg-background border border-border rounded-lg p-6 shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-300">
           <div className="flex justify-between items-start mb-4">
-            <p className="text-sm font-medium text-text-muted">Messages used</p>
-            <span className="material-symbols-outlined text-text-muted/50">forum</span>
+            <p className="text-sm font-medium text-text-muted">Questions configured</p>
+            <span className="material-symbols-outlined text-text-muted/50">help</span>
           </div>
           <div className="flex items-baseline gap-1">
-            <span className="text-4xl font-serif text-primary">6</span>
-            <span className="text-lg text-text-muted font-serif">/50</span>
+            <span className="text-4xl font-serif text-primary">{questions.length}</span>
           </div>
         </div>
         <div className="bg-background border border-border rounded-lg p-6 shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-300">
           <div className="flex justify-between items-start mb-4">
-            <p className="text-sm font-medium text-text-muted">Messages today</p>
-            <span className="material-symbols-outlined text-text-muted/50">today</span>
+            <p className="text-sm font-medium text-text-muted">Status</p>
+            <span className="material-symbols-outlined text-text-muted/50">{isPublished ? 'public' : 'edit_note'}</span>
           </div>
           <div className="flex items-baseline gap-1">
-            <span className="text-4xl font-serif text-primary">0</span>
+            <span className="text-2xl font-serif text-primary">{isPublished ? 'Published' : 'Draft'}</span>
           </div>
         </div>
         <div className="bg-primary border border-primary rounded-lg p-6 shadow-md cursor-pointer group relative overflow-hidden">
@@ -94,47 +144,8 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ onPreview, onNavigate }) =>
           </div>
         </div>
       </div>
-      <div className="bg-background border border-border rounded-lg p-8 shadow-sm mb-12">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <h3 className="text-xl font-serif text-primary">Recent Visitor Questions</h3>
-            <div className="px-2 py-0.5 rounded-full bg-surface border border-border text-[10px] font-mono font-medium text-text-muted">New</div>
-          </div>
-          <a className="flex items-center gap-1 text-xs font-medium text-text-muted hover:text-primary transition-colors border-b border-transparent hover:border-primary pb-0.5" href="#">
-            View all history
-          </a>
-        </div>
-        <div className="space-y-3">
-          <div className="group flex items-center justify-between p-4 rounded-md border border-border hover:border-primary/20 hover:bg-surface-highlight transition-all cursor-pointer">
-            <div className="flex items-start gap-4">
-              <div className="mt-1 size-2 rounded-full bg-text-muted group-hover:bg-primary transition-colors"></div>
-              <div>
-                <p className="text-sm font-medium text-primary mb-1 group-hover:underline decoration-border underline-offset-4">"Can you show me your resume or CV?"</p>
-                <div className="flex items-center gap-3 text-xs text-text-muted font-mono">
-                  <span>1d ago</span>
-                  <span>•</span>
-                  <span>Ho Chi Minh City, VN</span>
-                </div>
-              </div>
-            </div>
-            <span className="material-symbols-outlined text-text-muted group-hover:text-primary text-[18px] transition-colors">chevron_right</span>
-          </div>
-          <div className="group flex items-center justify-between p-4 rounded-md border border-border hover:border-primary/20 hover:bg-surface-highlight transition-all cursor-pointer">
-            <div className="flex items-start gap-4">
-              <div className="mt-1 size-2 rounded-full bg-text-muted group-hover:bg-primary transition-colors"></div>
-              <div>
-                <p className="text-sm font-medium text-primary mb-1 group-hover:underline decoration-border underline-offset-4">"What are your passions?"</p>
-                <div className="flex items-center gap-3 text-xs text-text-muted font-mono">
-                  <span>2d ago</span>
-                  <span>•</span>
-                  <span>London, UK</span>
-                </div>
-              </div>
-            </div>
-            <span className="material-symbols-outlined text-text-muted group-hover:text-primary text-[18px] transition-colors">chevron_right</span>
-          </div>
-        </div>
-      </div>
+
+      {/* Quick Actions */}
       <div className="mb-12">
         <h3 className="text-xl font-serif text-primary mb-6">Quick Actions</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -190,4 +201,3 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ onPreview, onNavigate }) =>
 };
 
 export default DashboardTab;
-

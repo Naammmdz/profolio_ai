@@ -22,6 +22,37 @@ services:
     networks:
       - profolio-network
 
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - profolio-network
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: minio-init
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      sleep 5;
+      mc alias set myminio http://minio:9000 minioadmin minioadmin;
+      mc mb myminio/profolio-files || true;
+      mc anonymous set public myminio/profolio-files;
+      exit 0;
+      "
+    networks:
+      - profolio-network
+
   auth-server:
     build:
       context: ./profolio-be/AuthorizationServer
@@ -61,11 +92,15 @@ services:
       # Tell service to reach auth-server internally for jwks validation
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://auth-server:9000/oauth2/jwks
       GOOGLE_AI_API_KEY: ${GOOGLE_AI_API_KEY}
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
     # ports:
     #   - "8081:8081"
     depends_on:
       - postgres
       - consul
+      - minio
     networks:
       - profolio-network
 
@@ -105,3 +140,4 @@ networks:
 
 volumes:
   postgres_data:
+  minio_data:

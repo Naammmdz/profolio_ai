@@ -2,13 +2,24 @@ package com.naammm.portfolioservice.service;
 
 import com.naammm.portfolioservice.dto.AIPersonalityDto;
 import com.naammm.portfolioservice.dto.PortfolioDto;
+import com.naammm.portfolioservice.dto.PublicPersonalityDto;
 import com.naammm.portfolioservice.dto.SuggestedQuestionDto;
+import com.naammm.portfolioservice.dto.ProjectDto;
+import com.naammm.portfolioservice.dto.SkillCategoryDto;
 import com.naammm.portfolioservice.model.AIPersonality;
 import com.naammm.portfolioservice.model.Portfolio;
 import com.naammm.portfolioservice.model.SuggestedQuestion;
+import com.naammm.portfolioservice.model.Project;
+import com.naammm.portfolioservice.model.SkillCategory;
+import com.naammm.portfolioservice.model.Skill;
+import com.naammm.portfolioservice.model.ToolboxConfig;
 import com.naammm.portfolioservice.repository.AIPersonalityRepository;
 import com.naammm.portfolioservice.repository.PortfolioRepository;
 import com.naammm.portfolioservice.repository.SuggestedQuestionRepository;
+import com.naammm.portfolioservice.repository.ProjectRepository;
+import com.naammm.portfolioservice.repository.SkillCategoryRepository;
+import com.naammm.portfolioservice.repository.ToolboxConfigRepository;
+import com.naammm.portfolioservice.dto.ToolboxConfigDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +35,9 @@ public class PortfolioService {
     private final PortfolioRepository portfolioRepository;
     private final AIPersonalityRepository personalityRepository;
     private final SuggestedQuestionRepository questionRepository;
+    private final ProjectRepository projectRepository;
+    private final SkillCategoryRepository skillCategoryRepository;
+    private final ToolboxConfigRepository toolboxConfigRepository;
     private final CVService cvService;
 
     // --- Portfolio CRUD ---
@@ -189,11 +203,22 @@ public class PortfolioService {
                 .orElseGet(() -> AIPersonality.builder().temperature(50).build());
         
         List<SuggestedQuestion> questions = questionRepository.findByPortfolio(portfolio);
+        List<Project> projects = projectRepository.findByPortfolioOrderByDisplayOrderAsc(portfolio);
+        List<SkillCategory> skillCategories = skillCategoryRepository.findByPortfolioOrderByDisplayOrderAsc(portfolio);
+        ToolboxConfig toolboxConfig = toolboxConfigRepository.findByPortfolio(portfolio).orElse(null);
 
         Map<String, Object> result = new HashMap<>();
         result.put("portfolio", mapToPortfolioDto(portfolio));
-        result.put("personality", mapToPersonalityDto(personality));
+        result.put("personality", mapToPublicPersonalityDto(personality));
         result.put("questions", questions.stream().map(this::mapToQuestionDto).toList());
+        result.put("projects", projects.stream().map(this::mapToProjectDto).toList());
+        result.put("skills", skillCategories.stream().map(this::mapToSkillCategoryDto).toList());
+        
+        if (toolboxConfig != null) {
+            result.put("tools", mapToToolboxConfigDto(toolboxConfig));
+        } else {
+            result.put("tools", null);
+        }
         
         return result;
     }
@@ -250,12 +275,88 @@ public class PortfolioService {
                 .build();
     }
 
+    private PublicPersonalityDto mapToPublicPersonalityDto(AIPersonality p) {
+        return PublicPersonalityDto.builder()
+                .professionalBio(p.getProfessionalBio())
+                .skills(p.getSkills())
+                .biggestFlex(p.getBiggestFlex())
+                .build();
+    }
+
     private SuggestedQuestionDto mapToQuestionDto(SuggestedQuestion q) {
         return SuggestedQuestionDto.builder()
                 .id(q.getId())
                 .question(q.getQuestion())
                 .category(q.getCategory())
                 .isDefault(q.getIsDefault())
+                .build();
+    }
+
+    private ProjectDto mapToProjectDto(Project p) {
+        return ProjectDto.builder()
+                .id(p.getId())
+                .title(p.getTitle())
+                .category(p.getCategory())
+                .description(p.getDescription())
+                .date(p.getDate())
+                .tags(p.getTags())
+                .links(p.getLinks())
+                .displayOrder(p.getDisplayOrder())
+                .build();
+    }
+
+    private SkillCategoryDto mapToSkillCategoryDto(SkillCategory c) {
+        List<String> skillNames = c.getSkills() != null
+                ? c.getSkills().stream().map(Skill::getName).toList()
+                : new ArrayList<>();
+        
+        return SkillCategoryDto.builder()
+                .id(c.getId())
+                .title(c.getTitle())
+                .skills(skillNames)
+                .displayOrder(c.getDisplayOrder())
+                .build();
+    }
+
+    private ToolboxConfigDto mapToToolboxConfigDto(ToolboxConfig c) {
+        return ToolboxConfigDto.builder()
+                .meInfo(ToolboxConfigDto.MeInfo.builder()
+                        .name(c.getMeName())
+                        .age(c.getMeAge())
+                        .location(c.getMeLocation())
+                        .introduction(c.getMeIntroduction())
+                        .tags(c.getMeTags())
+                        .photoUrl(c.getMePhotoUrl())
+                        .build())
+                .hobbiesInfo(ToolboxConfigDto.HobbiesInfo.builder()
+                        .title(c.getHobbiesTitle())
+                        .description(c.getHobbiesDescription())
+                        .photos(c.getHobbiesPhotos())
+                        .build())
+                .contactInfo(ToolboxConfigDto.ContactInfo.builder()
+                        .name(c.getContactName())
+                        .email(c.getContactEmail())
+                        .phone(c.getContactPhone())
+                        .handle(c.getContactHandle())
+                        .address(c.getContactAddress())
+                        .socialPlatforms(c.getContactSocialPlatforms())
+                        .socialUrls(c.getContactSocialUrls())
+                        .build())
+                .resumeInfo(ToolboxConfigDto.ResumeInfo.builder()
+                        .title(c.getResumeTitle())
+                        .description(c.getResumeDescription())
+                        .fileUrl(c.getResumeFileUrl())
+                        .fileName(c.getResumeFileName())
+                        .build())
+                .videoInfo(ToolboxConfigDto.VideoInfo.builder()
+                        .title(c.getVideoTitle())
+                        .url(c.getVideoUrl())
+                        .description(c.getVideoDescription())
+                        .build())
+                .locationInfo(ToolboxConfigDto.LocationInfo.builder()
+                        .city(c.getLocationCity())
+                        .country(c.getLocationCountry())
+                        .build())
                 .build();
     }
 }

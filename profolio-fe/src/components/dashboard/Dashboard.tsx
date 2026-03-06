@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import DashboardSidebar from './DashboardSidebar';
 import DashboardTab from './tabs/DashboardTab';
 import AnalyticsTab from './tabs/AnalyticsTab';
@@ -10,6 +11,8 @@ import AIPersonalityTab from './tabs/AIPersonalityTab';
 import ToolsTab from './tabs/ToolsTab';
 import QuestionsTab from './tabs/QuestionsTab';
 import OnboardingModal from './modals/OnboardingModal';
+import { useAddProject, useUpdateProject } from '../../hooks/useProjects';
+import { useAddSkillCategory, useUpdateSkillCategory } from '../../hooks/useSkillCategories';
 
 type Tab = 'dashboard' | 'analytics' | 'publish' | 'basic-info' | 'ai-personality' | 'tools' | 'questions';
 
@@ -18,6 +21,11 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ onPreview }) => {
+  const addProjectMutation = useAddProject();
+  const updateProjectMutation = useUpdateProject();
+  const addSkillCategoryMutation = useAddSkillCategory();
+  const updateSkillCategoryMutation = useUpdateSkillCategory();
+
   const [currentTab, setCurrentTab] = useState<Tab>('dashboard');
   const [showOnboarding, setShowOnboarding] = useState(() => {
     // Show onboarding only if not completed before
@@ -57,17 +65,33 @@ const Dashboard: React.FC<DashboardProps> = ({ onPreview }) => {
   const handleEditProject = (project: any) => {
     setEditingProject({
       ...project,
-      isNew: false,
-      category: 'WebApp',
-      description: "This is a project for developing a full-stack AI Workspace solution under strict time constraints for NAVER Hackathon 2025.",
-      date: "November 1st, 2025",
-      tags: ["React", "Spring Boot 3.x", "PostgreSQL", "Docker", "Dokploy"]
+      isNew: false
     });
   };
 
   const handleSaveProject = (project: any) => {
-    // TODO: Implement save logic with API
-    console.log('Saving project:', project);
+    if (project.isNew) {
+      addProjectMutation.mutate({
+        title: project.title,
+        category: project.category,
+        description: project.description,
+        date: project.date,
+        tags: project.tags,
+        links: project.links,
+      });
+    } else {
+      updateProjectMutation.mutate({
+        id: project.id,
+        data: {
+          title: project.title,
+          category: project.category,
+          description: project.description,
+          date: project.date,
+          tags: project.tags,
+          links: project.links,
+        }
+      });
+    }
     setEditingProject(null);
   };
 
@@ -88,8 +112,20 @@ const Dashboard: React.FC<DashboardProps> = ({ onPreview }) => {
   };
 
   const handleSaveSkillCategory = (category: any) => {
-    // TODO: Implement save logic with API
-    console.log('Saving skill category:', category);
+    if (category.isNew) {
+      addSkillCategoryMutation.mutate({
+        title: category.title,
+        skills: category.skills,
+      });
+    } else {
+      updateSkillCategoryMutation.mutate({
+        id: category.id,
+        data: {
+          title: category.title,
+          skills: category.skills,
+        }
+      });
+    }
     setEditingSkillCategory(null);
   };
 
