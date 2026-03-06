@@ -1,1 +1,0 @@
-- **Object Storage Migration:** Added `minio` and `minio-init` to `docker-compose.yml`, refactored `FileService.java` to stream directly to MinIO utilizing the `io.minio` Java library. Remapped `pom.xml` and `application.yml` for connection configurations.
