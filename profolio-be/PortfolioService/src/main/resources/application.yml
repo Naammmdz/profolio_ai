@@ -44,3 +44,9 @@ management:
     web:
       exposure:
         include: health,info,metrics
+
+minio:
+  endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+  accessKey: ${MINIO_ACCESS_KEY:minioadmin}
+  secretKey: ${MINIO_SECRET_KEY:minioadmin}
+  bucketName: ${MINIO_BUCKET_NAME:profolio-files}
