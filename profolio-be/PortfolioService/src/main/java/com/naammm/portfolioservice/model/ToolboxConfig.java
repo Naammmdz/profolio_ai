@@ -25,7 +25,12 @@ public class ToolboxConfig {
     @JoinColumn(name = "portfolio_id", nullable = false, unique = true)
     private Portfolio portfolio;
 
+    private Boolean isGlobalEnabled;
+    private Boolean isProjectsEnabled;
+    private Boolean isSkillsEnabled;
+
     // Me Info
+    private Boolean isMeEnabled;
     private String meName;
     private String meAge;
     private String meLocation;
@@ -39,6 +44,7 @@ public class ToolboxConfig {
     private String mePhotoUrl;
 
     // Fun & Hobbies
+    private Boolean isHobbiesEnabled;
     private String hobbiesTitle;
     @Column(columnDefinition = "TEXT")
     private String hobbiesDescription;
@@ -48,6 +54,7 @@ public class ToolboxConfig {
     private List<String> hobbiesPhotos;
 
     // Contact
+    private Boolean isContactEnabled;
     private String contactName;
     private String contactEmail;
     private String contactPhone;
@@ -63,6 +70,7 @@ public class ToolboxConfig {
     private List<String> contactSocialUrls;
 
     // Resume
+    private Boolean isResumeEnabled;
     private String resumeTitle;
     @Column(columnDefinition = "TEXT")
     private String resumeDescription;
@@ -70,12 +78,14 @@ public class ToolboxConfig {
     private String resumeFileName;
 
     // Video
+    private Boolean isVideoEnabled;
     private String videoTitle;
     private String videoUrl;
     @Column(columnDefinition = "TEXT")
     private String videoDescription;
 
     // Location
+    private Boolean isLocationEnabled;
     private String locationCity;
     private String locationCountry;
 
