@@ -44,7 +44,12 @@ public class ToolsService {
         ToolboxConfig config = toolboxConfigRepository.findByPortfolio(portfolio)
                 .orElseGet(() -> createEmptyToolboxConfig(portfolio));
 
+        if (dto.getIsGlobalEnabled() != null) config.setIsGlobalEnabled(dto.getIsGlobalEnabled());
+        if (dto.getIsProjectsEnabled() != null) config.setIsProjectsEnabled(dto.getIsProjectsEnabled());
+        if (dto.getIsSkillsEnabled() != null) config.setIsSkillsEnabled(dto.getIsSkillsEnabled());
+
         if (dto.getMeInfo() != null) {
+            config.setIsMeEnabled(dto.getMeInfo().getIsEnabled());
             config.setMeName(dto.getMeInfo().getName());
             config.setMeAge(dto.getMeInfo().getAge());
             config.setMeLocation(dto.getMeInfo().getLocation());
@@ -54,12 +59,14 @@ public class ToolsService {
         }
 
         if (dto.getHobbiesInfo() != null) {
+            config.setIsHobbiesEnabled(dto.getHobbiesInfo().getIsEnabled());
             config.setHobbiesTitle(dto.getHobbiesInfo().getTitle());
             config.setHobbiesDescription(dto.getHobbiesInfo().getDescription());
             config.setHobbiesPhotos(dto.getHobbiesInfo().getPhotos());
         }
 
         if (dto.getContactInfo() != null) {
+            config.setIsContactEnabled(dto.getContactInfo().getIsEnabled());
             config.setContactName(dto.getContactInfo().getName());
             config.setContactEmail(dto.getContactInfo().getEmail());
             config.setContactPhone(dto.getContactInfo().getPhone());
@@ -70,6 +77,7 @@ public class ToolsService {
         }
 
         if (dto.getResumeInfo() != null) {
+            config.setIsResumeEnabled(dto.getResumeInfo().getIsEnabled());
             config.setResumeTitle(dto.getResumeInfo().getTitle());
             config.setResumeDescription(dto.getResumeInfo().getDescription());
             config.setResumeFileUrl(dto.getResumeInfo().getFileUrl());
@@ -77,12 +85,14 @@ public class ToolsService {
         }
 
         if (dto.getVideoInfo() != null) {
+            config.setIsVideoEnabled(dto.getVideoInfo().getIsEnabled());
             config.setVideoTitle(dto.getVideoInfo().getTitle());
             config.setVideoUrl(dto.getVideoInfo().getUrl());
             config.setVideoDescription(dto.getVideoInfo().getDescription());
         }
 
         if (dto.getLocationInfo() != null) {
+            config.setIsLocationEnabled(dto.getLocationInfo().getIsEnabled());
             config.setLocationCity(dto.getLocationInfo().getCity());
             config.setLocationCountry(dto.getLocationInfo().getCountry());
         }
@@ -263,7 +273,11 @@ public class ToolsService {
 
     private ToolboxConfigDto mapToToolboxConfigDto(ToolboxConfig c) {
         return ToolboxConfigDto.builder()
+                .isGlobalEnabled(c.getIsGlobalEnabled())
+                .isProjectsEnabled(c.getIsProjectsEnabled())
+                .isSkillsEnabled(c.getIsSkillsEnabled())
                 .meInfo(ToolboxConfigDto.MeInfo.builder()
+                        .isEnabled(c.getIsMeEnabled())
                         .name(c.getMeName())
                         .age(c.getMeAge())
                         .location(c.getMeLocation())
@@ -272,11 +286,13 @@ public class ToolsService {
                         .photoUrl(c.getMePhotoUrl())
                         .build())
                 .hobbiesInfo(ToolboxConfigDto.HobbiesInfo.builder()
+                        .isEnabled(c.getIsHobbiesEnabled())
                         .title(c.getHobbiesTitle())
                         .description(c.getHobbiesDescription())
                         .photos(c.getHobbiesPhotos())
                         .build())
                 .contactInfo(ToolboxConfigDto.ContactInfo.builder()
+                        .isEnabled(c.getIsContactEnabled())
                         .name(c.getContactName())
                         .email(c.getContactEmail())
                         .phone(c.getContactPhone())
@@ -286,17 +302,20 @@ public class ToolsService {
                         .socialUrls(c.getContactSocialUrls())
                         .build())
                 .resumeInfo(ToolboxConfigDto.ResumeInfo.builder()
+                        .isEnabled(c.getIsResumeEnabled())
                         .title(c.getResumeTitle())
                         .description(c.getResumeDescription())
                         .fileUrl(c.getResumeFileUrl())
                         .fileName(c.getResumeFileName())
                         .build())
                 .videoInfo(ToolboxConfigDto.VideoInfo.builder()
+                        .isEnabled(c.getIsVideoEnabled())
                         .title(c.getVideoTitle())
                         .url(c.getVideoUrl())
                         .description(c.getVideoDescription())
                         .build())
                 .locationInfo(ToolboxConfigDto.LocationInfo.builder()
+                        .isEnabled(c.getIsLocationEnabled())
                         .city(c.getLocationCity())
                         .country(c.getLocationCountry())
                         .build())

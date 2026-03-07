@@ -54,6 +54,7 @@ export interface SkillCategory {
 }
 
 export interface MeInfo {
+    isEnabled?: boolean;
     name?: string;
     age?: string;
     location?: string;
@@ -63,12 +64,14 @@ export interface MeInfo {
 }
 
 export interface HobbiesInfo {
+    isEnabled?: boolean;
     title?: string;
     description?: string;
     photos?: string[];
 }
 
 export interface ContactInfo {
+    isEnabled?: boolean;
     name?: string;
     email?: string;
     phone?: string;
@@ -79,6 +82,7 @@ export interface ContactInfo {
 }
 
 export interface ResumeInfo {
+    isEnabled?: boolean;
     title?: string;
     description?: string;
     fileUrl?: string;
@@ -86,17 +90,22 @@ export interface ResumeInfo {
 }
 
 export interface VideoInfo {
+    isEnabled?: boolean;
     title?: string;
     url?: string;
     description?: string;
 }
 
 export interface LocationInfo {
+    isEnabled?: boolean;
     city?: string;
     country?: string;
 }
 
 export interface ToolboxConfig {
+    isGlobalEnabled?: boolean;
+    isProjectsEnabled?: boolean;
+    isSkillsEnabled?: boolean;
     meInfo?: MeInfo;
     hobbiesInfo?: HobbiesInfo;
     contactInfo?: ContactInfo;

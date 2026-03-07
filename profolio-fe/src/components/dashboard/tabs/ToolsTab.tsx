@@ -34,6 +34,34 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
   const updateToolboxConfigMutation = useUpdateToolboxConfig();
   const uploadFileMutation = useUploadFile();
 
+  const [toggles, setToggles] = React.useState({
+    isGlobalEnabled: true,
+    isProjectsEnabled: true,
+    isSkillsEnabled: true,
+    isMeEnabled: true,
+    isHobbiesEnabled: true,
+    isContactEnabled: true,
+    isResumeEnabled: true,
+    isVideoEnabled: true,
+    isLocationEnabled: true,
+  });
+
+  React.useEffect(() => {
+    if (toolboxConfig) {
+      setToggles({
+        isGlobalEnabled: toolboxConfig.isGlobalEnabled ?? true,
+        isProjectsEnabled: toolboxConfig.isProjectsEnabled ?? true,
+        isSkillsEnabled: toolboxConfig.isSkillsEnabled ?? true,
+        isMeEnabled: toolboxConfig.meInfo?.isEnabled ?? true,
+        isHobbiesEnabled: toolboxConfig.hobbiesInfo?.isEnabled ?? true,
+        isContactEnabled: toolboxConfig.contactInfo?.isEnabled ?? true,
+        isResumeEnabled: toolboxConfig.resumeInfo?.isEnabled ?? true,
+        isVideoEnabled: toolboxConfig.videoInfo?.isEnabled ?? true,
+        isLocationEnabled: toolboxConfig.locationInfo?.isEnabled ?? true,
+      });
+    }
+  }, [toolboxConfig]);
+
   // Me (personal info) state
   const [meInfo, setMeInfo] = React.useState({
     name: "",
@@ -75,7 +103,8 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
     updateToolboxConfigMutation.mutate({
       meInfo: {
         ...meInfo,
-        tags
+        tags,
+        isEnabled: toggles.isMeEnabled
       }
     });
   };
@@ -152,11 +181,29 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
     }
   }, [toolboxConfig]);
 
-  const saveContactInfo = () => updateToolboxConfigMutation.mutate({ contactInfo });
-  const saveLocationInfo = () => updateToolboxConfigMutation.mutate({ locationInfo });
-  const saveHobbiesInfo = () => updateToolboxConfigMutation.mutate({ hobbiesInfo });
-  const saveResumeInfo = () => updateToolboxConfigMutation.mutate({ resumeInfo });
-  const saveVideoInfo = () => updateToolboxConfigMutation.mutate({ videoInfo });
+  const handleToggle = (field: string, value: boolean) => {
+    setToggles(prev => ({ ...prev, [field]: value }));
+
+    // Auto save on toggle
+    const updatePayload: any = {};
+    if (field === 'isGlobalEnabled') updatePayload.isGlobalEnabled = value;
+    else if (field === 'isProjectsEnabled') updatePayload.isProjectsEnabled = value;
+    else if (field === 'isSkillsEnabled') updatePayload.isSkillsEnabled = value;
+    else if (field === 'isMeEnabled') updatePayload.meInfo = { ...meInfo, isEnabled: value };
+    else if (field === 'isHobbiesEnabled') updatePayload.hobbiesInfo = { ...hobbiesInfo, isEnabled: value };
+    else if (field === 'isContactEnabled') updatePayload.contactInfo = { ...contactInfo, isEnabled: value };
+    else if (field === 'isResumeEnabled') updatePayload.resumeInfo = { ...resumeInfo, isEnabled: value };
+    else if (field === 'isVideoEnabled') updatePayload.videoInfo = { ...videoInfo, isEnabled: value };
+    else if (field === 'isLocationEnabled') updatePayload.locationInfo = { ...locationInfo, isEnabled: value };
+
+    updateToolboxConfigMutation.mutate(updatePayload);
+  };
+
+  const saveContactInfo = () => updateToolboxConfigMutation.mutate({ contactInfo: { ...contactInfo, isEnabled: toggles.isContactEnabled } });
+  const saveLocationInfo = () => updateToolboxConfigMutation.mutate({ locationInfo: { ...locationInfo, isEnabled: toggles.isLocationEnabled } });
+  const saveHobbiesInfo = () => updateToolboxConfigMutation.mutate({ hobbiesInfo: { ...hobbiesInfo, isEnabled: toggles.isHobbiesEnabled } });
+  const saveResumeInfo = () => updateToolboxConfigMutation.mutate({ resumeInfo: { ...resumeInfo, isEnabled: toggles.isResumeEnabled } });
+  const saveVideoInfo = () => updateToolboxConfigMutation.mutate({ videoInfo: { ...videoInfo, isEnabled: toggles.isVideoEnabled } });
 
   return (
     <div className="p-8 lg:p-12 max-w-7xl mx-auto pb-32">
@@ -196,7 +243,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
             <span className="text-xs font-medium text-text-muted uppercase tracking-wide">Global Toggle</span>
             <div className="h-4 w-px bg-border"></div>
             <label className="switch">
-              <input checked type="checkbox" />
+              <input checked={toggles.isGlobalEnabled} onChange={(e) => handleToggle('isGlobalEnabled', e.target.checked)} type="checkbox" />
               <span className="slider"></span>
             </label>
           </div>
@@ -255,7 +302,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
               </button>
               <div className="h-6 w-px bg-surface-highlight"></div>
               <label className="switch">
-                <input checked type="checkbox" />
+                <input checked={toggles.isMeEnabled} onChange={(e) => handleToggle('isMeEnabled', e.target.checked)} type="checkbox" />
                 <span className="slider"></span>
               </label>
               <button
@@ -383,7 +430,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
               </button>
               <div className="h-6 w-px bg-surface-highlight"></div>
               <label className="switch">
-                <input checked type="checkbox" />
+                <input checked={toggles.isProjectsEnabled} onChange={(e) => handleToggle('isProjectsEnabled', e.target.checked)} type="checkbox" />
                 <span className="slider"></span>
               </label>
               <button
@@ -461,7 +508,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
               </button>
               <div className="h-6 w-px bg-surface-highlight"></div>
               <label className="switch">
-                <input checked type="checkbox" />
+                <input checked={toggles.isSkillsEnabled} onChange={(e) => handleToggle('isSkillsEnabled', e.target.checked)} type="checkbox" />
                 <span className="slider"></span>
               </label>
               <button
@@ -543,7 +590,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
               </button>
               <div className="h-6 w-px bg-surface-highlight"></div>
               <label className="switch">
-                <input checked type="checkbox" />
+                <input checked={toggles.isHobbiesEnabled} onChange={(e) => handleToggle('isHobbiesEnabled', e.target.checked)} type="checkbox" />
                 <span className="slider"></span>
               </label>
               <button
@@ -607,7 +654,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
               </button>
               <div className="h-6 w-px bg-surface-highlight"></div>
               <label className="switch">
-                <input checked type="checkbox" />
+                <input checked={toggles.isContactEnabled} onChange={(e) => handleToggle('isContactEnabled', e.target.checked)} type="checkbox" />
                 <span className="slider"></span>
               </label>
               <button
@@ -693,7 +740,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
               </button>
               <div className="h-6 w-px bg-surface-highlight"></div>
               <label className="switch">
-                <input checked type="checkbox" />
+                <input checked={toggles.isResumeEnabled} onChange={(e) => handleToggle('isResumeEnabled', e.target.checked)} type="checkbox" />
                 <span className="slider"></span>
               </label>
               <button
@@ -791,7 +838,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
               </button>
               <div className="h-6 w-px bg-surface-highlight"></div>
               <label className="switch">
-                <input checked type="checkbox" />
+                <input checked={toggles.isVideoEnabled} onChange={(e) => handleToggle('isVideoEnabled', e.target.checked)} type="checkbox" />
                 <span className="slider"></span>
               </label>
               <button
@@ -873,7 +920,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
               </button>
               <div className="h-6 w-px bg-surface-highlight"></div>
               <label className="switch">
-                <input checked type="checkbox" />
+                <input checked={toggles.isLocationEnabled} onChange={(e) => handleToggle('isLocationEnabled', e.target.checked)} type="checkbox" />
                 <span className="slider"></span>
               </label>
               <button

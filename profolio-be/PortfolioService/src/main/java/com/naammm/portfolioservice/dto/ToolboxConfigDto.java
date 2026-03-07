@@ -8,6 +8,10 @@ import java.util.List;
 @Data
 @Builder
 public class ToolboxConfigDto {
+    private Boolean isGlobalEnabled;
+    private Boolean isProjectsEnabled;
+    private Boolean isSkillsEnabled;
+
     private MeInfo meInfo;
     private HobbiesInfo hobbiesInfo;
     private ContactInfo contactInfo;
@@ -18,6 +22,7 @@ public class ToolboxConfigDto {
     @Data
     @Builder
     public static class MeInfo {
+        private Boolean isEnabled;
         private String name;
         private String age;
         private String location;
@@ -29,6 +34,7 @@ public class ToolboxConfigDto {
     @Data
     @Builder
     public static class HobbiesInfo {
+        private Boolean isEnabled;
         private String title;
         private String description;
         private List<String> photos;
@@ -37,6 +43,7 @@ public class ToolboxConfigDto {
     @Data
     @Builder
     public static class ContactInfo {
+        private Boolean isEnabled;
         private String name;
         private String email;
         private String phone;
@@ -49,6 +56,7 @@ public class ToolboxConfigDto {
     @Data
     @Builder
     public static class ResumeInfo {
+        private Boolean isEnabled;
         private String title;
         private String description;
         private String fileUrl;
@@ -58,6 +66,7 @@ public class ToolboxConfigDto {
     @Data
     @Builder
     public static class VideoInfo {
+        private Boolean isEnabled;
         private String title;
         private String url;
         private String description;
@@ -66,6 +75,7 @@ public class ToolboxConfigDto {
     @Data
     @Builder
     public static class LocationInfo {
+        private Boolean isEnabled;
         private String city;
         private String country;
     }
