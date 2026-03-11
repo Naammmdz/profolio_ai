@@ -97,9 +97,8 @@ export const portfolioApi = {
         const formData = new FormData();
         formData.append('file', file);
         const { data } = await apiClient.post('/v1/files/upload', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
+            headers: { 'Content-Type': 'multipart/form-data' },
+            timeout: 60_000, // file upload to MinIO can be slow — override default 10s
         });
         return data;
     },
