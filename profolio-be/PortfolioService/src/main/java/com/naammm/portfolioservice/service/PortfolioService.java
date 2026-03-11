@@ -211,11 +211,11 @@ public class PortfolioService {
 
     @Transactional(readOnly = true)
     public List<SuggestedQuestionDto> getQuestions(UUID userId) {
-        Portfolio portfolio = portfolioRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
-        return questionRepository.findByPortfolio(portfolio).stream()
-                .map(this::mapToQuestionDto)
-                .toList();
+        return portfolioRepository.findByUserId(userId)
+                .map(portfolio -> questionRepository.findByPortfolio(portfolio).stream()
+                        .map(this::mapToQuestionDto)
+                        .toList())
+                .orElse(Collections.emptyList());
     }
 
     @Transactional

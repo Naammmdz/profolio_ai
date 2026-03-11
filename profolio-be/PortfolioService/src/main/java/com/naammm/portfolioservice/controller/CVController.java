@@ -31,11 +31,8 @@ public class CVController {
             @RequestParam("file") MultipartFile file
     ) {
         try {
-            // Assuming "sub" or "userId" is the subject of the JWT
             UUID userId = UUID.fromString(jwt.getSubject());
-            
             portfolioService.ingestCV(userId, file);
-            
             return ResponseEntity.ok(Map.of(
                     "success", true,
                     "message", "CV successfully processed and added to your personality context."
@@ -48,8 +45,15 @@ public class CVController {
         } catch (IOException e) {
             return ResponseEntity.internalServerError().body(Map.of(
                     "success", false,
-                    "message", "An error occurred while processing the CV: " + e.getMessage()
+                    "message", "An error occurred while reading the CV file: " + e.getMessage()
+            ));
+        } catch (RuntimeException e) {
+            // Covers AI extractor failures, JSON parse errors, etc.
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "success", false,
+                    "message", "CV was uploaded but AI processing failed: " + e.getMessage()
             ));
         }
     }
+
 }
