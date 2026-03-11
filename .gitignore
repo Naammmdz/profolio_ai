@@ -29,3 +29,10 @@ target/
 *.jar
 *.war
 *.class
+
+# Environment files (NEVER commit these!)
+.env
+.env.local
+.env.production
+.env.staging
+.env.*.local
