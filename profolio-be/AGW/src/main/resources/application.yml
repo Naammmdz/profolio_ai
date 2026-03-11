@@ -43,7 +43,7 @@ spring:
         - id: portfolio-service
           uri: lb://PortfolioService
           predicates:
-            - Path=/api/v1/portfolio/**, /api/v1/cv/**, /api/v1/personality/**, /api/v1/questions/**, /api/v1/public/**
+            - Path=/api/v1/portfolio/**, /api/v1/cv/**, /api/v1/personality/**, /api/v1/questions/**, /api/v1/public/**, /api/v1/projects/**, /api/v1/skills/**, /api/v1/tools/**, /api/v1/files/**
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
     loadbalancer:
@@ -74,5 +74,6 @@ spring:
 server:
   port: ${SERVER_PORT:8080}
   forward-headers-strategy: framework
+  max-http-request-header-size: 32KB
   ssl:
     enabled: false

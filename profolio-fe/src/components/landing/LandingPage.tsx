@@ -9,6 +9,14 @@ import Showcase from './Showcase';
 import Pricing from './Pricing';
 import Footer from './Footer';
 import { useAuth } from 'react-oidc-context';
+import { motion } from 'framer-motion';
+
+const fadeInUp = {
+  initial: { opacity: 0, y: 40 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-100px" },
+  transition: { duration: 0.7, ease: "easeOut" as const }
+};
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -36,13 +44,28 @@ const LandingPage: React.FC = () => {
         }}
       />
 
-      <main className="relative z-10">
+      <main className="relative z-10 overflow-hidden">
         <Hero onStart={handleStart} />
-        <Comparison />
-        <Process />
-        <UseCases />
-        <Showcase />
-        <Pricing />
+
+        <motion.div {...fadeInUp}>
+          <Comparison />
+        </motion.div>
+
+        <motion.div {...fadeInUp}>
+          <Process />
+        </motion.div>
+
+        <motion.div {...fadeInUp}>
+          <UseCases />
+        </motion.div>
+
+        <motion.div {...fadeInUp}>
+          <Showcase />
+        </motion.div>
+
+        <motion.div {...fadeInUp}>
+          <Pricing />
+        </motion.div>
       </main>
 
       <Footer onStart={handleStart} />

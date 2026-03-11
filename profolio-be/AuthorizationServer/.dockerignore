@@ -1,0 +1,13 @@
+target/
+!target/*.jar
+.git
+.gitignore
+.idea
+*.iml
+*.md
+!README.md
+logs/
+*.log
+.env*
+cookies.txt
+fix_flyway.sql

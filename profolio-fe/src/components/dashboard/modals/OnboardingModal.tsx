@@ -75,7 +75,8 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose, onCo
                         {/* Modal Header Progress */}
                         <div className="h-1 w-full bg-surface-highlight">
                             <motion.div
-                                className="h-full bg-primary"
+                                className="h-full"
+                                style={{ background: 'var(--accent-blue)' }}
                                 initial={{ width: '25%' }}
                                 animate={{
                                     width: step === 'welcome' ? '25%' : step === 'upload' ? '50%' : step === 'processing' ? '75%' : '100%'
@@ -86,8 +87,8 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose, onCo
                         <div className="p-8 lg:p-10">
                             {step === 'welcome' && (
                                 <div className="text-center">
-                                    <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-                                        <span className="material-symbols-outlined text-primary text-3xl">magic_button</span>
+                                    <div className="size-16 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: 'rgba(59,111,235,0.1)' }}>
+                                        <span className="material-symbols-outlined text-3xl" style={{ color: 'var(--accent-blue)' }}>magic_button</span>
                                     </div>
                                     <h2 className="text-3xl font-serif text-primary mb-4">Welcome to Profolio AI</h2>
                                     <p className="text-text-muted mb-8 leading-relaxed">
@@ -96,7 +97,8 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose, onCo
                                     <div className="flex flex-col gap-3">
                                         <button
                                             onClick={() => setStep('upload')}
-                                            className="w-full bg-primary text-primary-foreground py-3.5 rounded-xl font-medium shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2"
+                                            className="w-full text-white py-3.5 rounded-xl font-medium shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2"
+                                            style={{ background: 'var(--accent-blue)' }}
                                         >
                                             <span className="material-symbols-outlined text-lg">upload_file</span>
                                             Quick Setup with CV
@@ -118,7 +120,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose, onCo
 
                                     <div
                                         onClick={() => fileInputRef.current?.click()}
-                                        className={`border-2 border-dashed rounded-2xl p-12 flex flex-col items-center justify-center cursor-pointer transition-all ${file ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50 hover:bg-surface'
+                                        className={`border-2 border-dashed rounded-2xl p-12 flex flex-col items-center justify-center cursor-pointer transition-all ${file ? 'border-[var(--accent-blue)] bg-[rgba(59,111,235,0.05)]' : 'border-border hover:border-[rgba(59,111,235,0.4)] hover:bg-surface'
                                             }`}
                                     >
                                         <input
@@ -128,7 +130,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose, onCo
                                             accept=".pdf,.docx,.doc"
                                             onChange={handleFileChange}
                                         />
-                                        <span className={`material-symbols-outlined text-4xl mb-4 ${file ? 'text-primary' : 'text-text-muted'}`}>
+                                        <span className={`material-symbols-outlined text-4xl mb-4`} style={{ color: file ? 'var(--accent-blue)' : 'var(--text-muted)' }}>
                                             {file ? 'description' : 'cloud_upload'}
                                         </span>
                                         <p className="font-medium text-primary mb-1">
@@ -155,7 +157,8 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose, onCo
                                         <button
                                             disabled={!file || isLoading}
                                             onClick={handleUpload}
-                                            className="flex-[2] bg-primary text-primary-foreground py-3 rounded-xl font-medium shadow-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                            className="flex-[2] text-white py-3 rounded-xl font-medium shadow-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                            style={{ background: 'var(--accent-blue)' }}
                                         >
                                             {isLoading ? 'Processing...' : 'Analyze CV'}
                                         </button>
@@ -167,9 +170,9 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose, onCo
                                 <div className="text-center py-10">
                                     <div className="flex justify-center mb-8">
                                         <div className="relative">
-                                            <div className="size-20 rounded-full border-4 border-border border-t-primary animate-spin"></div>
+                                            <div className="size-20 rounded-full border-4 border-border animate-spin" style={{ borderTopColor: 'var(--accent-blue)' }}></div>
                                             <div className="absolute inset-0 flex items-center justify-center">
-                                                <span className="material-symbols-outlined text-primary text-2xl animate-pulse">psychology</span>
+                                                <span className="material-symbols-outlined text-2xl animate-pulse" style={{ color: 'var(--accent-blue)' }}>psychology</span>
                                             </div>
                                         </div>
                                     </div>
@@ -191,7 +194,8 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose, onCo
                                     </p>
                                     <button
                                         onClick={onComplete}
-                                        className="w-full bg-primary text-primary-foreground py-4 rounded-xl font-medium shadow-lg hover:opacity-90 transition-all"
+                                        className="w-full text-white py-4 rounded-xl font-medium shadow-lg hover:opacity-90 transition-all"
+                                        style={{ background: 'var(--accent-blue)' }}
                                     >
                                         Go to Dashboard
                                     </button>

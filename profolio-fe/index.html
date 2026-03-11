@@ -7,7 +7,7 @@
     <title>Profolio - AI Portfolio Builder</title>
     <script>
         // Prevent FOUC: apply saved theme before first paint
-        (function() {
+        (function () {
             var theme = localStorage.getItem('theme');
             if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark');
@@ -15,7 +15,7 @@
         })();
     </script>
     <link
-        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         rel="stylesheet" />
@@ -23,25 +23,31 @@
         :root {
             --background: #ffffff;
             --surface: #ffffff;
-            --surface-highlight: #f9fafb;
-            --border: #e5e7eb;
-            --primary: #18181b;
+            --surface-highlight: #f4f4f5;
+            --border: #e4e4e7;
+            --primary: #09090b;
             --primary-foreground: #ffffff;
             --text-muted: #52525b;
-            --text-subtle: #9ca3af;
-            --accent: #d97706;
+            --text-subtle: #a1a1aa;
+            --accent: #f59e0b;
+            --accent-blue: #3b6feb;
+            --accent-blue-light: #eff3ff;
+            --accent-glow: rgba(59, 111, 235, 0.15);
         }
 
         .dark {
             --background: #09090b;
             --surface: #18181b;
             --surface-highlight: #27272a;
-            --border: #27272a;
+            --border: #3f3f46;
             --primary: #fafafa;
             --primary-foreground: #09090b;
             --text-muted: #a1a1aa;
             --text-subtle: #71717a;
             --accent: #f59e0b;
+            --accent-blue: #4b7bff;
+            --accent-blue-light: #1e2a4a;
+            --accent-glow: rgba(75, 123, 255, 0.2);
         }
 
         body {
@@ -56,7 +62,7 @@
         h3,
         h4,
         .font-serif {
-            font-family: "Instrument Serif", serif;
+            font-family: "Sora", sans-serif;
         }
 
         .font-mono {

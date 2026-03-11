@@ -9,6 +9,8 @@ export const oidcConfig: UserManagerSettings = {
   response_type: 'code',
   scope: 'openid profile email read write',
   automaticSilentRenew: true,
+  // Auto-fetch name/email/picture from /userinfo since the ID token is "thin"
+  loadUserInfo: true,
   // Persist across browser restarts
   userStore: new WebStorageStateStore({ store: window.localStorage }),
 };

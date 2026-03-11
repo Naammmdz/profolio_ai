@@ -20,10 +20,12 @@ import com.naammm.portfolioservice.repository.ProjectRepository;
 import com.naammm.portfolioservice.repository.SkillCategoryRepository;
 import com.naammm.portfolioservice.repository.ToolboxConfigRepository;
 import com.naammm.portfolioservice.dto.ToolboxConfigDto;
+import com.naammm.portfolioservice.dto.ai.CVExtractedData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.Collections;
 
 import java.io.IOException;
 import java.util.*;
@@ -39,6 +41,7 @@ public class PortfolioService {
     private final SkillCategoryRepository skillCategoryRepository;
     private final ToolboxConfigRepository toolboxConfigRepository;
     private final CVService cvService;
+    private final AICVExtractorService aiCVExtractorService;
 
     // --- Portfolio CRUD ---
 
@@ -128,7 +131,80 @@ public class PortfolioService {
                 .orElseGet(() -> createDefaultPersonality(portfolio));
 
         personality.setCvText(content);
+        
+        // --- Call AI Extractor ---
+        CVExtractedData extractedData = aiCVExtractorService.extract(content);
+        
+        // 1. Update Portfolio
+        if (extractedData.headline() != null && !extractedData.headline().isBlank()) {
+            portfolio.setHeadline(extractedData.headline());
+        }
+        if (extractedData.tagline() != null && !extractedData.tagline().isBlank()) {
+            portfolio.setTagline(extractedData.tagline());
+        }
+        portfolioRepository.save(portfolio);
+
+        // 2. Update Personality
+        if (extractedData.personality() != null) {
+            CVExtractedData.AIPersonalityData pData = extractedData.personality();
+            if (pData.professionalBio() != null) personality.setProfessionalBio(pData.professionalBio());
+            if (pData.skills() != null) personality.setSkills(pData.skills());
+            if (pData.biggestFlex() != null) personality.setBiggestFlex(pData.biggestFlex());
+            if (pData.personalDrives() != null) personality.setPersonalDrives(pData.personalDrives());
+            if (pData.interests() != null) personality.setInterests(pData.interests());
+            if (pData.uniqueness() != null) personality.setUniqueness(pData.uniqueness());
+            if (pData.communicationStyle() != null) personality.setCommunicationStyle(pData.communicationStyle());
+            if (pData.topicsLoveDiscussing() != null) personality.setTopicsLoveDiscussing(pData.topicsLoveDiscussing());
+            if (pData.generalContext() != null) personality.setGeneralContext(pData.generalContext());
+        }
         personalityRepository.save(personality);
+
+        // 3. Update Projects
+        if (extractedData.projects() != null && !extractedData.projects().isEmpty()) {
+            projectRepository.deleteAll(projectRepository.findByPortfolioOrderByDisplayOrderAsc(portfolio));
+            int order = 0;
+            for (CVExtractedData.ProjectData pData : extractedData.projects()) {
+                Project proj = Project.builder()
+                        .portfolio(portfolio)
+                        .title(pData.title() != null ? pData.title() : "Unknown Project")
+                        .category(pData.category() != null ? pData.category() : "Other")
+                        .description(pData.description() != null ? pData.description() : "")
+                        .date(pData.date() != null ? pData.date() : "")
+                        .tags(pData.tags() != null ? pData.tags() : Collections.emptyList())
+                        .links(Collections.emptyList())
+                        .displayOrder(order++)
+                        .build();
+                projectRepository.save(proj);
+            }
+        }
+
+        // 4. Update Skills
+        if (extractedData.skillCategories() != null && !extractedData.skillCategories().isEmpty()) {
+            skillCategoryRepository.deleteAll(skillCategoryRepository.findByPortfolioOrderByDisplayOrderAsc(portfolio));
+            int order = 0;
+            for (CVExtractedData.SkillCategoryData catData : extractedData.skillCategories()) {
+                SkillCategory cat = SkillCategory.builder()
+                        .portfolio(portfolio)
+                        .title(catData.title() != null ? catData.title() : "Skills")
+                        .displayOrder(order++)
+                        .build();
+                SkillCategory savedCat = skillCategoryRepository.save(cat);
+                
+                if (catData.skills() != null) {
+                    int skillOrder = 0;
+                    List<Skill> skills = new java.util.ArrayList<>();
+                    for (String skillName : catData.skills()) {
+                        skills.add(Skill.builder()
+                                .skillCategory(savedCat)
+                                .name(skillName)
+                                .displayOrder(skillOrder++)
+                                .build());
+                    }
+                    savedCat.setSkills(skills);
+                    skillCategoryRepository.save(savedCat);
+                }
+            }
+        }
     }
 
     // --- Suggested Questions CRUD ---
@@ -320,7 +396,11 @@ public class PortfolioService {
 
     private ToolboxConfigDto mapToToolboxConfigDto(ToolboxConfig c) {
         return ToolboxConfigDto.builder()
+                .isGlobalEnabled(c.getIsGlobalEnabled())
+                .isProjectsEnabled(c.getIsProjectsEnabled())
+                .isSkillsEnabled(c.getIsSkillsEnabled())
                 .meInfo(ToolboxConfigDto.MeInfo.builder()
+                        .isEnabled(c.getIsMeEnabled())
                         .name(c.getMeName())
                         .age(c.getMeAge())
                         .location(c.getMeLocation())
@@ -329,11 +409,13 @@ public class PortfolioService {
                         .photoUrl(c.getMePhotoUrl())
                         .build())
                 .hobbiesInfo(ToolboxConfigDto.HobbiesInfo.builder()
+                        .isEnabled(c.getIsHobbiesEnabled())
                         .title(c.getHobbiesTitle())
                         .description(c.getHobbiesDescription())
                         .photos(c.getHobbiesPhotos())
                         .build())
                 .contactInfo(ToolboxConfigDto.ContactInfo.builder()
+                        .isEnabled(c.getIsContactEnabled())
                         .name(c.getContactName())
                         .email(c.getContactEmail())
                         .phone(c.getContactPhone())
@@ -343,17 +425,20 @@ public class PortfolioService {
                         .socialUrls(c.getContactSocialUrls())
                         .build())
                 .resumeInfo(ToolboxConfigDto.ResumeInfo.builder()
+                        .isEnabled(c.getIsResumeEnabled())
                         .title(c.getResumeTitle())
                         .description(c.getResumeDescription())
                         .fileUrl(c.getResumeFileUrl())
                         .fileName(c.getResumeFileName())
                         .build())
                 .videoInfo(ToolboxConfigDto.VideoInfo.builder()
+                        .isEnabled(c.getIsVideoEnabled())
                         .title(c.getVideoTitle())
                         .url(c.getVideoUrl())
                         .description(c.getVideoDescription())
                         .build())
                 .locationInfo(ToolboxConfigDto.LocationInfo.builder()
+                        .isEnabled(c.getIsLocationEnabled())
                         .city(c.getLocationCity())
                         .country(c.getLocationCountry())
                         .build())

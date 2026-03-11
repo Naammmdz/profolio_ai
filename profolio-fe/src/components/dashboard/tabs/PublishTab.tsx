@@ -2,6 +2,7 @@ import React from 'react';
 import { usePortfolio, useUpdatePortfolio } from '../../../hooks/usePortfolio';
 import { usePersonality } from '../../../hooks/usePersonality';
 import { useQuestions } from '../../../hooks/useQuestions';
+import DashboardTopBar from '../DashboardTopBar';
 
 interface PublishTabProps {
   onPreview: () => void;
@@ -64,26 +65,7 @@ const PublishTab: React.FC<PublishTabProps> = ({ onPreview, onNavigate }) => {
 
   return (
     <div className="p-8 lg:p-12 max-w-7xl mx-auto pb-32">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
-        <div className="hidden sm:block">
-          <button className="p-2 -ml-2 text-text-muted hover:text-primary transition-colors rounded-md hover:bg-surface-highlight">
-            <span className="material-symbols-outlined">dock_to_left</span>
-          </button>
-        </div>
-        <div className="flex items-center gap-3 self-end sm:self-auto">
-          <div className="bg-background border border-border text-text-muted px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 shadow-sm">
-            <span className={`size-1.5 rounded-full ${isPublished ? 'bg-green-500' : 'bg-orange-500'}`}></span>
-            {isPublished ? 'Published' : 'Draft Mode'}
-          </div>
-          <button
-            onClick={onPreview}
-            className="bg-background hover:bg-surface-highlight border border-border text-primary px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm flex items-center gap-2"
-          >
-            <span className="material-symbols-outlined text-[16px]">visibility</span>
-            Preview
-          </button>
-        </div>
-      </div>
+      <DashboardTopBar onPreview={onPreview} onPublish={() => onNavigate('dashboard')} />
       <div className="mb-10">
         <h1 className="text-4xl md:text-5xl font-serif font-normal text-primary tracking-tight mb-2">Preview &amp; Publish</h1>
         <p className="text-text-muted text-sm font-light">Review your settings and launch your portfolio.</p>
@@ -109,7 +91,7 @@ const PublishTab: React.FC<PublishTabProps> = ({ onPreview, onNavigate }) => {
               {checklist.map((item, idx) => (
                 <div key={idx} className="flex items-center justify-between p-3 hover:bg-surface-highlight rounded-lg transition-colors cursor-default group">
                   <div className="flex items-center gap-3">
-                    <div className={`size-5 rounded-full flex items-center justify-center shrink-0 ${item.done ? 'bg-primary text-primary-foreground' : 'bg-border text-text-subtle'}`}>
+                    <div className={`size-5 rounded-full flex items-center justify-center shrink-0 ${item.done ? 'text-white' : 'bg-border text-text-subtle'}`} style={item.done ? { background: 'var(--accent-blue)' } : {}}>
                       <span className="material-symbols-outlined text-[14px] font-bold">{item.done ? 'check' : 'remove'}</span>
                     </div>
                     <span className="text-sm font-medium text-primary">{item.label}</span>
@@ -135,7 +117,7 @@ const PublishTab: React.FC<PublishTabProps> = ({ onPreview, onNavigate }) => {
             <div className="flex items-center gap-2 mb-1.5">
               <span className="material-symbols-outlined text-[20px] text-text-subtle">language</span>
               <h2 className="text-base font-semibold text-primary">Custom Domain</h2>
-              <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 uppercase tracking-wide">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 uppercase tracking-wide" style={{ color: 'var(--accent-blue)', background: 'rgba(59,111,235,0.1)', border: '1px solid rgba(59,111,235,0.2)' }}>
                 Pro
               </span>
             </div>
@@ -144,7 +126,7 @@ const PublishTab: React.FC<PublishTabProps> = ({ onPreview, onNavigate }) => {
               <span>https://yourdomain.com</span>
             </div>
           </div>
-          <button className="shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
+          <button className="shrink-0 py-2.5 px-5 rounded-lg text-sm font-medium transition-all" style={{ color: 'var(--accent-blue)', background: 'rgba(59,111,235,0.08)', border: '1px solid rgba(59,111,235,0.25)' }}>
             Upgrade to Pro
           </button>
         </div>
@@ -170,7 +152,7 @@ const PublishTab: React.FC<PublishTabProps> = ({ onPreview, onNavigate }) => {
         <div className="bg-surface border border-border rounded-xl p-0 overflow-hidden shadow-md relative mt-4">
           <div className="absolute inset-0 bg-gradient-to-br from-surface-highlight/50 via-surface to-surface pointer-events-none"></div>
           <div className="relative z-10 p-10 text-center">
-            <div className="size-12 mx-auto bg-primary text-primary-foreground rounded-full flex items-center justify-center mb-4 shadow-lg shadow-black/10">
+            <div className="size-12 mx-auto rounded-full flex items-center justify-center mb-4 shadow-lg text-white" style={{ background: 'var(--accent-blue)' }}>
               <span className="material-symbols-outlined text-[24px]">{isPublished ? 'public' : 'rocket_launch'}</span>
             </div>
             <h2 className="text-2xl font-serif text-primary mb-2">
@@ -185,7 +167,8 @@ const PublishTab: React.FC<PublishTabProps> = ({ onPreview, onNavigate }) => {
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <button
                   onClick={() => window.open(`/p/${portfolio?.slug}`, '_blank')}
-                  className="min-w-[160px] bg-primary hover:bg-primary/90 text-primary-foreground py-3 px-6 rounded-lg text-sm font-medium transition-colors shadow-lg"
+                  className="min-w-[160px] text-white py-3 px-6 rounded-lg text-sm font-medium transition-all shadow-lg hover:opacity-90"
+                  style={{ background: 'var(--accent-blue)' }}
                 >
                   View Live Portfolio
                 </button>
@@ -201,7 +184,8 @@ const PublishTab: React.FC<PublishTabProps> = ({ onPreview, onNavigate }) => {
               <button
                 onClick={handlePublish}
                 disabled={updatePortfolio.isPending}
-                className="w-full sm:w-auto min-w-[200px] bg-primary hover:bg-primary/90 text-primary-foreground py-3 px-6 rounded-lg text-sm font-medium transition-colors shadow-lg shadow-border disabled:opacity-60"
+                className="w-full sm:w-auto min-w-[200px] text-white py-3 px-6 rounded-lg text-sm font-medium transition-all shadow-lg hover:opacity-90 disabled:opacity-60"
+                style={{ background: 'var(--accent-blue)' }}
               >
                 {updatePortfolio.isPending ? 'Publishing...' : 'Publish now'}
               </button>

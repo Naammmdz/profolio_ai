@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Slider } from '../../ui/slider';
 import { usePersonality, useUpdatePersonality } from '../../../hooks/usePersonality';
+import DashboardFooter from '../DashboardFooter';
+import DashboardTopBar from '../DashboardTopBar';
 
 interface AIPersonalityTabProps {
   onPreview: () => void;
@@ -84,33 +86,7 @@ const AIPersonalityTab: React.FC<AIPersonalityTabProps> = ({
 
   return (
     <div className="p-8 lg:p-12 max-w-7xl mx-auto pb-32">
-      {/* Header with Draft Mode, Preview, Publish Changes */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
-        <div className="hidden sm:block">
-          <button className="p-2 -ml-2 text-text-muted hover:text-primary transition-colors rounded-md hover:bg-surface-highlight">
-            <span className="material-symbols-outlined">dock_to_left</span>
-          </button>
-        </div>
-        <div className="flex items-center gap-3 self-end sm:self-auto">
-          <div className="bg-background border border-border text-text-muted px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 shadow-sm">
-            <span className="size-1.5 rounded-full bg-orange-500"></span>
-            Draft Mode
-          </div>
-          <button
-            onClick={onPreview}
-            className="bg-background hover:bg-surface-highlight border border-border text-primary px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm flex items-center gap-2"
-          >
-            <span className="material-symbols-outlined text-[16px]">visibility</span>
-            Preview
-          </button>
-          <button
-            onClick={() => onNavigate('publish')}
-            className="bg-primary hover:opacity-90 text-primary-foreground px-5 py-2 rounded-lg text-sm font-medium transition-colors shadow-lg"
-          >
-            Publish Changes
-          </button>
-        </div>
-      </div>
+      <DashboardTopBar onPreview={onPreview} onPublish={() => onNavigate('publish')} />
 
       {/* Title */}
       <div className="mb-10">
@@ -355,36 +331,24 @@ const AIPersonalityTab: React.FC<AIPersonalityTabProps> = ({
         </div>
       </div>
 
-      {/* Save Button */}
-      <hr className="border-border mb-8" />
-      <div className="flex justify-end">
+      {/* Sticky Save Bar */}
+      <div className="sticky bottom-0 z-40 border-t border-border bg-surface/90 backdrop-blur-md px-0 py-3 mt-8">
         <button
           onClick={handleSave}
           disabled={updatePersonality.isPending}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-2.5 rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md disabled:opacity-60"
+          className="w-full text-white py-2.5 rounded-lg text-sm font-medium transition-all shadow-md hover:opacity-90 disabled:opacity-60 flex items-center justify-center gap-2"
+          style={{ background: 'var(--accent-blue)' }}
         >
-          {updatePersonality.isPending ? 'Saving...' : 'Save'}
+          {updatePersonality.isPending ? (
+            <>
+              <span className="size-3.5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+              Saving...
+            </>
+          ) : 'Save Changes'}
         </button>
       </div>
 
-      {/* Footer */}
-      <footer className="mt-16 border-t border-border pt-8 pb-4">
-        <div className="flex flex-col md:flex-row justify-between items-center text-xs text-text-muted gap-4 font-light">
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-primary">Profolio</span>
-            <span>© 2025</span>
-          </div>
-          <div className="flex gap-6">
-            <a className="hover:text-primary transition-colors" href="#">Dashboard</a>
-            <a className="hover:text-primary transition-colors" href="#">Billing</a>
-            <a className="hover:text-primary transition-colors" href="#">Support</a>
-          </div>
-          <div className="flex gap-6">
-            <a className="hover:text-primary transition-colors" href="#">Terms</a>
-            <a className="hover:text-primary transition-colors" href="#">Privacy</a>
-          </div>
-        </div>
-      </footer>
+      <DashboardFooter />
     </div>
   );
 };

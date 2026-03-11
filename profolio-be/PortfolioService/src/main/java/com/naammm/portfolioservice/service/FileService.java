@@ -15,16 +15,18 @@ public class FileService {
 
     private final MinioClient minioClient;
     private final String bucketName;
-    private final String endpoint;
+    private final String publicBaseUrl;
 
     public FileService(
             @Value("${minio.endpoint}") String endpoint,
             @Value("${minio.accessKey}") String accessKey,
             @Value("${minio.secretKey}") String secretKey,
-            @Value("${minio.bucketName}") String bucketName) {
+            @Value("${minio.bucketName}") String bucketName,
+            @Value("${minio.publicUrl:}") String publicUrl) {
 
-        this.endpoint = endpoint;
         this.bucketName = bucketName;
+        // Public URL for browser access: use explicit config, or fall back to endpoint
+        this.publicBaseUrl = (publicUrl != null && !publicUrl.isBlank()) ? publicUrl : endpoint;
         this.minioClient = MinioClient.builder()
                 .endpoint(endpoint)
                 .credentials(accessKey, secretKey)
@@ -35,7 +37,6 @@ public class FileService {
             boolean found = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
             if (!found) {
                 minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
-                // Make public policy for direct URL access
                 String policy = """
                         {
                           "Version": "2012-10-17",
@@ -76,20 +77,10 @@ public class FileService {
                                 .build()
                 );
             }
-            
-            // Generate public URL
-            String publicUrl = endpoint;
-            if (!publicUrl.endsWith("/")) {
-                publicUrl += "/";
-            }
-            publicUrl += bucketName + "/" + fileName;
 
-            // In local development docker network, 'minio' might be the host but the browser needs localhost
-            if (publicUrl.contains("http://minio:9000")) {
-                 publicUrl = publicUrl.replace("http://minio:9000", "http://localhost:9000");
-            }
-
-            return publicUrl;
+            // Generate browser-accessible URL using configured public base
+            String baseUrl = publicBaseUrl.endsWith("/") ? publicBaseUrl : publicBaseUrl + "/";
+            return baseUrl + bucketName + "/" + fileName;
 
         } catch (Exception ex) {
             throw new RuntimeException("Could not store file " + fileName + ". Please try again!", ex);

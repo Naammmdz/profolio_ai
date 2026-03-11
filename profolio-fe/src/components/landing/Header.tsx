@@ -35,27 +35,28 @@ const Header: React.FC<HeaderProps> = ({
     <header className="sticky top-0 z-50 w-full bg-background border-b border-border/50 transition-colors duration-300">
       <div className="px-6 lg:px-12 py-4 flex items-center justify-between max-w-7xl mx-auto">
         <div className="flex items-center gap-3">
-          <div className="size-8 flex items-center justify-center text-primary border border-primary/10 rounded bg-primary/5 font-serif italic text-xl">
+          <div className="size-8 flex items-center justify-center text-white rounded font-serif italic text-xl" style={{ background: 'var(--accent-blue)' }}>
             P
           </div>
           <h2 className="text-primary text-xl font-serif tracking-tight">Profolio</h2>
         </div>
-        
+
         <nav className="hidden md:flex items-center gap-8">
           <a className="text-text-muted hover:text-primary text-xs uppercase tracking-widest font-mono transition-colors" href="#how-it-works">How It Works</a>
           <a className="text-text-muted hover:text-primary text-xs uppercase tracking-widest font-mono transition-colors" href="#use-cases">Use Cases</a>
           <a className="text-text-muted hover:text-primary text-xs uppercase tracking-widest font-mono transition-colors" href="#showcase">Showcase</a>
           <a className="text-text-muted hover:text-primary text-xs uppercase tracking-widest font-mono transition-colors" href="#pricing">Pricing</a>
         </nav>
-        
+
         <div className="flex items-center gap-4">
           <AnimatedThemeToggler />
 
           <div className="flex items-center gap-3">
             {!isAuthenticated && (
-              <button 
+              <button
                 onClick={handleCtaClick}
-                className="flex cursor-pointer items-center justify-center overflow-hidden rounded-md h-9 px-5 bg-primary text-primary-foreground hover:opacity-90 transition-all text-xs font-bold uppercase tracking-wide"
+                className="flex cursor-pointer items-center justify-center overflow-hidden rounded-md h-9 px-5 text-white hover:opacity-90 transition-all text-xs font-bold uppercase tracking-wide"
+                style={{ background: 'var(--accent-blue)' }}
               >
                 Get Started
               </button>

@@ -268,10 +268,14 @@ const Dashboard: React.FC<DashboardProps> = ({ onPreview }) => {
         }
       `}</style>
 
-      <DashboardSidebar currentTab={currentTab} onTabChange={setCurrentTab} />
+      <DashboardSidebar
+        currentTab={currentTab}
+        onTabChange={setCurrentTab}
+        onTriggerOnboarding={() => setShowOnboarding(true)}
+      />
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto bg-background bg-grid relative transition-colors duration-300">
+      <main className="flex-1 overflow-y-auto bg-background relative transition-colors duration-300">
         {currentTab === 'dashboard' && (
           <DashboardTab
             onPreview={onPreview}

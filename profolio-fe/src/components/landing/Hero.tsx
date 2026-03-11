@@ -1,6 +1,5 @@
 import React from 'react';
 import Highlighter from '../common/Highlighter';
-import Orb from '../common/Orb';
 
 interface HeroProps {
   onStart?: () => void;
@@ -9,67 +8,76 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({ onStart }) => {
   return (
     <section className="relative pt-20 pb-24 lg:pt-28 lg:pb-40 px-6 bg-background">
-      <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center">
-        <div className="relative w-[560px] h-[560px] md:w-[680px] md:h-[680px] lg:w-[760px] lg:h-[760px] shrink-0 opacity-70 [mask-image:radial-gradient(circle_at_center,black_30%,transparent_58%)] block dark:hidden">
-          <Orb
-            hue={-12}
-            hoverIntensity={0.2}
-            rotateOnHover={true}
-            forceHoverState={true}
-            backgroundColor="#ffffff"
-            colors={['#c5cfff', '#b5f0ea', '#ffe8c5']}
-          />
+      {/* Premium Animated Mesh Grid Background */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden bg-background">
+        {/* Subtle fading grid */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#2563eb18_1px,transparent_1px),linear-gradient(to_bottom,#2563eb18_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_10%,#000_20%,transparent_100%)]"></div>
+
+        {/* Elegant moving glows */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[1200px] h-[700px] opacity-70">
+          {/* Center core - blue */}
+          <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[600px] h-[500px] rounded-[100%] blur-[100px] mix-blend-multiply dark:mix-blend-screen animate-[pulse_8s_ease-in-out_infinite]" style={{ backgroundColor: 'rgba(37,99,235,0.18)' }}></div>
+          {/* Left flare - sky */}
+          <div className="absolute top-[30%] left-[20%] w-[450px] h-[400px] rounded-[100%] blur-[90px] mix-blend-multiply dark:mix-blend-screen animate-[pulse_10s_ease-in-out_infinite]" style={{ backgroundColor: 'rgba(14,165,233,0.15)', animationDelay: '2s' }}></div>
+          {/* Right flare - emerald */}
+          <div className="absolute top-[10%] right-[20%] w-[450px] h-[400px] rounded-[100%] blur-[90px] mix-blend-multiply dark:mix-blend-screen animate-[pulse_12s_ease-in-out_infinite]" style={{ backgroundColor: 'rgba(16,185,129,0.12)', animationDelay: '4s' }}></div>
         </div>
-        <div className="relative w-[560px] h-[560px] md:w-[680px] md:h-[680px] lg:w-[760px] lg:h-[760px] shrink-0 opacity-85 [mask-image:radial-gradient(circle_at_center,black_55%,transparent_78%)] hidden dark:block">
-          <Orb
-            hue={32}
-            hoverIntensity={0.28}
-            rotateOnHover={true}
-            forceHoverState={true}
-            backgroundColor="#09090b"
-            colors={['#f358c4', '#f8de53', '#4c2b6f']}
-          />
-        </div>
+
+        {/* Soft bottom fade */}
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent"></div>
       </div>
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-primary/[0.04] rounded-full blur-[120px] pointer-events-none z-0"></div>
-      
+
       <div className="max-w-4xl mx-auto flex flex-col items-center justify-center relative z-10 text-center">
         <div className="flex flex-col gap-8 items-center">
-          
+
+          {/* Social proof */}
           <div className="flex items-center gap-4 justify-center">
             <div className="flex -space-x-3">
               <div className="size-8 rounded-full bg-surface-highlight border border-background bg-cover grayscale opacity-70" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCybM_PaAA1EWuyzRjSRxM7IdOcypSI8rCcGpfgkJ66mbQrxPLAF98Lxfk6Po8fahg9vaJxXWr1Tf0U_cq5UHl8Wv0jpzgotOkh4WZPjcHYChYeBE_8xiteXxJhjG48YIjAieh_2hVmrBIvSxzln_DCEuxurQSVv74BsK8nWrg2xDdCI5EvOot3aCL4Mz3DohymKM1uutUxNmemycr6J4ccIBN5oXqy2hfUVb1RxxsudxXElQi9szfpLd-Y7i3Uc1Bp0dOL6NzWOA')" }}></div>
               <div className="size-8 rounded-full bg-surface-highlight border border-background bg-cover grayscale opacity-70" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAyJh-9n1qxgq0lorptr_y0ona0xymhZcXgEJCt0qj9YPwSUtIas4ld3wLE1jWXgelAO5QVkFAd3HEBcdd6wVgi9fW6bF4X_55oXDT2y7NZcCX-U8vGQ5xW6BqLKcNiuvu14s5_4ldtXIxJpnCi5K4D4XGjukw2XRwpSKoWUGO0hPyzT4wPCDSFrnfLC_P8WbB-Co0Ksn42B9mGuArAxLu1mm9xoBaq0rEZOmuZwBi-Fr1PgPnW7DDG80QXdpdKNmFncIzqK04Ehg')" }}></div>
               <div className="size-8 rounded-full bg-surface-highlight border border-background bg-cover grayscale opacity-70" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBgWsmvnB4AUYbX_oS-IHr9UGoQjAWoAt4BLokLAum8IIfuWkuvQnmDQlu-uI-5xQMqGAn2Ik1Y9rEkQSJAsu7_IQ0vpPaHtXi8jJ36MtlC70FktJLN0wSmRdaP0lEqhWII5uH1RdPBr1lUV6QjbTWD2bhBy2ybR0PjL4JplVG1e3vBO5moceznnKg67eclNqUxndx5JnzW178-vbHxRf997Th626d_vHh4aqJYNT4C86PHUO7C87I_YPKzr1RM7zIOwbR22wJOMA')" }}></div>
             </div>
-            <p className="text-xs font-mono text-text-muted">Trusted by 10,000+ Designers & Devs</p>
+            <p className="text-xs font-mono text-text-muted">Trusted by 10,000+ Designers &amp; Devs</p>
           </div>
-          
+
+          {/* AI Badge */}
+          <div
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border"
+            style={{ backgroundColor: 'var(--accent-blue-light)', borderColor: 'rgba(37,99,235,0.2)', color: 'var(--accent-blue)' }}
+          >
+            <span className="size-1.5 rounded-full animate-pulse" style={{ backgroundColor: 'var(--accent-blue)' }}></span>
+            AI-Powered Portfolio Builder
+          </div>
+
           <h1 className="text-6xl lg:text-7xl xl:text-8xl font-serif font-medium leading-[0.95] tracking-tight text-primary transition-colors duration-300">
-            Your Portfolio is <Highlighter action="crossed-off" color="#ef4444" strokeWidth={2}><span className="text-text-muted italic">dead</span></Highlighter>. <br/>
+            Your Portfolio is <Highlighter action="crossed-off" color="#ef4444" strokeWidth={2}><span className="text-text-muted italic">dead</span></Highlighter>. <br />
             <span className="text-primary italic relative">
-               Let Profolio <Highlighter action="highlight" color="var(--primary)" strokeWidth={2} delay={400}><span className="text-primary-foreground">bring it to life.</span></Highlighter>
+              Let Profolio <Highlighter action="highlight" color="var(--accent-blue)" strokeWidth={2} delay={400}><span style={{ color: 'white' }}>bring it to life.</span></Highlighter>
             </span>
           </h1>
-          
+
           <p className="text-lg text-text-muted leading-relaxed max-w-2xl mx-auto font-light transition-colors duration-300">
             Don't let recruiters skim your profile in 6 seconds. Keep them engaged with a real conversation with your own AI twin.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center">
-            <button 
+            <button
               onClick={onStart}
-              className="h-12 px-8 rounded-md bg-primary text-primary-foreground hover:opacity-90 font-medium text-sm uppercase tracking-wide transition-all flex items-center justify-center gap-2"
+              className="h-12 px-8 rounded-md font-medium text-sm uppercase tracking-wide transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+              style={{ backgroundColor: 'var(--accent-blue)', color: 'white' }}
             >
               <span>Create your AI Twin</span>
-              <span className="text-[10px] border border-primary-foreground/20 px-1.5 py-0.5 rounded ml-1">(Free)</span>
+              <span className="text-[10px] border border-white/20 px-1.5 py-0.5 rounded ml-1">(Free)</span>
             </button>
-            <button className="h-12 px-8 rounded-md bg-transparent border border-primary/10 hover:bg-primary/5 text-primary font-medium text-sm uppercase tracking-wide transition-all flex items-center justify-center gap-2 group">
+            <button
+              className="h-12 px-8 rounded-md bg-transparent border text-primary font-medium text-sm uppercase tracking-wide transition-all flex items-center justify-center gap-2 group hover:bg-surface-highlight"
+              style={{ borderColor: 'var(--border)' }}
+            >
               <span>View Demo</span>
               <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </button>
           </div>
-          
+
         </div>
       </div>
     </section>

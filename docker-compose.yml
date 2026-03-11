@@ -5,6 +5,11 @@ services:
     ports:
       - "8500:8500"
     command: "agent -dev -client=0.0.0.0"
+    healthcheck:
+      test: ["CMD", "consul", "info"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - profolio-network
 
@@ -19,6 +24,11 @@ services:
     volumes:
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
     networks:
       - profolio-network
 
@@ -29,19 +39,26 @@ services:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
     ports:
-      - "9000:9000"
+      - "9002:9000"
       - "9001:9001"
     command: server /data --console-address ":9001"
     volumes:
       - minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - profolio-network
 
   minio-init:
     image: minio/mc:latest
     container_name: minio-init
+    restart: "no"
     depends_on:
-      - minio
+      minio:
+        condition: service_healthy
     entrypoint: >
       /bin/sh -c "
       sleep 5;
@@ -72,8 +89,16 @@ services:
     # ports:
     #   - "9000:9000"
     depends_on:
-      - postgres
-      - consul
+      postgres:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:9000/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
     networks:
       - profolio-network
 
@@ -93,14 +118,24 @@ services:
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://auth-server:9000/oauth2/jwks
       GOOGLE_AI_API_KEY: ${GOOGLE_AI_API_KEY:-dummy_key_to_prevent_crash_12345}
       MINIO_ENDPOINT: http://minio:9000
+      MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL:-http://localhost:9002}
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
     # ports:
     #   - "8081:8081"
     depends_on:
-      - postgres
-      - consul
-      - minio
+      postgres:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8081/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
     networks:
       - profolio-network
 
@@ -117,9 +152,18 @@ services:
     # ports:
     #   - "8080:8080"
     depends_on:
-      - auth-server
-      - portfolio-service
-      - consul
+      auth-server:
+        condition: service_healthy
+      portfolio-service:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       - profolio-network
 
@@ -130,7 +174,8 @@ services:
     ports:
       - "4000:80"
     depends_on:
-      - agw
+      agw:
+        condition: service_healthy
     networks:
       - profolio-network
 

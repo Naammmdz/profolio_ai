@@ -2,8 +2,10 @@ package com.naammm.portfolioservice.service;
 
 import com.naammm.portfolioservice.model.AIPersonality;
 import com.naammm.portfolioservice.model.Portfolio;
+import com.naammm.portfolioservice.model.ToolboxConfig;
 import com.naammm.portfolioservice.repository.AIPersonalityRepository;
 import com.naammm.portfolioservice.repository.PortfolioRepository;
+import com.naammm.portfolioservice.repository.ToolboxConfigRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -28,6 +30,7 @@ public class ChatService {
     private final ChatModel chatModel;
     private final PortfolioRepository portfolioRepository;
     private final AIPersonalityRepository personalityRepository;
+    private final ToolboxConfigRepository toolboxConfigRepository;
 
     public String generateResponse(String slug, String userMessage, List<Map<String, String>> history) {
         Portfolio portfolio = portfolioRepository.findBySlug(slug)
@@ -36,12 +39,21 @@ public class ChatService {
         AIPersonality personality = personalityRepository.findByPortfolio(portfolio)
                 .orElseGet(() -> AIPersonality.builder().temperature(50).build());
 
-        String systemPrompt = buildSystemPrompt(portfolio, personality);
+        Optional<ToolboxConfig> toolboxOpt = toolboxConfigRepository.findByPortfolio(portfolio);
+
+        // Block all chat if global toggle is off
+        if (toolboxOpt.isPresent()) {
+            ToolboxConfig tc = toolboxOpt.get();
+            if (Boolean.FALSE.equals(tc.getIsGlobalEnabled())) {
+                return "I'm not available for chat right now. Please check back later.";
+            }
+        }
+
+        String systemPrompt = buildSystemPrompt(portfolio, personality, toolboxOpt.orElse(null));
 
         List<Message> messages = new ArrayList<>();
         messages.add(new SystemMessage(systemPrompt));
 
-        // Add history if any
         if (history != null) {
             for (Map<String, String> entry : history) {
                 if ("user".equals(entry.get("role"))) {
@@ -55,7 +67,7 @@ public class ChatService {
         messages.add(new UserMessage(userMessage));
 
         Prompt prompt = new Prompt(messages);
-        
+
         try {
             return chatModel.call(prompt).getResult().getOutput().getText();
         } catch (Exception e) {
@@ -64,7 +76,7 @@ public class ChatService {
         }
     }
 
-    private String buildSystemPrompt(Portfolio portfolio, AIPersonality p) {
+    private String buildSystemPrompt(Portfolio portfolio, AIPersonality p, ToolboxConfig tc) {
         StringBuilder sb = new StringBuilder();
         sb.append("You are acting as the personal AI representative of ").append(portfolio.getHeadline()).append(".\n");
         sb.append("YOUR GOAL: Answer questions from visitors to my portfolio in a way that truly represents me.\n");
@@ -75,12 +87,77 @@ public class ChatService {
 
         sb.append("### MY PROFESSIONAL IDENTITY:\n");
         sb.append(p.getProfessionalBio() != null ? p.getProfessionalBio() : "").append("\n");
-        sb.append("My Skills: ").append(p.getSkills() != null ? p.getSkills() : "").append("\n\n");
+
+        // Skills — only if enabled
+        if (tc == null || !Boolean.FALSE.equals(tc.getIsSkillsEnabled())) {
+            sb.append("My Skills: ").append(p.getSkills() != null ? p.getSkills() : "").append("\n");
+        }
+        sb.append("\n");
 
         sb.append("### MY PERSONALITY & STYLE:\n");
         sb.append("Communication Style: ").append(p.getCommunicationStyle() != null ? p.getCommunicationStyle() : "Professional and friendly").append("\n");
         sb.append("Interests: ").append(p.getInterests() != null ? p.getInterests() : "").append("\n");
         sb.append("General Context: ").append(p.getGeneralContext() != null ? p.getGeneralContext() : "").append("\n\n");
+
+        // Tool-gated context sections
+        if (tc != null) {
+            // Me info
+            if (!Boolean.FALSE.equals(tc.getIsMeEnabled()) && tc.getMeIntroduction() != null) {
+                sb.append("### ABOUT ME:\n");
+                sb.append(tc.getMeIntroduction()).append("\n");
+                if (tc.getMeTags() != null && !tc.getMeTags().isEmpty()) {
+                    sb.append("Tags/Keywords: ").append(String.join(", ", tc.getMeTags())).append("\n");
+                }
+                sb.append("\n");
+            }
+
+            // Contact
+            if (!Boolean.FALSE.equals(tc.getIsContactEnabled())) {
+                sb.append("### CONTACT:\n");
+                if (tc.getContactEmail() != null) sb.append("Email: ").append(tc.getContactEmail()).append("\n");
+                if (tc.getContactPhone() != null) sb.append("Phone: ").append(tc.getContactPhone()).append("\n");
+                if (tc.getContactHandle() != null) sb.append("Handle: ").append(tc.getContactHandle()).append("\n");
+                sb.append("\n");
+            } else {
+                sb.append("RULE: Do NOT share any contact information in this session.\n\n");
+            }
+
+            // Location
+            if (!Boolean.FALSE.equals(tc.getIsLocationEnabled())) {
+                if (tc.getLocationCity() != null || tc.getLocationCountry() != null) {
+                    sb.append("### LOCATION:\n");
+                    sb.append("Based in: ").append(tc.getLocationCity() != null ? tc.getLocationCity() : "").append(", ").append(tc.getLocationCountry() != null ? tc.getLocationCountry() : "").append("\n\n");
+                }
+            } else {
+                sb.append("RULE: Do NOT share location information in this session.\n\n");
+            }
+
+            // Resume
+            if (!Boolean.FALSE.equals(tc.getIsResumeEnabled()) && tc.getResumeFileUrl() != null) {
+                sb.append("### RESUME:\n");
+                if (tc.getResumeDescription() != null) sb.append(tc.getResumeDescription()).append("\n");
+                sb.append("Download link: ").append(tc.getResumeFileUrl()).append("\n\n");
+            } else if (Boolean.FALSE.equals(tc.getIsResumeEnabled())) {
+                sb.append("RULE: Do NOT share resume or CV links in this session.\n\n");
+            }
+
+            // Video
+            if (!Boolean.FALSE.equals(tc.getIsVideoEnabled()) && tc.getVideoUrl() != null) {
+                sb.append("### VIDEO INTRODUCTION:\n");
+                if (tc.getVideoTitle() != null) sb.append(tc.getVideoTitle()).append("\n");
+                sb.append("Link: ").append(tc.getVideoUrl()).append("\n\n");
+            } else if (Boolean.FALSE.equals(tc.getIsVideoEnabled())) {
+                sb.append("RULE: Do NOT share video links in this session.\n\n");
+            }
+
+            // Hobbies
+            if (!Boolean.FALSE.equals(tc.getIsHobbiesEnabled()) && tc.getHobbiesDescription() != null) {
+                sb.append("### HOBBIES & INTERESTS:\n");
+                sb.append(tc.getHobbiesDescription()).append("\n\n");
+            } else if (Boolean.FALSE.equals(tc.getIsHobbiesEnabled())) {
+                sb.append("RULE: Do NOT discuss hobbies or personal interests in this session.\n\n");
+            }
+        }
 
         sb.append("### GUIDELINES:\n");
         sb.append("- Be concise but helpful.\n");
@@ -88,7 +165,7 @@ public class ChatService {
             sb.append("- Maintain a '").append(p.getCommunicationStyle()).append("' tone throughout the conversation.\n");
         }
         sb.append("- If you don't know something based on the context, answer gracefully in character, perhaps saying you'd love to discuss that more in a real interview.\n");
-        
+
         return sb.toString();
     }
 }

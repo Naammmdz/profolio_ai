@@ -3,11 +3,12 @@ import { AnimatedBeam } from '../common/AnimatedBeam';
 
 const Circle = React.forwardRef<
   HTMLDivElement,
-  { className?: string; children?: React.ReactNode }
->(({ className, children }, ref) => {
+  { className?: string; children?: React.ReactNode; style?: React.CSSProperties }
+>(({ className, children, style }, ref) => {
   return (
     <div
       ref={ref}
+      style={style}
       className={`z-10 flex size-14 md:size-16 items-center justify-center rounded-full border-2 border-border bg-background p-3 shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)] dark:shadow-[0_0_20px_-12px_rgba(255,255,255,0.2)] ${className}`}
     >
       {children}
@@ -20,8 +21,8 @@ Circle.displayName = "Circle";
 const Icons = {
   linkedin: () => (
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="size-full">
-      <path d="M20.447 20.452H16.892V14.881C16.892 13.553 16.865 11.844 15.038 11.844C13.185 11.844 12.901 13.291 12.901 14.786V20.452H9.34595V9H12.757V10.564H12.805C13.28 9.664 14.44 8.715 16.171 8.715C19.773 8.715 20.447 11.086 20.447 14.129V20.452Z" fill="#0A66C2"/>
-      <path d="M5.337 7.433C4.195 7.433 3.274 6.51 3.274 5.373C3.274 4.235 4.195 3.314 5.337 3.314C6.478 3.314 7.4 4.235 7.4 5.373C7.4 6.51 6.478 7.433 5.337 7.433ZM7.119 20.452H3.557V9H7.119V20.452Z" fill="#0A66C2"/>
+      <path d="M20.447 20.452H16.892V14.881C16.892 13.553 16.865 11.844 15.038 11.844C13.185 11.844 12.901 13.291 12.901 14.786V20.452H9.34595V9H12.757V10.564H12.805C13.28 9.664 14.44 8.715 16.171 8.715C19.773 8.715 20.447 11.086 20.447 14.129V20.452Z" fill="#0A66C2" />
+      <path d="M5.337 7.433C4.195 7.433 3.274 6.51 3.274 5.373C3.274 4.235 4.195 3.314 5.337 3.314C6.478 3.314 7.4 4.235 7.4 5.373C7.4 6.51 6.478 7.433 5.337 7.433ZM7.119 20.452H3.557V9H7.119V20.452Z" fill="#0A66C2" />
     </svg>
   ),
   github: () => (
@@ -31,16 +32,16 @@ const Icons = {
   ),
   resume: () => (
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="size-full stroke-primary">
-      <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M14 2V8H20" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M16 13H8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M16 17H8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M10 9H8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M14 2V8H20" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M16 13H8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M16 17H8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M10 9H8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
   openai: () => (
-    <img 
-      src="https://upload.wikimedia.org/wikipedia/commons/e/ef/ChatGPT-Logo.svg" 
+    <img
+      src="https://upload.wikimedia.org/wikipedia/commons/e/ef/ChatGPT-Logo.svg"
       alt="ChatGPT"
       className="size-full dark:invert transition-all duration-300"
     />
@@ -65,111 +66,121 @@ const Process: React.FC = () => {
   return (
     <section className="py-24 px-6 relative" id="how-it-works">
       <div className="max-w-6xl mx-auto w-full">
-        
+
         {/* Main Card Container */}
-        <div 
-          className="relative w-full rounded-[2.5rem] bg-surface p-12 md:p-20 overflow-hidden shadow-sm" 
+        <div
+          className="relative w-full rounded-[2.5rem] bg-surface p-12 md:p-20 overflow-hidden shadow-sm"
           ref={containerRef}
         >
-          
+
           {/* Header */}
           <div className="text-center mb-16 relative z-20">
-              <h2 className="text-4xl md:text-5xl font-serif text-primary mb-4">5 minutes setup</h2>
-              <p className="text-text-muted">Three easy steps to create your AI-powered portfolio</p>
+            <span className="text-xs font-mono uppercase tracking-widest mb-3 block" style={{ color: 'var(--accent-blue)' }}>How It Works</span>
+            <h2 className="text-4xl md:text-5xl font-serif text-primary mb-4">5 minutes setup</h2>
+            <p className="text-text-muted">Three easy steps to create your AI-powered portfolio</p>
           </div>
 
           <div className="flex flex-col md:flex-row items-center justify-between gap-10 md:gap-0 min-h-[300px] max-w-4xl mx-auto">
-              
-              {/* Column 1: Import */}
-              <div className="flex flex-col justify-between h-full gap-8 md:gap-20 w-full md:w-auto items-center md:items-start relative z-20">
-                  <Circle ref={div1Ref} className="hover:scale-110 transition-transform duration-300 bg-background">
-                      <Icons.linkedin />
-                  </Circle>
-                  <Circle ref={div2Ref} className="hover:scale-110 transition-transform duration-300 bg-background">
-                      <Icons.resume />
-                  </Circle>
-                  <Circle ref={div3Ref} className="hover:scale-110 transition-transform duration-300 bg-background">
-                      <Icons.github />
-                  </Circle>
-              </div>
 
-              {/* Column 2: AI Learn */}
-              <div className="flex flex-col justify-center h-full w-full md:w-auto items-center relative z-20">
-                  <Circle ref={div4Ref} className="size-24 md:size-28 p-6 hover:scale-105 transition-transform duration-500 hover:shadow-[0_0_40px_-5px_var(--primary)] bg-background">
-                      <Icons.openai />
-                  </Circle>
-              </div>
+            {/* Column 1: Import */}
+            <div className="flex flex-col justify-between h-full gap-8 md:gap-20 w-full md:w-auto items-center md:items-start relative z-20">
+              <Circle ref={div1Ref} className="hover:scale-110 transition-transform duration-300 bg-background">
+                <Icons.linkedin />
+              </Circle>
+              <Circle ref={div2Ref} className="hover:scale-110 transition-transform duration-300 bg-background">
+                <Icons.resume />
+              </Circle>
+              <Circle ref={div3Ref} className="hover:scale-110 transition-transform duration-300 bg-background">
+                <Icons.github />
+              </Circle>
+            </div>
 
-              {/* Column 3: Share */}
-              <div className="flex flex-col justify-center h-full w-full md:w-auto items-center md:items-end relative z-20">
-                  <Circle ref={div5Ref} className="size-20 md:size-24 hover:scale-110 transition-transform duration-300 bg-primary text-primary-foreground border-primary/20">
-                      <Icons.portfolio />
-                  </Circle>
-              </div>
+            {/* Column 2: AI Learn */}
+            <div className="flex flex-col justify-center h-full w-full md:w-auto items-center relative z-20">
+              <Circle ref={div4Ref} className="size-24 md:size-28 p-6 hover:scale-105 transition-transform duration-500 hover:shadow-[0_0_40px_-5px_var(--primary)] bg-background">
+                <Icons.openai />
+              </Circle>
+            </div>
+
+            {/* Column 3: Share */}
+            <div className="flex flex-col justify-center h-full w-full md:w-auto items-center md:items-end relative z-20">
+              <Circle ref={div5Ref} className="size-20 md:size-24 hover:scale-110 transition-transform duration-300 border-0 text-white" style={{ background: 'var(--accent-blue)', borderColor: 'rgba(59,111,235,0.3)' }}>
+                <Icons.portfolio />
+              </Circle>
+            </div>
 
           </div>
 
           {/* Labels / Text Descriptions */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 text-center max-w-4xl mx-auto relative z-20">
-              <div>
-                  <h3 className="text-lg font-bold text-primary mb-2">1- Import</h3>
-                  <p className="text-sm text-text-muted font-mono">LinkedIn • Resume • GitHub</p>
-              </div>
-              <div>
-                  <h3 className="text-lg font-bold text-primary mb-2">2- AI Learn</h3>
-                  <p className="text-sm text-text-muted font-mono">Processes & Understands</p>
-              </div>
-              <div>
-                  <h3 className="text-lg font-bold text-primary mb-2">3- Share</h3>
-                  <p className="text-sm text-text-muted font-mono">Your AI Portfolio</p>
-              </div>
+            <div>
+              <h3 className="text-lg font-bold text-primary mb-2 flex items-center justify-center gap-2">
+                <span className="text-xs font-mono px-2 py-0.5" style={{ color: 'var(--accent-blue)', background: 'rgba(59,111,235,0.08)', border: '1px solid rgba(59,111,235,0.2)' }}>01</span>
+                Import
+              </h3>
+              <p className="text-sm text-text-muted font-mono">LinkedIn • Resume • GitHub</p>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-primary mb-2 flex items-center justify-center gap-2">
+                <span className="text-xs font-mono px-2 py-0.5" style={{ color: 'var(--accent-blue)', background: 'rgba(59,111,235,0.08)', border: '1px solid rgba(59,111,235,0.2)' }}>02</span>
+                AI Learn
+              </h3>
+              <p className="text-sm text-text-muted font-mono">Processes &amp; Understands</p>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-primary mb-2 flex items-center justify-center gap-2">
+                <span className="text-xs font-mono px-2 py-0.5" style={{ color: 'var(--accent-blue)', background: 'rgba(59,111,235,0.08)', border: '1px solid rgba(59,111,235,0.2)' }}>03</span>
+                Share
+              </h3>
+              <p className="text-sm text-text-muted font-mono">Your AI Portfolio</p>
+            </div>
           </div>
 
           {/* Animated Beams Layer */}
           {/* LinkedIn -> AI */}
           <AnimatedBeam
-              containerRef={containerRef}
-              fromRef={div1Ref}
-              toRef={div4Ref}
-              curvature={30}
-              endYOffset={-10}
-              pathColor="var(--text-muted)"
-              pathOpacity={0.2}
-              gradientStartColor="var(--accent)"
-              gradientStopColor="var(--primary)"
+            containerRef={containerRef}
+            fromRef={div1Ref}
+            toRef={div4Ref}
+            curvature={30}
+            endYOffset={-10}
+            pathColor="var(--text-muted)"
+            pathOpacity={0.2}
+            gradientStartColor="var(--accent)"
+            gradientStopColor="var(--primary)"
           />
           {/* Resume -> AI */}
           <AnimatedBeam
-              containerRef={containerRef}
-              fromRef={div2Ref}
-              toRef={div4Ref}
-              pathColor="var(--text-muted)"
-              pathOpacity={0.2}
-              gradientStartColor="var(--accent)"
-              gradientStopColor="var(--primary)"
+            containerRef={containerRef}
+            fromRef={div2Ref}
+            toRef={div4Ref}
+            pathColor="var(--text-muted)"
+            pathOpacity={0.2}
+            gradientStartColor="var(--accent)"
+            gradientStopColor="var(--primary)"
           />
           {/* GitHub -> AI */}
           <AnimatedBeam
-              containerRef={containerRef}
-              fromRef={div3Ref}
-              toRef={div4Ref}
-              curvature={-30}
-              endYOffset={10}
-              pathColor="var(--text-muted)"
-              pathOpacity={0.2}
-              gradientStartColor="var(--accent)"
-              gradientStopColor="var(--primary)"
+            containerRef={containerRef}
+            fromRef={div3Ref}
+            toRef={div4Ref}
+            curvature={-30}
+            endYOffset={10}
+            pathColor="var(--text-muted)"
+            pathOpacity={0.2}
+            gradientStartColor="var(--accent)"
+            gradientStopColor="var(--primary)"
           />
           {/* AI -> Portfolio */}
           <AnimatedBeam
-              containerRef={containerRef}
-              fromRef={div4Ref}
-              toRef={div5Ref}
-              pathColor="var(--text-muted)"
-              pathOpacity={0.2}
-              gradientStartColor="var(--primary)"
-              gradientStopColor="var(--accent)"
-              delay={1}
+            containerRef={containerRef}
+            fromRef={div4Ref}
+            toRef={div5Ref}
+            pathColor="var(--text-muted)"
+            pathOpacity={0.2}
+            gradientStartColor="var(--primary)"
+            gradientStopColor="var(--accent)"
+            delay={1}
           />
         </div>
 

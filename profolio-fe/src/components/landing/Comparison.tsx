@@ -3,65 +3,143 @@ import React from 'react';
 const Comparison: React.FC = () => {
   return (
     <section className="py-24 px-6 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16">
-          <div className="lg:col-span-4">
-            <h2 className="text-4xl lg:text-5xl font-serif mb-6 leading-tight text-primary">Old vs. New: <br/>The Paradigm Shift</h2>
-            <p className="text-text-muted font-light leading-relaxed border-l border-primary/10 pl-4">
-              Static PDFs are an artifact of the past. In a world of interaction, static is invisible. Give them something to query.
-            </p>
+      <div className="max-w-6xl mx-auto">
+
+        {/* Section Header */}
+        <div className="text-center mb-16">
+          <span className="text-xs font-mono uppercase tracking-widest mb-3 block" style={{ color: 'var(--accent-blue)' }}>The Shift</span>
+          <h2 className="text-4xl lg:text-5xl font-serif mb-4 leading-tight text-primary">Old vs. New</h2>
+          <p className="text-text-muted font-light max-w-md mx-auto leading-relaxed">
+            Static PDFs are an artifact of the past. In a world of interaction, static is invisible.
+          </p>
+        </div>
+
+        {/* Comparison Grid */}
+        <div className="relative grid md:grid-cols-2 gap-6 items-stretch">
+
+          {/* VS Badge — center divider */}
+          <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+            <div
+              className="size-10 rounded-full flex items-center justify-center text-xs font-mono font-bold shadow-lg border"
+              style={{ background: 'var(--background)', borderColor: 'var(--border)', color: 'var(--text-muted)' }}
+            >
+              VS
+            </div>
           </div>
-          
-          <div className="lg:col-span-8 grid md:grid-cols-2 gap-px bg-border border border-border overflow-hidden rounded-sm transition-colors duration-300">
-            
-            {/* Legacy Format Card */}
-            <div className="bg-background p-8 flex flex-col relative group transition-colors duration-300">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div className="flex items-center justify-between mb-8 opacity-50">
-                <span className="font-mono text-xs uppercase tracking-widest text-text-muted">Legacy Format</span>
-                <span className="material-symbols-outlined text-text-muted">description</span>
+
+          {/* ── Left: Legacy ── */}
+          <div className="bg-surface border border-border rounded-2xl p-8 flex flex-col relative overflow-hidden opacity-80">
+            {/* Label row */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2">
+                <span className="size-2 rounded-full bg-red-400"></span>
+                <span className="font-mono text-xs uppercase tracking-widest text-text-muted">Static Resume</span>
               </div>
-              <div className="flex-1 space-y-4 mb-8 grayscale opacity-30">
-                <div className="h-2 bg-primary/10 w-3/4"></div>
-                <div className="h-2 bg-primary/10 w-full"></div>
-                <div className="h-2 bg-primary/10 w-5/6"></div>
-                <div className="h-20 bg-primary/5 w-full mt-6 border border-primary/5"></div>
-              </div>
-              <ul className="space-y-3 mt-auto font-mono text-xs text-text-muted">
-                <li className="flex items-center gap-3"><span className="text-red-500">×</span> 10-second skim time</li>
-                <li className="flex items-center gap-3"><span className="text-red-500">×</span> Zero interaction</li>
-                <li className="flex items-center gap-3"><span className="text-red-500">×</span> High bounce rate</li>
-              </ul>
+              <span className="text-xs font-mono text-text-muted border border-border px-2 py-0.5 rounded-md">2010 — Today</span>
             </div>
 
-            {/* AI Format Card */}
-            <div className="bg-background p-8 flex flex-col relative group transition-colors duration-300">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-500/50 to-transparent"></div>
-              <div className="flex items-center justify-between mb-8">
-                <span className="font-mono text-xs uppercase tracking-widest text-primary">Profolio AI</span>
-                <span className="size-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]"></span>
-              </div>
-              <div className="flex-1 space-y-4 mb-8">
-                <div className="flex flex-col gap-3 font-mono text-xs">
-                  <div className="self-start bg-surface-highlight border border-border px-3 py-2 text-text-muted max-w-[80%]">
-                    <span className="text-primary/30 mr-2">&gt;</span> Check out my design work
-                  </div>
-                  <div className="self-end bg-primary text-primary-foreground px-3 py-2 max-w-[80%]">
-                    Here is the latest system...
-                  </div>
-                  <div className="self-start bg-surface-highlight border border-border px-3 py-2 text-text-muted max-w-[80%]">
-                    <span className="text-primary/30 mr-2">&gt;</span> Tech stack?
-                  </div>
+            {/* Mock PDF visual */}
+            <div className="flex-1 mb-6 rounded-xl border border-border bg-background p-5 grayscale opacity-60">
+              <div className="flex items-center gap-2 mb-4 pb-3 border-b border-border">
+                <div className="size-8 rounded-full bg-border"></div>
+                <div className="space-y-1">
+                  <div className="h-2 w-24 bg-primary/20 rounded"></div>
+                  <div className="h-1.5 w-16 bg-primary/10 rounded"></div>
                 </div>
               </div>
-              <ul className="space-y-3 mt-auto font-mono text-xs text-primary">
-                <li className="flex items-center gap-3"><span className="text-green-600">✓</span> 2-way interactive experience</li>
-                <li className="flex items-center gap-3"><span className="text-green-600">✓</span> Instant personalized answers</li>
-                <li className="flex items-center gap-3"><span className="text-green-600">✓</span> memorable impression</li>
-              </ul>
+              <div className="space-y-2">
+                <div className="h-1.5 w-full bg-primary/10 rounded"></div>
+                <div className="h-1.5 w-5/6 bg-primary/10 rounded"></div>
+                <div className="h-1.5 w-4/5 bg-primary/10 rounded"></div>
+                <div className="h-1.5 w-full bg-primary/10 rounded mt-3"></div>
+                <div className="h-1.5 w-3/4 bg-primary/10 rounded"></div>
+                <div className="h-8 w-full bg-primary/5 rounded mt-3 border border-primary/5"></div>
+                <div className="h-1.5 w-full bg-primary/10 rounded mt-2"></div>
+                <div className="h-1.5 w-2/3 bg-primary/10 rounded"></div>
+              </div>
             </div>
 
+            {/* Cons */}
+            <ul className="space-y-2.5 font-mono text-xs text-text-muted">
+              <li className="flex items-center gap-3">
+                <span className="size-4 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 shrink-0 text-[10px]">×</span>
+                10-second skim time then discarded
+              </li>
+              <li className="flex items-center gap-3">
+                <span className="size-4 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 shrink-0 text-[10px]">×</span>
+                Zero two-way interaction
+              </li>
+              <li className="flex items-center gap-3">
+                <span className="size-4 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 shrink-0 text-[10px]">×</span>
+                No follow-up, instant forget
+              </li>
+            </ul>
           </div>
+
+          {/* ── Right: Profolio AI ── */}
+          <div
+            className="rounded-2xl p-8 flex flex-col relative overflow-hidden border"
+            style={{
+              background: 'rgba(59,111,235,0.04)',
+              borderColor: 'rgba(59,111,235,0.2)',
+              borderLeftWidth: '4px',
+              borderLeftColor: 'var(--accent-blue)',
+            }}
+          >
+            {/* Top gradient line */}
+            <div className="absolute top-0 left-0 w-full h-0.5" style={{ background: 'linear-gradient(to right, var(--accent-blue), transparent)' }}></div>
+
+            {/* Label row */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2">
+                <span className="size-2 rounded-full animate-pulse" style={{ background: 'var(--accent-blue)', boxShadow: '0 0 8px rgba(59,111,235,0.5)' }}></span>
+                <span className="font-mono text-xs uppercase tracking-widest font-semibold" style={{ color: 'var(--accent-blue)' }}>Profolio AI</span>
+              </div>
+              <span className="text-xs font-mono px-2 py-0.5 rounded-md" style={{ color: 'var(--accent-blue)', background: 'rgba(59,111,235,0.08)', border: '1px solid rgba(59,111,235,0.2)' }}>
+                Live 24/7
+              </span>
+            </div>
+
+            {/* Live chat mock */}
+            <div className="flex-1 mb-6 rounded-xl border bg-background p-4 flex flex-col gap-2.5" style={{ borderColor: 'rgba(59,111,235,0.15)' }}>
+              {/* Recruiter messages */}
+              <div className="self-start bg-surface-highlight border border-border px-3 py-2 rounded-xl rounded-tl-none max-w-[80%]">
+                <p className="text-xs text-text-muted font-mono">&gt; What's your tech stack?</p>
+              </div>
+              <div className="self-end px-3 py-2 rounded-xl rounded-tr-none max-w-[80%] text-white text-xs font-mono" style={{ background: 'var(--accent-blue)' }}>
+                React, TypeScript, Java Spring...
+              </div>
+              <div className="self-start bg-surface-highlight border border-border px-3 py-2 rounded-xl rounded-tl-none max-w-[80%]">
+                <p className="text-xs text-text-muted font-mono">&gt; Show me your best project</p>
+              </div>
+              <div className="self-end px-3 py-2 rounded-xl rounded-tr-none text-white text-xs font-mono" style={{ background: 'var(--accent-blue)', maxWidth: '85%' }}>
+                Here's the Profolio platform — live demo linked below 🚀
+              </div>
+              {/* Typing indicator */}
+              <div className="self-start flex items-center gap-1 px-3 py-2 rounded-xl bg-surface-highlight border border-border">
+                <span className="size-1.5 rounded-full bg-text-muted animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                <span className="size-1.5 rounded-full bg-text-muted animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                <span className="size-1.5 rounded-full bg-text-muted animate-bounce" style={{ animationDelay: '300ms' }}></span>
+              </div>
+            </div>
+
+            {/* Pros */}
+            <ul className="space-y-2.5 font-mono text-xs text-primary">
+              <li className="flex items-center gap-3">
+                <span className="size-4 rounded-full flex items-center justify-center text-white shrink-0 text-[10px]" style={{ background: 'var(--accent-blue)' }}>✓</span>
+                Avg. 8+ minutes engagement
+              </li>
+              <li className="flex items-center gap-3">
+                <span className="size-4 rounded-full flex items-center justify-center text-white shrink-0 text-[10px]" style={{ background: 'var(--accent-blue)' }}>✓</span>
+                Instant personalized answers
+              </li>
+              <li className="flex items-center gap-3">
+                <span className="size-4 rounded-full flex items-center justify-center text-white shrink-0 text-[10px]" style={{ background: 'var(--accent-blue)' }}>✓</span>
+                Memorable, shareable, always on
+              </li>
+            </ul>
+          </div>
+
         </div>
       </div>
     </section>

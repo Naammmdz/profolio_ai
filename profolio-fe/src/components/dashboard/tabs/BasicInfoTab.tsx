@@ -1,5 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { usePortfolio, useUpdatePortfolio } from '../../../hooks/usePortfolio';
+import { portfolioApi } from '../../../services/portfolioApi';
+import { useQueryClient } from '@tanstack/react-query';
+import { Switch } from '../../ui/switch';
+import DashboardFooter from '../DashboardFooter';
+import DashboardTopBar from '../DashboardTopBar';
+
 
 interface BasicInfoTabProps {
   onPreview: () => void;
@@ -38,12 +44,33 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ onPreview, onNavigate }) =>
     }
   }, [portfolio]);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const queryClient = useQueryClient();
+
   const handleSave = () => {
     updatePortfolio.mutate(form);
   };
 
   const handleChange = (field: string, value: string | boolean) => {
     setForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingAvatar(true);
+    try {
+      const result = await portfolioApi.uploadFile(file);
+      await updatePortfolio.mutateAsync({ avatarUrl: result.url } as any);
+      queryClient.invalidateQueries({ queryKey: ['portfolio'] });
+    } catch (err) {
+      console.error('Avatar upload failed:', err);
+    } finally {
+      setIsUploadingAvatar(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
   };
 
   if (isLoading) {
@@ -61,33 +88,7 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ onPreview, onNavigate }) =>
 
   return (
     <div className="p-8 lg:p-12 max-w-7xl mx-auto pb-32">
-      {/* Header with Draft Mode, Preview, Publish Changes */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
-        <div className="hidden sm:block">
-          <button className="p-2 -ml-2 text-text-muted hover:text-primary transition-colors rounded-md hover:bg-surface-highlight">
-            <span className="material-symbols-outlined">dock_to_left</span>
-          </button>
-        </div>
-        <div className="flex items-center gap-3 self-end sm:self-auto">
-          <div className="bg-background border border-border text-text-muted px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 shadow-sm">
-            <span className={`size-1.5 rounded-full ${portfolio?.status === 'PUBLISHED' ? 'bg-green-500' : 'bg-orange-500'}`}></span>
-            {portfolio?.status === 'PUBLISHED' ? 'Published' : 'Draft Mode'}
-          </div>
-          <button
-            onClick={onPreview}
-            className="bg-background hover:bg-surface-highlight border border-border text-primary px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm flex items-center gap-2"
-          >
-            <span className="material-symbols-outlined text-[16px]">visibility</span>
-            Preview
-          </button>
-          <button
-            onClick={() => onNavigate('publish')}
-            className="bg-primary hover:opacity-90 text-primary-foreground px-5 py-2 rounded-lg text-sm font-medium transition-colors shadow-lg"
-          >
-            Publish Changes
-          </button>
-        </div>
-      </div>
+      <DashboardTopBar onPreview={onPreview} onPublish={() => onNavigate('publish')} />
 
       {/* Title */}
       <div className="mb-10">
@@ -132,7 +133,7 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ onPreview, onNavigate }) =>
                 placeholder={form.chatPlaceholder}
                 type="text"
               />
-              <button className="absolute right-2 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center bg-primary rounded-full text-primary-foreground hover:bg-primary/90 transition-colors">
+              <button className="absolute right-2 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center rounded-full text-white hover:opacity-90 transition-colors" style={{ background: 'var(--accent-blue)' }}>
                 <span className="material-symbols-outlined text-[16px]">arrow_upward</span>
               </button>
             </div>
@@ -152,13 +153,19 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ onPreview, onNavigate }) =>
           <div className="flex flex-col sm:flex-row items-center gap-10">
             <div className="flex bg-surface-highlight rounded-lg p-1 border border-border">
               <button
-                onClick={() => handleChange('avatarShape', 'SQUARED')}
+                onClick={() => {
+                  handleChange('avatarShape', 'SQUARED');
+                  updatePortfolio.mutate({ avatarShape: 'SQUARED' } as any);
+                }}
                 className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${form.avatarShape === 'SQUARED' ? 'bg-surface shadow-sm text-primary border border-border/50' : 'text-text-muted hover:text-primary'}`}
               >
                 Squared
               </button>
               <button
-                onClick={() => handleChange('avatarShape', 'ROUNDED')}
+                onClick={() => {
+                  handleChange('avatarShape', 'ROUNDED');
+                  updatePortfolio.mutate({ avatarShape: 'ROUNDED' } as any);
+                }}
                 className={`px-5 py-2 rounded-md text-sm font-medium transition-all ${form.avatarShape === 'ROUNDED' ? 'bg-surface shadow-sm text-primary border border-border/50' : 'text-text-muted hover:text-primary'}`}
               >
                 Rounded
@@ -173,7 +180,31 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ onPreview, onNavigate }) =>
                 )}
               </div>
               <div>
-                <button className="text-sm font-medium text-primary border border-border px-4 py-2 rounded-lg hover:bg-surface-highlight transition-colors mb-2 bg-surface shadow-sm">Upload Avatar</button>
+                {/* Hidden real file input */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  onChange={handleAvatarUpload}
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploadingAvatar}
+                  className="text-sm font-medium text-primary border border-border px-4 py-2 rounded-lg hover:bg-surface-highlight transition-colors mb-2 bg-surface shadow-sm flex items-center gap-2 disabled:opacity-60"
+                >
+                  {isUploadingAvatar ? (
+                    <>
+                      <span className="size-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></span>
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <span className="material-symbols-outlined text-[16px]">upload</span>
+                      Upload Avatar
+                    </>
+                  )}
+                </button>
                 <p className="text-xs text-text-muted">Min 200x200px • JPG, PNG</p>
               </div>
             </div>
@@ -186,42 +217,55 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ onPreview, onNavigate }) =>
             <h2 className="text-xl font-serif text-primary mb-1">Appearance</h2>
             <p className="text-sm text-text-muted font-light">Choose a visual theme for your portfolio</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-primary mb-2">Theme</label>
-                <div className="relative">
-                  <select
-                    value={form.theme}
-                    onChange={(e) => handleChange('theme', e.target.value)}
-                    className="w-full appearance-none bg-surface border border-border text-primary py-2.5 pl-4 pr-10 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm shadow-sm transition-shadow"
+          <div className="space-y-6">
+            {/* Theme visual card picker */}
+            <div>
+              <label className="block text-sm font-medium text-primary mb-3">Theme</label>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { value: 'DEFAULT', label: 'Default', swatchBg: '#f9fafb', swatchAccent: '#1f2937', swatchBubble: '#1f2937' },
+                  { value: 'DARK', label: 'Dark', swatchBg: '#09090b', swatchAccent: '#2563eb', swatchBubble: '#2563eb' },
+                  { value: 'PLAYFUL', label: 'Playful', swatchBg: 'linear-gradient(135deg,#faf5ff,#fdf2f8)', swatchAccent: '#9333ea', swatchBubble: '#9333ea' },
+                ].map(({ value, label, swatchBg, swatchAccent, swatchBubble }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => handleChange('theme', value)}
+                    className={`relative flex flex-col items-center gap-2 p-0 rounded-xl border-2 transition-all overflow-hidden ${form.theme === value ? 'border-[var(--accent-blue)] shadow-md' : 'border-border hover:border-primary/30'
+                      }`}
                   >
-                    <option value="DEFAULT">Default - Clean and minimal</option>
-                    <option value="DARK">Dark - Professional and sleek</option>
-                    <option value="PLAYFUL">Playful - Colorful and friendly</option>
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-primary mb-2">Cursor Animation</label>
-                <div className="relative">
-                  <select
-                    value={form.cursorAnimation}
-                    onChange={(e) => handleChange('cursorAnimation', e.target.value)}
-                    className="w-full appearance-none bg-surface border border-border text-primary py-2.5 pl-4 pr-10 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm shadow-sm transition-shadow"
-                  >
-                    <option value="FLUID">Fluid</option>
-                    <option value="SOLID">Solid</option>
-                    <option value="NONE">None</option>
-                  </select>
-                </div>
+                    {/* Mini preview */}
+                    <div
+                      className="w-full h-20 flex flex-col items-center justify-center gap-1.5 px-2"
+                      style={{ background: swatchBg }}
+                    >
+                      <div className="w-6 h-6 rounded-full" style={{ background: value === 'DARK' ? '#3f3f46' : value === 'PLAYFUL' ? 'linear-gradient(135deg,#e9d5ff,#fbcfe8)' : '#e5e7eb' }}></div>
+                      <div className="w-full space-y-1">
+                        <div className="h-1 rounded-full mx-2" style={{ background: swatchAccent, opacity: 0.8 }}></div>
+                        <div className="self-end h-1 rounded-full" style={{ background: swatchBubble, width: '55%', marginLeft: 'auto', marginRight: '4px' }}></div>
+                      </div>
+                    </div>
+                    <span className="text-xs font-medium text-primary pb-2">{label}</span>
+                    {form.theme === value && (
+                      <div className="absolute top-1.5 right-1.5 size-4 rounded-full flex items-center justify-center text-white" style={{ background: 'var(--accent-blue)' }}>
+                        <span className="material-symbols-outlined text-[12px]">check</span>
+                      </div>
+                    )}
+                  </button>
+                ))}
               </div>
             </div>
-            <div className="h-full min-h-[120px] rounded-xl bg-surface-highlight border border-border flex items-center justify-center overflow-hidden relative">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-surface-highlight to-surface-highlight blur-xl"></div>
-              <div className="relative z-10 flex flex-col items-center gap-2">
-                <div className="size-8 rounded-full bg-primary/5 animate-pulse"></div>
-                <span className="text-xs text-text-muted font-medium tracking-wide uppercase">Preview</span>
+            <div>
+              <label className="block text-sm font-medium text-primary mb-2">Cursor Animation</label>
+              <div className="relative">
+                <select
+                  value={form.cursorAnimation}
+                  onChange={(e) => handleChange('cursorAnimation', e.target.value)}
+                  className="w-full appearance-none bg-surface border border-border text-primary py-2.5 pl-4 pr-10 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm shadow-sm transition-shadow"
+                >
+                  <option value="FLUID">Fluid</option>
+                  <option value="NONE">None</option>
+                </select>
               </div>
             </div>
           </div>
@@ -233,7 +277,7 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ onPreview, onNavigate }) =>
             <h2 className="text-xl font-serif text-primary mb-1">Landing Page</h2>
             <p className="text-sm text-text-muted font-light">Customize the first impression visitors have of your portfolio</p>
           </div>
-          <div className="space-y-6 max-w-3xl">
+          <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-primary mb-2">
                 Portfolio Headline <span className="text-text-subtle font-normal ml-1">(Optional)</span>
@@ -266,70 +310,58 @@ const BasicInfoTab: React.FC<BasicInfoTabProps> = ({ onPreview, onNavigate }) =>
             </div>
             <div className="pt-6 border-t border-border mt-6">
               <div className="flex justify-between items-center mb-6">
-                <label className="block text-sm font-medium text-primary">Welcome Modal</label>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    checked={form.showModal}
-                    onChange={(e) => handleChange('showModal', e.target.checked)}
-                    className="sr-only peer toggle-switch-input"
-                    type="checkbox"
-                  />
-                  <div className="w-10 h-6 bg-border peer-focus:outline-none rounded-full peer toggle-switch-label transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface after:shadow-sm after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                </label>
-              </div>
-              {form.showModal && (
-                <div className="space-y-4 p-5 bg-surface-highlight/50 rounded-xl border border-border">
-                  <div>
-                    <label className="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-2">Modal Title</label>
-                    <input
-                      className="w-full bg-surface border border-border text-primary py-2.5 px-4 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm shadow-sm transition-shadow"
-                      type="text"
-                      value={form.modalTitle}
-                      onChange={(e) => handleChange('modalTitle', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-2">Modal Content</label>
-                    <textarea
-                      className="w-full bg-surface border border-border text-primary py-2.5 px-4 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm min-h-[100px] resize-y shadow-sm transition-shadow"
-                      value={form.modalContent}
-                      onChange={(e) => handleChange('modalContent', e.target.value)}
-                    ></textarea>
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-primary">Welcome Modal</label>
+                  <p className="text-xs text-text-muted mt-0.5">Show a greeting popup when visitors open your portfolio</p>
                 </div>
-              )}
+                <Switch
+                  checked={form.showModal}
+                  onChange={(val) => handleChange('showModal', val)}
+                />
+              </div>
+              <div className="space-y-4 p-5 bg-surface-highlight/50 rounded-xl border border-border">
+                <div>
+                  <label className="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-2">Modal Title</label>
+                  <input
+                    className="w-full bg-surface border border-border text-primary py-2.5 px-4 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm shadow-sm transition-shadow"
+                    type="text"
+                    value={form.modalTitle}
+                    onChange={(e) => handleChange('modalTitle', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-2">Modal Content</label>
+                  <textarea
+                    className="w-full bg-surface border border-border text-primary py-2.5 px-4 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-sm min-h-[100px] resize-y shadow-sm transition-shadow"
+                    value={form.modalContent}
+                    onChange={(e) => handleChange('modalContent', e.target.value)}
+                  >
+                  </textarea>
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="flex justify-end pt-4">
-            <button
-              onClick={handleSave}
-              disabled={updatePortfolio.isPending}
-              className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground py-2.5 px-8 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:opacity-60"
-            >
-              {updatePortfolio.isPending ? 'Saving...' : 'Save Changes'}
-            </button>
           </div>
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="mt-16 border-t border-border pt-8 pb-4">
-        <div className="flex flex-col md:flex-row justify-between items-center text-xs text-text-muted gap-4">
-          <div className="flex items-center gap-2">
-            <span className="font-serif italic text-sm text-primary">Profolio</span>
-            <span>© 2025</span>
-          </div>
-          <div className="flex gap-6">
-            <a className="hover:text-primary transition-colors" href="#">Dashboard</a>
-            <a className="hover:text-primary transition-colors" href="#">Billing</a>
-            <a className="hover:text-primary transition-colors" href="#">Support</a>
-          </div>
-          <div className="flex gap-6">
-            <a className="hover:text-primary transition-colors" href="#">Terms</a>
-            <a className="hover:text-primary transition-colors" href="#">Privacy</a>
-          </div>
-        </div>
-      </footer>
+      {/* Sticky Save Bar — sticks while scrolling, sits above footer at page bottom */}
+      <div className="sticky bottom-0 z-40 border-t border-border bg-surface/90 backdrop-blur-md px-0 py-3 mt-8">
+        <button
+          onClick={handleSave}
+          disabled={updatePortfolio.isPending}
+          className="w-full text-white py-2.5 rounded-lg text-sm font-medium transition-all shadow-md hover:opacity-90 disabled:opacity-60 flex items-center justify-center gap-2"
+          style={{ background: 'var(--accent-blue)' }}
+        >
+          {updatePortfolio.isPending ? (
+            <>
+              <span className="size-3.5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+              Saving...
+            </>
+          ) : 'Save Changes'}
+        </button>
+      </div>
+
+      <DashboardFooter />
     </div>
   );
 };

@@ -2,6 +2,9 @@ import React from 'react';
 import { useProjects, useDeleteProject } from '../../../hooks/useProjects';
 import { useSkillCategories, useDeleteSkillCategory } from '../../../hooks/useSkillCategories';
 import { useToolboxConfig, useUpdateToolboxConfig, useUploadFile } from '../../../hooks/useToolboxConfig';
+import { Switch } from '../../ui/switch';
+import DashboardFooter from '../DashboardFooter';
+import DashboardTopBar from '../DashboardTopBar';
 
 interface ToolsTabProps {
   onPreview: () => void;
@@ -207,33 +210,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
 
   return (
     <div className="p-8 lg:p-12 max-w-7xl mx-auto pb-32">
-      {/* Header with Draft Mode, Preview, Publish Changes */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
-        <div className="hidden sm:block">
-          <button className="p-2 -ml-2 text-text-muted hover:text-primary transition-colors rounded-md hover:bg-surface-highlight">
-            <span className="material-symbols-outlined">dock_to_left</span>
-          </button>
-        </div>
-        <div className="flex items-center gap-3 self-end sm:self-auto">
-          <div className="bg-background border border-border text-text-muted px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 shadow-sm">
-            <span className="size-1.5 rounded-full bg-orange-500"></span>
-            Draft Mode
-          </div>
-          <button
-            onClick={onPreview}
-            className="bg-background hover:bg-surface-highlight border border-border text-primary px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm flex items-center gap-2"
-          >
-            <span className="material-symbols-outlined text-[16px]">visibility</span>
-            Preview
-          </button>
-          <button
-            onClick={() => onNavigate('publish')}
-            className="bg-primary hover:opacity-90 text-primary-foreground px-5 py-2 rounded-lg text-sm font-medium transition-colors shadow-lg"
-          >
-            Publish Changes
-          </button>
-        </div>
-      </div>
+      <DashboardTopBar onPreview={onPreview} onPublish={() => onNavigate('publish')} />
 
       {/* Title */}
       <div className="mb-10">
@@ -242,54 +219,25 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
           <div className="flex items-center gap-3 bg-surface-highlight px-4 py-2 rounded-full border border-border shadow-sm">
             <span className="text-xs font-medium text-text-muted uppercase tracking-wide">Global Toggle</span>
             <div className="h-4 w-px bg-border"></div>
-            <label className="switch">
-              <input checked={toggles.isGlobalEnabled} onChange={(e) => handleToggle('isGlobalEnabled', e.target.checked)} type="checkbox" />
-              <span className="slider"></span>
-            </label>
+            <Switch checked={toggles.isGlobalEnabled} onChange={(v) => handleToggle('isGlobalEnabled', v)} />
           </div>
         </div>
         <p className="text-text-muted text-lg font-light max-w-2xl">Configure the tools your AI assistant can use to answer questions about you.</p>
       </div>
 
-      {/* Preview Section */}
-      <div className="bg-surface border border-border rounded-2xl p-0 mb-10 shadow-[0_2px_16px_-4px_rgba(0,0,0,0.04)] h-[360px] relative overflow-hidden flex flex-col items-center justify-center group hover:shadow-[0_8px_30px_-8px_rgba(0,0,0,0.06)] transition-all duration-500">
-        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:24px_24px] opacity-50"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-surface via-transparent to-surface opacity-80"></div>
-        <div className="relative z-10 flex flex-col items-center mb-8">
-          <div className="mb-6 relative size-20 bg-surface-highlight rounded-2xl shadow-lg border border-border flex items-center justify-center apple-float">
-            <span className="material-symbols-outlined text-[40px] text-primary">smart_toy</span>
-            <div className="absolute -right-2 -bottom-2 bg-primary text-primary-foreground p-1.5 rounded-lg shadow-lg">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
-              </svg>
-            </div>
-          </div>
-          <div className="bg-surface-highlight/80 backdrop-blur-sm px-4 py-1.5 rounded-full border border-border shadow-sm text-xs font-medium text-text-muted">
-            Interactive Preview
-          </div>
-        </div>
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-full max-w-md px-6">
-          <div className="bg-surface-highlight/90 backdrop-blur-xl rounded-full border border-border shadow-lg p-2 pl-6 flex items-center hover:border-border transition-colors group-hover:shadow-xl group-hover:-translate-y-1 duration-300">
-            <span className="text-sm text-text-subtle flex-1 font-light">Ask me anything about my work...</span>
-            <button className="size-9 bg-primary rounded-full flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors shadow-md">
-              <span className="material-symbols-outlined text-[18px]">arrow_upward</span>
-            </button>
-          </div>
-        </div>
-      </div>
 
       <div className="space-y-4">
         {/* Me (personal info) - First Tool */}
         <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-[0_2px_8px_-2px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_24px_-8px_rgba(0,0,0,0.06)] hover:border-border transition-all duration-300 group">
           <div className="w-full flex items-center justify-between p-6">
             <div className="flex items-start gap-4">
-              <div className="size-10 rounded-lg bg-surface-highlight border border-border flex items-center justify-center text-text-muted group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+              <div className="size-10 rounded-lg border border-border flex items-center justify-center text-text-muted transition-colors duration-300 group-hover:text-white" style={{ background: 'var(--surface-highlight)' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--accent-blue)')} onMouseLeave={e => (e.currentTarget.style.background = 'var(--surface-highlight)')}>
                 <span className="material-symbols-outlined text-[20px]">person</span>
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <h3 className="text-base font-medium text-primary">Me (personal info)</h3>
-                  <span className="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-100 dark:border-green-800 rounded-full px-1.5 py-0.5 text-[10px] font-semibold flex items-center gap-0.5 uppercase tracking-wider">
+                  <span className="rounded-full px-1.5 py-0.5 text-[10px] font-semibold flex items-center gap-0.5 uppercase tracking-wider" style={{ background: 'rgba(59,111,235,0.08)', color: 'var(--accent-blue)', border: '1px solid rgba(59,111,235,0.2)' }}>
                     Active
                   </span>
                 </div>
@@ -301,10 +249,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
                 Try it out
               </button>
               <div className="h-6 w-px bg-surface-highlight"></div>
-              <label className="switch">
-                <input checked={toggles.isMeEnabled} onChange={(e) => handleToggle('isMeEnabled', e.target.checked)} type="checkbox" />
-                <span className="slider"></span>
-              </label>
+              <Switch checked={toggles.isMeEnabled} onChange={(v) => handleToggle('isMeEnabled', v)} />
               <button
                 onClick={() => onToggleTool('personal')}
                 className={`p-1 rounded hover:bg-surface-highlight text-text-subtle hover:text-primary transition-colors ${expandedTools['personal'] ? 'rotate-180' : ''}`}
@@ -389,7 +334,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {tags.map((tag, index) => (
-                    <span key={index} className="inline-flex items-center gap-1 px-3 py-1 bg-surface-highlight rounded-full text-xs font-medium text-primary">
+                    <span key={index} className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium text-primary border" style={{ background: 'rgba(59,111,235,0.06)', borderColor: 'rgba(59,111,235,0.2)' }}>
                       {tag}
                       <span
                         className="material-symbols-outlined text-[14px] cursor-pointer hover:text-red-500"
@@ -402,7 +347,8 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
               <button
                 onClick={saveMeInfo}
                 disabled={updateToolboxConfigMutation.isPending}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm disabled:opacity-50"
+                className="w-full text-white py-2.5 rounded-lg text-sm font-medium transition-all shadow-sm disabled:opacity-50 hover:opacity-90"
+                style={{ background: 'var(--accent-blue)' }}
               >
                 {updateToolboxConfigMutation.isPending ? 'Saving...' : 'Save Presentation Information'}
               </button>
@@ -414,7 +360,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
         <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-[0_2px_8px_-2px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_24px_-8px_rgba(0,0,0,0.06)] hover:border-border transition-all duration-300 group">
           <div className="w-full flex items-center justify-between p-6">
             <div className="flex items-start gap-4">
-              <div className="size-10 rounded-lg bg-surface-highlight border border-border flex items-center justify-center text-text-muted group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+              <div className="size-10 rounded-lg border border-border flex items-center justify-center text-text-muted transition-colors duration-300 group-hover:text-white" style={{ background: 'var(--surface-highlight)' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--accent-blue)')} onMouseLeave={e => (e.currentTarget.style.background = 'var(--surface-highlight)')}>
                 <span className="material-symbols-outlined text-[20px]">folder_open</span>
               </div>
               <div>
@@ -429,10 +375,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
                 Try it out
               </button>
               <div className="h-6 w-px bg-surface-highlight"></div>
-              <label className="switch">
-                <input checked={toggles.isProjectsEnabled} onChange={(e) => handleToggle('isProjectsEnabled', e.target.checked)} type="checkbox" />
-                <span className="slider"></span>
-              </label>
+              <Switch checked={toggles.isProjectsEnabled} onChange={(v) => handleToggle('isProjectsEnabled', v)} />
               <button
                 onClick={() => onToggleTool('projects')}
                 className={`p-1 rounded hover:bg-surface-highlight text-text-subtle hover:text-primary transition-colors ${expandedTools['projects'] ? 'rotate-180' : ''}`}
@@ -479,7 +422,8 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
               </div>
               <button
                 onClick={onCreateProject}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center justify-center gap-2"
+                className="w-full text-white py-2.5 rounded-lg text-sm font-medium transition-all shadow-sm flex items-center justify-center gap-2 hover:opacity-90"
+                style={{ background: 'var(--accent-blue)' }}
               >
                 <span className="material-symbols-outlined text-[18px]">add</span>
                 Add Project
@@ -507,10 +451,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
                 Try it out
               </button>
               <div className="h-6 w-px bg-surface-highlight"></div>
-              <label className="switch">
-                <input checked={toggles.isSkillsEnabled} onChange={(e) => handleToggle('isSkillsEnabled', e.target.checked)} type="checkbox" />
-                <span className="slider"></span>
-              </label>
+              <Switch checked={toggles.isSkillsEnabled} onChange={(v) => handleToggle('isSkillsEnabled', v)} />
               <button
                 onClick={() => onToggleTool('skills')}
                 className={`p-1 rounded hover:bg-surface-highlight text-text-subtle hover:text-primary transition-colors ${expandedTools['skills'] ? 'rotate-180' : ''}`}
@@ -561,7 +502,8 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
               </div>
               <button
                 onClick={onCreateSkillCategory}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center justify-center gap-2"
+                className="w-full text-white py-2.5 rounded-lg text-sm font-medium transition-all shadow-sm flex items-center justify-center gap-2 hover:opacity-90"
+                style={{ background: 'var(--accent-blue)' }}
               >
                 <span className="material-symbols-outlined text-[18px]">add</span>
                 Add Category
@@ -589,10 +531,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
                 Try it out
               </button>
               <div className="h-6 w-px bg-surface-highlight"></div>
-              <label className="switch">
-                <input checked={toggles.isHobbiesEnabled} onChange={(e) => handleToggle('isHobbiesEnabled', e.target.checked)} type="checkbox" />
-                <span className="slider"></span>
-              </label>
+              <Switch checked={toggles.isHobbiesEnabled} onChange={(v) => handleToggle('isHobbiesEnabled', v)} />
               <button
                 onClick={() => onToggleTool('hobbies')}
                 className={`p-1 rounded hover:bg-surface-highlight text-text-subtle hover:text-primary transition-colors ${expandedTools['hobbies'] ? 'rotate-180' : ''}`}
@@ -626,7 +565,8 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
               <button
                 onClick={saveHobbiesInfo}
                 disabled={updateToolboxConfigMutation.isPending}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm disabled:opacity-50"
+                className="w-full text-white py-2.5 rounded-lg text-sm font-medium transition-all shadow-sm disabled:opacity-50 hover:opacity-90"
+                style={{ background: 'var(--accent-blue)' }}
               >
                 {updateToolboxConfigMutation.isPending ? 'Saving...' : 'Save Fun Section'}
               </button>
@@ -653,10 +593,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
                 Try it out
               </button>
               <div className="h-6 w-px bg-surface-highlight"></div>
-              <label className="switch">
-                <input checked={toggles.isContactEnabled} onChange={(e) => handleToggle('isContactEnabled', e.target.checked)} type="checkbox" />
-                <span className="slider"></span>
-              </label>
+              <Switch checked={toggles.isContactEnabled} onChange={(v) => handleToggle('isContactEnabled', v)} />
               <button
                 onClick={() => onToggleTool('contact')}
                 className={`p-1 rounded hover:bg-surface-highlight text-text-subtle hover:text-primary transition-colors ${expandedTools['contact'] ? 'rotate-180' : ''}`}
@@ -712,7 +649,8 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
               <button
                 onClick={saveContactInfo}
                 disabled={updateToolboxConfigMutation.isPending}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm disabled:opacity-50"
+                className="w-full text-white py-2.5 rounded-lg text-sm font-medium transition-all shadow-sm disabled:opacity-50 hover:opacity-90"
+                style={{ background: 'var(--accent-blue)' }}
               >
                 {updateToolboxConfigMutation.isPending ? 'Saving...' : 'Save Contact Information'}
               </button>
@@ -739,10 +677,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
                 Try it out
               </button>
               <div className="h-6 w-px bg-surface-highlight"></div>
-              <label className="switch">
-                <input checked={toggles.isResumeEnabled} onChange={(e) => handleToggle('isResumeEnabled', e.target.checked)} type="checkbox" />
-                <span className="slider"></span>
-              </label>
+              <Switch checked={toggles.isResumeEnabled} onChange={(v) => handleToggle('isResumeEnabled', v)} />
               <button
                 onClick={() => onToggleTool('resume')}
                 className={`p-1 rounded hover:bg-surface-highlight text-text-subtle hover:text-primary transition-colors ${expandedTools['resume'] ? 'rotate-180' : ''}`}
@@ -810,7 +745,8 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
               <button
                 onClick={saveResumeInfo}
                 disabled={updateToolboxConfigMutation.isPending}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm disabled:opacity-50"
+                className="w-full text-white py-2.5 rounded-lg text-sm font-medium transition-all shadow-sm disabled:opacity-50 hover:opacity-90"
+                style={{ background: 'var(--accent-blue)' }}
               >
                 {updateToolboxConfigMutation.isPending ? 'Saving...' : 'Save Resume Information'}
               </button>
@@ -822,7 +758,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
         <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-[0_2px_8px_-2px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_24px_-8px_rgba(0,0,0,0.06)] hover:border-border transition-all duration-300 group">
           <div className="w-full flex items-center justify-between p-6">
             <div className="flex items-start gap-4">
-              <div className="size-10 rounded-lg bg-surface-highlight border border-border flex items-center justify-center text-text-muted group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+              <div className="size-10 rounded-lg border border-border flex items-center justify-center text-text-muted transition-colors duration-300 group-hover:text-white" style={{ background: 'var(--surface-highlight)' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--accent-blue)')} onMouseLeave={e => (e.currentTarget.style.background = 'var(--surface-highlight)')}>
                 <span className="material-symbols-outlined text-[20px]">movie</span>
               </div>
               <div>
@@ -837,10 +773,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
                 Try it out
               </button>
               <div className="h-6 w-px bg-surface-highlight"></div>
-              <label className="switch">
-                <input checked={toggles.isVideoEnabled} onChange={(e) => handleToggle('isVideoEnabled', e.target.checked)} type="checkbox" />
-                <span className="slider"></span>
-              </label>
+              <Switch checked={toggles.isVideoEnabled} onChange={(v) => handleToggle('isVideoEnabled', v)} />
               <button
                 onClick={() => onToggleTool('video')}
                 className={`p-1 rounded hover:bg-surface-highlight text-text-subtle hover:text-primary transition-colors ${expandedTools['video'] ? 'rotate-180' : ''}`}
@@ -892,7 +825,8 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
               <button
                 onClick={saveVideoInfo}
                 disabled={updateToolboxConfigMutation.isPending}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm disabled:opacity-50"
+                className="w-full text-white py-2.5 rounded-lg text-sm font-medium transition-all shadow-sm disabled:opacity-50 hover:opacity-90"
+                style={{ background: 'var(--accent-blue)' }}
               >
                 {updateToolboxConfigMutation.isPending ? 'Saving...' : 'Save Video'}
               </button>
@@ -904,7 +838,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
         <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-[0_2px_8px_-2px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_24px_-8px_rgba(0,0,0,0.06)] hover:border-border transition-all duration-300 group">
           <div className="w-full flex items-center justify-between p-6">
             <div className="flex items-start gap-4">
-              <div className="size-10 rounded-lg bg-surface-highlight border border-border flex items-center justify-center text-text-muted group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+              <div className="size-10 rounded-lg border border-border flex items-center justify-center text-text-muted transition-colors duration-300 group-hover:text-white" style={{ background: 'var(--surface-highlight)' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--accent-blue)')} onMouseLeave={e => (e.currentTarget.style.background = 'var(--surface-highlight)')}>
                 <span className="material-symbols-outlined text-[20px]">map</span>
               </div>
               <div>
@@ -919,10 +853,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
                 Try it out
               </button>
               <div className="h-6 w-px bg-surface-highlight"></div>
-              <label className="switch">
-                <input checked={toggles.isLocationEnabled} onChange={(e) => handleToggle('isLocationEnabled', e.target.checked)} type="checkbox" />
-                <span className="slider"></span>
-              </label>
+              <Switch checked={toggles.isLocationEnabled} onChange={(v) => handleToggle('isLocationEnabled', v)} />
               <button
                 onClick={() => onToggleTool('location')}
                 className={`p-1 rounded hover:bg-surface-highlight text-text-subtle hover:text-primary transition-colors ${expandedTools['location'] ? 'rotate-180' : ''}`}
@@ -958,7 +889,8 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
               <button
                 onClick={saveLocationInfo}
                 disabled={updateToolboxConfigMutation.isPending}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm disabled:opacity-50"
+                className="w-full text-white py-2.5 rounded-lg text-sm font-medium transition-all shadow-sm disabled:opacity-50 hover:opacity-90"
+                style={{ background: 'var(--accent-blue)' }}
               >
                 {updateToolboxConfigMutation.isPending ? 'Saving...' : 'Save Location'}
               </button>
@@ -967,24 +899,7 @@ const ToolsTab: React.FC<ToolsTabProps> = ({
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="mt-16 border-t border-border pt-8 pb-4">
-        <div className="flex flex-col md:flex-row justify-between items-center text-xs text-text-muted gap-4 font-medium">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-primary">Profolio</span>
-            <span>© 2025</span>
-          </div>
-          <div className="flex gap-6">
-            <a className="hover:text-primary transition-colors" href="#">Dashboard</a>
-            <a className="hover:text-primary transition-colors" href="#">Billing</a>
-            <a className="hover:text-primary transition-colors" href="#">Support</a>
-          </div>
-          <div className="flex gap-6">
-            <a className="hover:text-primary transition-colors" href="#">Terms</a>
-            <a className="hover:text-primary transition-colors" href="#">Privacy</a>
-          </div>
-        </div>
-      </footer>
+      <DashboardFooter />
     </div>
   );
 };

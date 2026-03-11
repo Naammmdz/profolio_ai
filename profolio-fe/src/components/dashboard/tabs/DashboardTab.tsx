@@ -1,6 +1,8 @@
 import React from 'react';
 import { usePortfolio } from '../../../hooks/usePortfolio';
 import { useQuestions } from '../../../hooks/useQuestions';
+import DashboardFooter from '../DashboardFooter';
+import DashboardTopBar from '../DashboardTopBar';
 
 interface DashboardTabProps {
   onPreview: () => void;
@@ -31,32 +33,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ onPreview, onNavigate }) =>
 
   return (
     <div className="p-8 lg:p-12 max-w-7xl mx-auto pb-32">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
-        <div className="hidden sm:block">
-          <button className="p-2 -ml-2 text-text-muted hover:text-primary transition-colors rounded-md hover:bg-surface-highlight">
-            <span className="material-symbols-outlined">dock_to_left</span>
-          </button>
-        </div>
-        <div className="flex items-center gap-3 self-end sm:self-auto">
-          <div className="bg-background border border-border text-text-muted px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 shadow-sm">
-            <span className={`size-1.5 rounded-full ${isPublished ? 'bg-green-500' : 'bg-orange-500'}`}></span>
-            {isPublished ? 'Published' : 'Draft Mode'}
-          </div>
-          <button
-            onClick={onPreview}
-            className="bg-background hover:bg-surface-highlight border border-border text-primary px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm flex items-center gap-2"
-          >
-            <span className="material-symbols-outlined text-[16px]">visibility</span>
-            Preview
-          </button>
-          <button
-            onClick={() => onNavigate('publish')}
-            className="bg-primary hover:opacity-90 text-primary-foreground px-5 py-2 rounded-lg text-sm font-medium transition-colors shadow-lg"
-          >
-            Publish Changes
-          </button>
-        </div>
-      </div>
+      <DashboardTopBar onPreview={onPreview} onPublish={() => onNavigate('publish')} />
       <div className="mb-10">
         <h1 className="text-5xl font-serif text-primary mb-3 tracking-tight">
           Hello{portfolio?.tagline ? `, ${portfolio.tagline.split(' ')[0]}` : ''}!
@@ -130,17 +107,20 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ onPreview, onNavigate }) =>
             <span className="text-2xl font-serif text-primary">{isPublished ? 'Published' : 'Draft'}</span>
           </div>
         </div>
-        <div className="bg-primary border border-primary rounded-lg p-6 shadow-md cursor-pointer group relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-            <span className="material-symbols-outlined text-primary-foreground text-6xl">analytics</span>
+        <div className="rounded-lg p-6 shadow-sm cursor-pointer group relative overflow-hidden border transition-all duration-300 hover:shadow-md" style={{ background: 'rgba(59,111,235,0.06)', borderColor: 'rgba(59,111,235,0.2)' }}>
+          <div className="absolute top-0 right-0 p-3 opacity-[0.07] group-hover:opacity-[0.12] transition-opacity">
+            <span className="material-symbols-outlined text-6xl" style={{ color: 'var(--accent-blue)' }}>analytics</span>
           </div>
           <div className="flex justify-between items-start mb-4 relative z-10">
-            <p className="text-sm font-medium text-text-muted group-hover:text-primary-foreground transition-colors">Analytics</p>
-            <span className="material-symbols-outlined text-text-muted group-hover:text-primary-foreground transition-colors">lock</span>
+            <p className="text-sm font-medium text-text-muted">Analytics</p>
+            <span className="material-symbols-outlined text-[18px]" style={{ color: 'var(--accent-blue)' }}>lock</span>
           </div>
           <div className="relative z-10">
-            <span className="block text-xl font-serif text-primary-foreground mb-1">Unlock Analytics</span>
-            <p className="text-xs text-text-muted group-hover:text-primary-foreground/80 transition-colors">Upgrade to see visitor insights</p>
+            <span className="block text-xl font-serif text-primary mb-1">Unlock Analytics</span>
+            <p className="text-xs text-text-muted">Upgrade to see visitor insights</p>
+          </div>
+          <div className="mt-4 relative z-10">
+            <span className="text-xs font-medium px-2.5 py-1 rounded-full text-white" style={{ background: 'var(--accent-blue)' }}>Upgrade →</span>
           </div>
         </div>
       </div>
@@ -149,53 +129,27 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ onPreview, onNavigate }) =>
       <div className="mb-12">
         <h3 className="text-xl font-serif text-primary mb-6">Quick Actions</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <button onClick={() => onNavigate('basic-info')} className="flex flex-col items-center justify-center py-8 px-4 bg-background border border-border rounded-lg shadow-sm hover:border-primary/20 hover:shadow-md transition-all group cursor-pointer">
-            <div className="size-10 rounded-full bg-surface border border-border flex items-center justify-center mb-3 group-hover:bg-primary group-hover:border-primary transition-colors">
-              <span className="material-symbols-outlined text-text-muted text-[20px] group-hover:text-primary-foreground transition-colors">globe</span>
-            </div>
-            <span className="text-sm font-medium text-primary group-hover:text-primary">Basic Info</span>
-            <span className="text-[10px] text-text-muted mt-1 font-mono">Edit details</span>
-          </button>
-          <button onClick={() => onNavigate('ai-personality')} className="flex flex-col items-center justify-center py-8 px-4 bg-background border border-border rounded-lg shadow-sm hover:border-primary/20 hover:shadow-md transition-all group cursor-pointer">
-            <div className="size-10 rounded-full bg-surface border border-border flex items-center justify-center mb-3 group-hover:bg-primary group-hover:border-primary transition-colors">
-              <span className="material-symbols-outlined text-text-muted text-[20px] group-hover:text-primary-foreground transition-colors">smart_toy</span>
-            </div>
-            <span className="text-sm font-medium text-primary group-hover:text-primary">AI Personality</span>
-            <span className="text-[10px] text-text-muted mt-1 font-mono">Adjust tone</span>
-          </button>
-          <button onClick={() => onNavigate('tools')} className="flex flex-col items-center justify-center py-8 px-4 bg-background border border-border rounded-lg shadow-sm hover:border-primary/20 hover:shadow-md transition-all group cursor-pointer">
-            <div className="size-10 rounded-full bg-surface border border-border flex items-center justify-center mb-3 group-hover:bg-primary group-hover:border-primary transition-colors">
-              <span className="material-symbols-outlined text-text-muted text-[20px] group-hover:text-primary-foreground transition-colors">construction</span>
-            </div>
-            <span className="text-sm font-medium text-primary group-hover:text-primary">Tools</span>
-            <span className="text-[10px] text-text-muted mt-1 font-mono">Integrations</span>
-          </button>
-          <button onClick={() => onNavigate('questions')} className="flex flex-col items-center justify-center py-8 px-4 bg-background border border-border rounded-lg shadow-sm hover:border-primary/20 hover:shadow-md transition-all group cursor-pointer">
-            <div className="size-10 rounded-full bg-surface border border-border flex items-center justify-center mb-3 group-hover:bg-primary group-hover:border-primary transition-colors">
-              <span className="material-symbols-outlined text-text-muted text-[20px] group-hover:text-primary-foreground transition-colors">help</span>
-            </div>
-            <span className="text-sm font-medium text-primary group-hover:text-primary">Questions</span>
-            <span className="text-[10px] text-text-muted mt-1 font-mono">Manage Q&A</span>
-          </button>
+          {[
+            { tab: 'basic-info', icon: 'globe', label: 'Basic Info', sub: 'Edit details' },
+            { tab: 'ai-personality', icon: 'smart_toy', label: 'AI Personality', sub: 'Adjust tone' },
+            { tab: 'tools', icon: 'construction', label: 'Tools', sub: 'Integrations' },
+            { tab: 'questions', icon: 'help', label: 'Questions', sub: 'Manage Q&A' },
+          ].map(({ tab, icon, label, sub }) => (
+            <button
+              key={tab}
+              onClick={() => onNavigate(tab)}
+              className="flex flex-col items-center justify-center py-8 px-4 bg-background border border-border rounded-lg shadow-sm hover:shadow-md transition-all group cursor-pointer hover:border-[var(--accent-blue)]"
+            >
+              <div className="size-10 rounded-full bg-surface border border-border flex items-center justify-center mb-3 group-hover:bg-[var(--accent-blue)] group-hover:border-[var(--accent-blue)] transition-colors">
+                <span className="material-symbols-outlined text-text-muted text-[20px] group-hover:text-white transition-colors">{icon}</span>
+              </div>
+              <span className="text-sm font-medium text-primary">{label}</span>
+              <span className="text-[10px] text-text-muted mt-1 font-mono">{sub}</span>
+            </button>
+          ))}
         </div>
       </div>
-      <footer className="mt-auto border-t border-border pt-8 pb-4">
-        <div className="flex flex-col md:flex-row justify-between items-center text-xs text-text-muted gap-4 font-mono">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-primary font-sans">Profolio</span>
-            <span>© 2025</span>
-          </div>
-          <div className="flex gap-6">
-            <a className="hover:text-primary transition-colors" href="#">Dashboard</a>
-            <a className="hover:text-primary transition-colors" href="#">Billing</a>
-            <a className="hover:text-primary transition-colors" href="#">Support</a>
-          </div>
-          <div className="flex gap-6">
-            <a className="hover:text-primary transition-colors" href="#">Terms</a>
-            <a className="hover:text-primary transition-colors" href="#">Privacy</a>
-          </div>
-        </div>
-      </footer>
+      <DashboardFooter />
     </div>
   );
 };

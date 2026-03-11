@@ -12,6 +12,7 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -26,6 +27,7 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
@@ -103,6 +105,14 @@ public class AuthorizationServerConfig {
     public OAuth2AuthorizationConsentService authorizationConsentService(
             JdbcTemplate jdbcTemplate, RegisteredClientRepository registeredClientRepository) {
         return new JdbcOAuth2AuthorizationConsentService(jdbcTemplate, registeredClientRepository);
+    }
+
+    @Bean
+    public AuthorizationServerSettings authorizationServerSettings(
+            @Value("${spring.security.oauth2.authorizationserver.provider.issuer}") String issuer) {
+        return AuthorizationServerSettings.builder()
+                .issuer(issuer)
+                .build();
     }
 
     // --- IMPORTANT ADDITION: JWK SOURCE ---
