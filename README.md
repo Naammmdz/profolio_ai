@@ -8,6 +8,8 @@
     <img src="https://img.shields.io/badge/Vite-6.2.0-purple.svg?style=flat-square&logo=vite" alt="Vite" />
     <img src="https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen.svg?style=flat-square&logo=spring" alt="Spring Boot" />
     <img src="https://img.shields.io/badge/PostgreSQL-12%2B-blue.svg?style=flat-square&logo=postgresql" alt="PostgreSQL" />
+    <img src="https://img.shields.io/badge/Docker-Enabled-2CA5E0.svg?style=flat-square&logo=docker" alt="Docker" />
+    <img src="https://img.shields.io/badge/Google%20Gemini-AI-orange.svg?style=flat-square&logo=google" alt="Google Gemini" />
   </p>
 </div>
 
@@ -17,165 +19,109 @@
 
 **Profolio AI** is a groundbreaking, interactive platform that moves beyond traditional static portfolios where recruiters only "scroll" and "read".
 
-This project allows users to upload their CV/Resume. The AI then processes, analyzes, and extracts the rich contextual data from this CV to **roleplay as the user**. 
+This project allows users to upload their CV/Resume. The AI then processes, analyzes, and extracts the rich contextual data from this document to **roleplay as the user**. 
 
 Instead of forcing viewers to blindly search for information, when a recruiter or guest visits your Portfolio link, they will experience a direct **"mock interview" (Interactive Chat)** with the AI. The AI intelligently and naturally answers questions about your work experience, skills, projects, and education... as if you were sitting right in front of the screen answering them.
 
 ## 🌟 Core Features
 
-- 🤖 **Interactive AI Persona**: It's not a static website. The AI assumes a persona, speaks in the first-person, and communicates with visitors/recruiters on your behalf.
-- 📄 **Smart CV Context (RAG/LLM)**: Seamlessly processes and extracts knowledge from uploaded CVs, fully learning their contents.
+- 🤖 **Interactive AI Persona**: Powered by Google Gemini, the AI assumes your persona, speaks in the first-person, and communicates with visitors on your behalf.
+- 📄 **Smart CV Context (RAG/LLM)**: Seamlessly processes your uploaded resume to fully learn your background, skills, and projects.
 - 🔗 **Shareable Public Links**: Generate and share your interactive portfolio via a public web link in seconds.
-- 🔐 **Security & Authorization**: Strictly enforces an OAuth2 Server architecture alongside the BFF Pattern for absolute data security.
+- 📸 **Project Showcase**: Display your projects with rich descriptions and carousels natively within the chat interface.
+- 🔐 **Grade-A Security**: Enforces an OAuth2 Server architecture alongside the BFF (Backend-for-Frontend) Pattern for absolute data security and session management.
 
 ## 🚀 Tech Stack
 
 ### 🎨 Frontend (`profolio-fe`)
-- **Framework & Libraries**: React 18.3.1, TypeScript 5.8.2, Vite 6.2.0
-- **UI & Animation**: Tailwind CSS, Framer Motion 11.0.8
-- **Network**: Axios 1.7.9
+- **Core**: React 18.3.1, TypeScript 5.8.2, Vite 6.2.0
+- **UI & Animation**: Tailwind CSS, Framer Motion, Lucide React
+- **Network & State**: Axios, React Router v6
 
-### ⚙️ Backend (`profolio-be`)
+### ⚙️ Backend Services (`profolio-be`)
 
-| Component | Core Technology | Function/Role |
+| Service | Core Technology | Role |
 |---|---|---|
-| **API Gateway (AGW)** | Spring Boot 3.5.6, Spring Cloud Gateway, WebFlux | Entry point for incoming requests, routing, and load balancing. |
-| **Authorization Server** | Spring Auth Server, Spring Security, JWT, BFF | Manages OAuth2/OIDC standard authentication, users, and authorization. |
-| **Database** | PostgreSQL 12+, Flyway, Consul Discovery | Distributed storage and automated database schema version control. |
+| **API Gateway (AGW)** | Spring Cloud Gateway | Front-door routing, load balancing, and edge security. |
+| **Auth Server** | Spring Auth Server / Spring Security | Manages OAuth2/OIDC standards, user identity, and BFF Token exchange. |
+| **Portfolio Service** | Spring Boot, SpringAI, Google Gemini | Core business logic, LLM integration, user configuration, and interactions. |
+| **Infrastructure** | PostgreSQL, MinIO, Consul | Persistent storage, S3-compatible object storage, and service discovery. |
 
-## 🏗️ Architecture & Security 
+## 🏗️ Architecture Design
 
-The system embraces a closed-loop authentication design using the **OAuth2 Authorization Code Flow** coupled with the **BFF (Backend-for-Frontend) Pattern**, ensuring that Access Tokens are completely hidden from the Client through these techniques:
-
-- ✅ **Absolute Security**: Access Tokens & Refresh Tokens are stored server-side.
-- ✅ **HttpOnly Cookies**: Complete protection against Cookie theft attacks (e.g., XSS).
-- ✅ **CSRF Protection**: Utilizes state mechanisms combined with login flow encryption.
-- ✅ **Secure Encryption**: Standard JWT RS256 signing and BCrypt Password Hashing.
-
-### OAuth2 Authentication Flow
+Profolio AI operates on a modern microservices architecture with a dedicated Authorization Server handling the secure OAuth2 Authorization Code flow via a BFF implementation.
 
 ```mermaid
-sequenceDiagram
-    autonumber
-    participant Browser as Browser
-    participant API as BFF (/api/auth/exchange)
-    participant Auth as Auth Server (/oauth2/authorize)
-
-    Browser->>Auth: User accesses Login page
-    Note right of Auth: Login/Register View served by Auth Server
-    Auth-->>Browser: Redirect to Callback (with Auth Code attached)
-    Browser->>API: Send Authorization Code
-    Note right of API: Token retrieval logic is concealed
-    API->>Auth: Exchange Code for Token (Server-to-Server)
-    Auth-->>API: Return encrypted resources (JWT Tokens)
-    API-->>Browser: Set Session via HttpOnly Cookie
-    Browser->>API: Subsequent API logic calls (with Cookie in header)
+graph TD
+    Client[Web Browser Frontend] -->|HTTP Requests| AGW(API Gateway)
+    AGW -->|Route: /api/auth| Auth((Authorization Server))
+    AGW -->|Route: /api/v1| Portfolio((Portfolio Service))
+    
+    Auth -.-> DB_Auth[(Auth DB)]
+    Portfolio -.-> DB_Port[(Portfolio DB)]
+    Portfolio -.-> MinIO[(MinIO Object Storage)]
+    Portfolio <-->|Prompt & History| Gemini[Google Gemini AI API]
+    
+    Consul[[Consul Service Discovery]] -.-> AGW
+    Consul -.-> Auth
+    Consul -.-> Portfolio
 ```
+
+### Security Flow (BFF + HttpOnly Cookies)
+The system embraces a closed-loop authentication design ensuring Access Tokens are never exposed to the browser.
+- ✅ **Secure Storage**: Access & Refresh Tokens are persisted solely on the Auth Server backend.
+- ✅ **HttpOnly Cookies**: Prevents Cookie theft (XSS).
+- ✅ **Secure Exchange**: The Frontend only passes a short-lived Authorization Code which the BFF exchanges internally for a Token.
 
 ## 📁 Project Structure
 
-The project utilizes the **Monorepo** convention, decoupling the Client and Server services.
-
 ```text
 profolio_ai/
-├── profolio-fe/              # Frontend Platform (Vite + React)
-│   ├── components/           # UI Components (auth, dashboard, portfolio, ...)
-│   ├── src/
-│   │   ├── config/           # API configurations and Env variables
-│   │   ├── services/         # API interaction and OAuth2 services
-│   │   └── types/            # TypeScript Definitions & Mappings
-│   └── package.json
+├── docker-compose.yml        # All-in-one local deployment
+├── profolio-fe/              # Frontend Application (React/Vite)
+│   ├── src/components/       # UI Components & Pages
+│   └── src/services/         # API integrations
 │
-└── profolio-be/              # Backend Services Platform
-    ├── AGW/                  # API Gateway (Spring Cloud Gateway)
-    │   └── src/main/resources/application.yml
-    │
-    └── AuthorizationServer/  # Standard OAuth2 Authorization Server
-        ├── src/main/java/com/naammm/authorizationserver/
-        │   ├── bff/          # BFF Pattern Implementation 
-        │   ├── config/       # Security & OAuth2 Rules Configuration
-        │   └── controller/   # REST Controllers for retrieval services
-        ├── src/main/resources/
-        │   ├── db/migration/ # Database Schemas (Flyway)
-        │   └── templates/    # UI Views for Auth Server (Login/Register template)
-        └── README.md         # Detailed AuthServer Document
+└── profolio-be/              # Backend Microservices Hub
+    ├── AGW/                  # API Gateway Service
+    ├── AuthorizationServer/  # Identity & OAuth2 Provider
+    └── PortfolioService/     # Main Business & AI Logic Service
 ```
 
-## 🛠️ Installation & Setup
+## 🛠️ Quick Start (Docker)
+
+The fastest way to spin up the entire system (Frontend, All 3 Backend Services, PostgreSQL, MinIO, and Consul) is via Docker Compose.
 
 ### Prerequisites
-- **Node.js**: Minimum version 18.x
-- **Java**: Java Virtual Machine 21 or higher
-- **Maven**: 3.8+ 
-- **PostgreSQL**: 12.x+
-- **Consul** _(Optional: used for Service Discovery)_
+- **Docker** and **Docker Compose** installed
+- A valid **Google Gemini API Key**
 
----
+### 1. Environment Setup
+Create a `.env` file in the root directory and inject your Gemini API key and public URL (if deploying):
 
-### Step 1: Start Frontend
-Open your Terminal, navigate to `profolio-fe`:
-```bash
-cd profolio-fe
-npm install
-npm run dev
-```
-> **Frontend:** Accessible at `http://localhost:3000`
-
-Create a static environment file `.env.local` at the root of `profolio-fe`:
 ```env
-VITE_API_BASE_URL=http://localhost:8080/api
-VITE_AUTH_SERVER_URL=http://localhost:9000
-VITE_OAUTH_CLIENT_ID=auth-code-client
-VITE_OAUTH_REDIRECT_URI=http://localhost:3000/callback
+GOOGLE_AI_API_KEY=your_gemini_api_key_here
+PUBLIC_URL=http://localhost:4000
+MINIO_PUBLIC_URL=http://localhost:9002
 ```
 
-### Step 2: Start Authorization Server
-Set up your Database connection (ensure PostgreSQL is running). Configure the Data Source and start the authorization module:
+### 2. Launch Everything
+Run the following command at the root directory:
 
 ```bash
-cd profolio-be/AuthorizationServer
-
-# Local Database config (Default Port 5432)
-export DATABASE_URL=jdbc:postgresql://localhost:5432/authdb
-export DATABASE_USERNAME=postgres
-export DATABASE_PASSWORD=your_password
-
-mvn spring-boot:run
+docker compose up -d --build
 ```
-> **Auth Server:** Service configuration accessible at `http://localhost:9000` *(For advanced configurations, see `[AuthorizationServer/README.md]`)*
 
-### Step 3: Start API Gateway (AGW)
-The Gateway acts as a firewall filtering all requests entering the system.
+### 3. Access the Application
+Once all containers report as "healthy", you can access the platform at:
+- **Frontend App**: `http://localhost:4000`
+- **Consul Dashboard**: `http://localhost:8500`
+- **MinIO Console**: `http://localhost:9001` (Credentials: `minioadmin` / `minioadmin`)
 
-```bash
-cd profolio-be/AGW
-
-export CONSUL_HOST=localhost
-export CONSUL_PORT=8500
-
-mvn spring-boot:run
-```
-> **API Gateway:** Runs by default at `http://localhost:8080`
-
-## 📡 Highlighted API Endpoints
-
-**Public APIs:**
-- `POST /api/auth/register` - Register a project account (User Ecosystem).
-- `GET /oauth2/authorize` - Endpoint navigating the OAuth2 Authorization Code cycle.
-- `POST /api/auth/exchange` - Exchange layer (BFF) Authorization Code to Session Cookie.
-
-**Protected APIs (Requires HttpOnly Cookie):**
-- `GET /api/auth/me` - Query information of the current user Session.
-- `POST /api/auth/logout` - Logout and completely destroy all Tokens & Cookies across all dimensions.
-
-## 📚 Project References
-To dive deeper, explore the following additional documents:
-1. [📄 Authorization Server Readme](profolio-be/AuthorizationServer/README.md) - Deep dive into Backend OAuth2 implementation.
-2. [📄 Database Schema Layout (SQL)](profolio-fe/docs/DATABASE_SCHEMA.sql) - Visualizing data repository structures.
-3. [📄 Entity Model Structure](profolio-fe/docs/ENTITY_MODELS.md) - UML Mapping.
+*(Note: During the first launch, it may take 1-2 minutes for all services to initialize and register with Consul).*
 
 ## 🤝 Contributing
-The project is still actively expanding; we are very eager to accept **Issues** and **Pull Requests** to grow the ecosystem further.
+The project is actively expanding and we welcome **Issues** and **Pull Requests**. Whether it's adding a new AI personality trait, optimizing the UI, or enhancing the backend architecture — your contributions are appreciated!
 
 ---
 
