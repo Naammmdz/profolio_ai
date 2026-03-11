@@ -159,12 +159,52 @@ public class ChatService {
             }
         }
 
-        sb.append("### GUIDELINES:\n");
-        sb.append("- Be concise but helpful.\n");
+        sb.append("### OUTPUT FORMAT — CRITICAL:\n");
+        sb.append("You MUST respond with ONLY valid JSON. No explanation outside the JSON. No markdown code fences.\n");
+        sb.append("Follow this EXACT schema:\n");
+        sb.append("{\n");
+        sb.append("  \"type\": \"PROFILE\" | \"SKILLS\" | \"PROJECTS\" | \"CONTACT\" | \"LOCATION\" | \"RESUME\" | \"HOBBIES\" | \"MIXED\" | \"GENERAL\",\n");
+        sb.append("  \"lead\": \"Short engaging opening sentence (1-2 sentences max, first person)\",\n");
+        sb.append("  \"cards\": [\n");
+        sb.append("    {\n");
+        sb.append("      \"section_type\": \"SKILLS\" | \"PROJECTS\" | \"PROFILE\" | \"CONTACT\" | \"GENERAL\",  // which topic this card belongs to\n");
+        sb.append("      \"title\": \"optional card title\",\n");
+        sb.append("      \"text\": \"optional body text for this card (keep short, 1-3 sentences)\",\n");
+        sb.append("      \"tags\": [\"tag1\", \"tag2\", \"tag3\"]\n");
+        sb.append("    }\n");
+        sb.append("  ],\n");
+        sb.append("  \"followUp\": \"Short engaging follow-up question to visitor\"\n");
+        sb.append("}\n\n");
+
+        sb.append("### TYPE SELECTION RULES:\n");
+        sb.append("- Question about yourself/who you are → type: \"PROFILE\"\n");
+        sb.append("  cards = [{section_type:\"PROFILE\", title:\"Background\", text:\"...\", tags:[key tech]}, {section_type:\"PROFILE\", title:\"What I Do\", text:\"...\"}]\n");
+        sb.append("- Question about skills/stack → type: \"SKILLS\"\n");
+        sb.append("  cards = one card per skill category with section_type:\"SKILLS\": [{title:\"Languages\", tags:[\"Java\",\"JS\"]}, {title:\"Frameworks\", tags:[\"Spring Boot\"]}]\n");
+        sb.append("- Question about projects → type: \"PROJECTS\"\n");
+        sb.append("  cards = one card per project with section_type:\"PROJECTS\": [{title:\"Project Name\", text:\"short description\", tags:[\"tech used\"]}]\n");
+        sb.append("- Question about contact → type: \"CONTACT\"\n");
+        sb.append("  cards = [{section_type:\"CONTACT\", title:\"Email\", text:\"email@example.com\"}, ...]\n");
+        sb.append("- Question about location → type: \"LOCATION\"\n");
+        sb.append("  cards = [{section_type:\"GENERAL\", title:\"Based in\", text:\"City, Country\"}]\n");
+        sb.append("- Question about resume/CV → type: \"RESUME\"\n");
+        sb.append("  cards = [{section_type:\"GENERAL\", title:\"Resume\", text:\"brief description\", tags:[\"PDF\"]}]\n");
+        sb.append("- Question about hobbies/interests → type: \"HOBBIES\"\n");
+        sb.append("  cards = [{section_type:\"GENERAL\", title:\"Hobby Name\", text:\"brief description\"}]\n");
+        sb.append("- MIXED question (e.g. 'skills AND projects', 'tell me about yourself and your work') → type: \"MIXED\"\n");
+        sb.append("  Include cards from MULTIPLE topics. Use section_type to tag each card correctly.\n");
+        sb.append("  Example: [{section_type:\"SKILLS\", title:\"Languages\", tags:[...]}, {section_type:\"PROJECTS\", title:\"ProjectA\", text:\"...\", tags:[...]}]\n");
+        sb.append("- Any single-topic question not listed → type: \"GENERAL\"\n");
+        sb.append("  cards = [{section_type:\"GENERAL\", text:\"your answer in 2-3 sentences\"}]\n\n");
+
+        sb.append("### RULES:\n");
+        sb.append("- ONLY output JSON. Nothing else. No intro text, no code blocks.\n");
+        sb.append("- Always use first person.\n");
         if (p.getCommunicationStyle() != null) {
-            sb.append("- Maintain a '").append(p.getCommunicationStyle()).append("' tone throughout the conversation.\n");
+            sb.append("- Maintain a '").append(p.getCommunicationStyle()).append("' tone.\n");
         }
-        sb.append("- If you don't know something based on the context, answer gracefully in character, perhaps saying you'd love to discuss that more in a real interview.\n");
+        sb.append("- Tags array should contain short labels only (1-3 words each).\n");
+        sb.append("- Never fabricate data not in the context. Answer gracefully if unsure.\n");
 
         return sb.toString();
     }

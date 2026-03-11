@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from 'react-oidc-context';
 import apiClient from '../../config/api';
 import { portfolioApi } from '../../services/portfolioApi';
-import { ToolboxConfig } from '../../types/portfolio';
+import { ToolboxConfig, Project } from '../../types/portfolio';
 import SplashCursor from '../common/SplashCursor';
 
 interface Message {
@@ -15,52 +15,353 @@ interface PortfolioPreviewProps {
   onBack: () => void;
 }
 
-// ── Theme Definitions ──────────────────────────────────────────────────────────
+// ── Projects Carousel ────────────────────────────────────────────────────────
+const CARD_GRADIENTS = [
+  'from-gray-900 to-gray-700',
+  'from-slate-800 to-slate-600',
+  'from-zinc-900 to-zinc-600',
+  'from-stone-800 to-stone-600',
+  'from-neutral-900 to-neutral-700',
+];
+
+const ProjectDetailModal: React.FC<{ project: Project; onClose: () => void }> = ({ project, onClose }) => (
+  <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onClose}>
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 40 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      className="w-full max-w-lg bg-white rounded-3xl shadow-2xl p-7 relative max-h-[85vh] overflow-y-auto"
+      onClick={e => e.stopPropagation()}
+    >
+      <button onClick={onClose} className="absolute top-5 right-5 size-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 transition-colors">
+        <span className="material-symbols-outlined text-[18px]">close</span>
+      </button>
+
+      {project.category && (
+        <span className="inline-block px-3 py-1 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-500 mb-3">
+          {project.category}
+        </span>
+      )}
+
+      <h2 className="text-2xl font-serif font-bold text-gray-900 mb-1">{project.title}</h2>
+
+      {project.date && (
+        <p className="text-[12px] text-gray-400 mb-4">{project.date}</p>
+      )}
+
+      {project.description && (
+        <p className="text-[14px] leading-relaxed text-gray-600 mb-5 whitespace-pre-wrap">{project.description}</p>
+      )}
+
+      {project.tags && project.tags.length > 0 && (
+        <div className="mb-5">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 mb-2">Tech Stack</p>
+          <div className="flex flex-wrap gap-1.5">
+            {project.tags.map((tag, i) => (
+              <span key={i} className="px-3 py-1 rounded-full text-[12px] font-semibold bg-gray-900 text-white">{tag}</span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {project.links && project.links.length > 0 && (
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 mb-2">Links</p>
+          <div className="flex flex-col gap-2">
+            {project.links.map((link, i) => (
+              <a key={i} href={link} target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-[13px] text-blue-600 hover:underline">
+                <span className="material-symbols-outlined text-[14px]">link</span>
+                {link}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </motion.div>
+  </div>
+);
+
+const ProjectsCarousel: React.FC<{ projects: Project[] }> = ({ projects }) => {
+  const [selected, setSelected] = useState<Project | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (dir: 'left' | 'right') => {
+    if (!scrollRef.current) return;
+    scrollRef.current.scrollBy({ left: dir === 'right' ? 200 : -200, behavior: 'smooth' });
+  };
+
+  return (
+    <>
+      <div
+        ref={scrollRef}
+        className="flex gap-3 overflow-x-auto pb-1"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        {projects.map((p, i) => (
+          <button
+            key={p.id ?? i}
+            onClick={() => setSelected(p)}
+            className="shrink-0 w-44 text-left rounded-2xl bg-white border border-gray-200 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col overflow-hidden"
+            style={{ height: '278px' }}
+          >
+            <div className="flex-1 flex flex-col p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-400">
+                  {p.category || 'Project'}
+                </span>
+                <span className="text-[10px] font-mono text-gray-300">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+              </div>
+
+              <p className="text-gray-900 font-serif text-[16px] font-bold leading-snug mb-2 line-clamp-4 flex-1">
+                {p.title}
+              </p>
+
+              {p.description && (
+                <p className="text-[11px] text-gray-400 leading-relaxed line-clamp-2 mb-3">
+                  {p.description}
+                </p>
+              )}
+
+              {p.tags && p.tags.length > 0 && (
+                <div className="flex gap-1 flex-wrap mt-auto">
+                  {p.tags.slice(0, 3).map((t, j) => (
+                    <span key={j} className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 font-medium">{t}</span>
+                  ))}
+                  {p.tags.length > 3 && <span className="text-[10px] text-gray-400">+{p.tags.length - 3}</span>}
+                </div>
+              )}
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {/* Arrow nav */}
+      <div className="flex gap-2 mt-3 justify-end">
+        <button onClick={() => scroll('left')} className="size-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors">
+          <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+        </button>
+        <button onClick={() => scroll('right')} className="size-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors">
+          <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </button>
+      </div>
+
+      <AnimatePresence>
+        {selected && <ProjectDetailModal project={selected} onClose={() => setSelected(null)} />}
+      </AnimatePresence>
+    </>
+  );
+};
+
+
+// ── ConnectedProjectsCard — fetches real data then renders carousel ────────
+const ConnectedProjectsCard: React.FC<{ lead?: string; followUp?: string; textClass: string }> = ({ lead, followUp, textClass }) => {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    portfolioApi.getProjects()
+      .then(data => setProjects(data.sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))))
+      .catch(() => setProjects([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  return (
+    <div className={`${textClass} space-y-3`}>
+      {lead && <p className="text-[15px] leading-relaxed">{lead}</p>}
+      {loading ? (
+        <div className="flex gap-1.5 py-3">
+          {[0, 150, 300].map(d => <span key={d} className="size-2.5 rounded-full bg-current opacity-30 animate-bounce" style={{ animationDelay: `${d}ms` }} />)}
+        </div>
+      ) : projects.length === 0 ? (
+        <p className="text-[14px] opacity-50">No projects added yet.</p>
+      ) : (
+        <ProjectsCarousel projects={projects} />
+      )}
+      {followUp && <p className="text-[14px] mt-2 opacity-50 italic">{followUp}</p>}
+    </div>
+  );
+};
+
+// ── AI Response types ──────────────────────────────────────────────────────
+interface AICard { section_type?: string; title?: string; text?: string; tags?: string[]; }
+interface AIResponse {
+  type: 'PROFILE' | 'SKILLS' | 'PROJECTS' | 'CONTACT' | 'LOCATION' | 'RESUME' | 'HOBBIES' | 'MIXED' | 'GENERAL';
+  lead?: string;
+  cards?: AICard[];
+  followUp?: string;
+}
+
+function parseAIResponse(raw: string): AIResponse | null {
+  try {
+    // Strip markdown code fences if AI wraps in ```json ... ```
+    const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+    return JSON.parse(cleaned) as AIResponse;
+  } catch {
+    return null;
+  }
+}
+
+// Single neutral tag badge — no multi-color
+const TagBadge: React.FC<{ label: string }> = ({ label }) => (
+  <span className="inline-flex items-center px-3 py-1 rounded-full text-[12px] font-semibold bg-gray-900 text-white">
+    {label}
+  </span>
+);
+
+const AICard: React.FC<{ card: AICard }> = ({ card }) => (
+  <div className="mb-3">
+    {card.title && <p className="text-[11px] font-semibold uppercase tracking-widest opacity-40 mb-1.5">{card.title}</p>}
+    {card.text && <p className="text-[15px] leading-relaxed mb-2">{card.text}</p>}
+    {card.tags && card.tags.length > 0 && (
+      <div className="flex flex-wrap gap-1.5">
+        {card.tags.map((tag, i) => (
+          <TagBadge key={i} label={tag} />
+        ))}
+      </div>
+    )}
+  </div>
+);
+
+const SECTION_LABELS: Record<string, string> = {
+  SKILLS: '🛠 Skills',
+  PROJECTS: '📁 Projects',
+  PROFILE: '👤 About',
+  CONTACT: '📬 Contact',
+  HOBBIES: '🎯 Interests',
+  GENERAL: '',
+};
+
+const AIResponseRenderer: React.FC<{ content: string; textClass: string }> = ({ content, textClass }) => {
+  const parsed = parseAIResponse(content);
+
+  if (!parsed) {
+    return <p className={`text-[15px] leading-relaxed ${textClass} whitespace-pre-wrap`}>{content}</p>;
+  }
+
+  const { type, lead, cards = [], followUp } = parsed;
+
+  // PROJECTS type → use real data carousel instead of AI cards
+  if (type === 'PROJECTS') {
+    return <ConnectedProjectsCard lead={lead} followUp={followUp} textClass={textClass} />;
+  }
+
+  // For MIXED: group cards by section_type and render with section headers
+  let renderedCards: React.ReactNode;
+  if (type === 'MIXED' && cards.some(c => c.section_type)) {
+    const groups: { section: string; items: AICard[] }[] = [];
+    cards.forEach(card => {
+      const s = (card.section_type || 'GENERAL').toUpperCase();
+      const last = groups[groups.length - 1];
+      if (last && last.section === s) {
+        last.items.push(card);
+      } else {
+        groups.push({ section: s, items: [card] });
+      }
+    });
+    renderedCards = (
+      <div className="space-y-6">
+        {groups.map((group, gi) => (
+          <div key={gi}>
+            {SECTION_LABELS[group.section] && (
+              <p className="text-[11px] font-bold uppercase tracking-widest opacity-30 mb-3">
+                {SECTION_LABELS[group.section]}
+              </p>
+            )}
+            {/* PROJECTS group → real carousel */}
+            {group.section === 'PROJECTS' ? (
+              <ConnectedProjectsCard textClass={textClass} />
+            ) : (
+              <div className="space-y-4">
+                {group.items.map((card, i) => (
+                  <AICard key={i} card={card} />
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  } else if (cards.some(c => (c.section_type || '').toUpperCase() === 'PROJECTS')) {
+    // Non-MIXED but has project cards — use carousel for them
+    const nonProjectCards = cards.filter(c => (c.section_type || '').toUpperCase() !== 'PROJECTS');
+    renderedCards = (
+      <div className="space-y-4">
+        {nonProjectCards.map((card, i) => <AICard key={i} card={card} />)}
+        <ConnectedProjectsCard textClass={textClass} />
+      </div>
+    );
+  } else {
+    renderedCards = (
+      <div className="space-y-4">
+        {cards.map((card, i) => (
+          <AICard key={i} card={card} />
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className={`${textClass} space-y-1`}>
+      {lead && <p className="text-[15px] leading-relaxed mb-4">{lead}</p>}
+      {cards.length > 0 && renderedCards}
+      {followUp && <p className="text-[14px] mt-4 opacity-50 italic">{followUp}</p>}
+    </div>
+  );
+};
+
+
 const THEMES = {
   DEFAULT: {
     bg: 'bg-gray-50',
     text: 'text-gray-900',
-    inputBg: 'bg-white/70 focus:bg-white/95',
+    inputBg: 'bg-white',
     inputBorder: 'border-gray-200',
-    inputFocus: 'focus:ring-gray-300',
     inputText: 'text-gray-900 placeholder:text-gray-400',
-    sendBtn: 'bg-gray-800 hover:bg-gray-900',
-    quickBtn: 'bg-white border-gray-100 hover:bg-gray-50 text-gray-800',
-    userBubble: 'bg-gray-800 text-white rounded-tr-sm',
-    aiBubble: 'bg-white text-gray-800 border border-gray-200 rounded-tl-sm',
+    sendBtn: 'bg-gray-900 hover:bg-gray-800',
+    chipBtn: 'bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 shadow-sm',
+    userBubble: 'bg-gray-900 text-white',
+    aiBubble: 'bg-white text-gray-800 border border-gray-100 shadow-sm',
     typingDot: 'bg-gray-400',
-    heroText: 'text-black',
-    subText: 'text-gray-700',
+    heroText: 'text-gray-900',
+    subText: 'text-gray-500',
+    card: 'bg-white border border-gray-100 shadow-sm',
+    divider: 'border-gray-100',
   },
   DARK: {
     bg: 'bg-zinc-950',
     text: 'text-zinc-100',
-    inputBg: 'bg-zinc-800/80 focus:bg-zinc-800',
+    inputBg: 'bg-zinc-800',
     inputBorder: 'border-zinc-700',
-    inputFocus: 'focus:ring-zinc-600',
     inputText: 'text-zinc-100 placeholder:text-zinc-500',
     sendBtn: 'bg-blue-600 hover:bg-blue-500',
-    quickBtn: 'bg-zinc-800 border-zinc-700 hover:bg-zinc-700 text-zinc-100',
-    userBubble: 'bg-blue-600 text-white rounded-tr-sm',
-    aiBubble: 'bg-zinc-800 text-zinc-100 border border-zinc-700 rounded-tl-sm',
+    chipBtn: 'bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 text-zinc-200',
+    userBubble: 'bg-blue-600 text-white',
+    aiBubble: 'bg-zinc-800 text-zinc-100 border border-zinc-700',
     typingDot: 'bg-zinc-500',
     heroText: 'text-white',
     subText: 'text-zinc-400',
+    card: 'bg-zinc-900 border border-zinc-700',
+    divider: 'border-zinc-800',
   },
   PLAYFUL: {
     bg: 'bg-gradient-to-br from-purple-50 via-pink-50 to-amber-50',
     text: 'text-gray-900',
-    inputBg: 'bg-white/80 focus:bg-white',
+    inputBg: 'bg-white/90',
     inputBorder: 'border-purple-200',
-    inputFocus: 'focus:ring-purple-300',
     inputText: 'text-gray-900 placeholder:text-purple-300',
     sendBtn: 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600',
-    quickBtn: 'bg-white border-purple-100 hover:bg-purple-50 text-purple-800',
-    userBubble: 'bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-tr-sm',
-    aiBubble: 'bg-white text-gray-800 border border-purple-100 rounded-tl-sm',
+    chipBtn: 'bg-white border border-purple-100 hover:bg-purple-50 text-purple-800',
+    userBubble: 'bg-gradient-to-r from-purple-500 to-pink-500 text-white',
+    aiBubble: 'bg-white text-gray-800 border border-purple-100 shadow-sm',
     typingDot: 'bg-purple-400',
     heroText: 'bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent',
-    subText: 'text-purple-700',
+    subText: 'text-purple-600',
+    card: 'bg-white border border-purple-100 shadow-sm',
+    divider: 'border-purple-100',
   },
 } as const;
 
@@ -71,10 +372,13 @@ const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({ onBack }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
   const [portfolio, setPortfolio] = useState<any>(null);
   const [toolboxConfig, setToolboxConfig] = useState<ToolboxConfig | null>(null);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const contentEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const hasConversation = messages.length > 0 || isLoading;
 
   const isGlobalEnabled = toolboxConfig?.isGlobalEnabled !== false;
@@ -91,7 +395,7 @@ const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({ onBack }) => {
   ].filter(action => action.isEnabled);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    contentEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   useEffect(() => {
@@ -100,7 +404,6 @@ const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({ onBack }) => {
         const response = await apiClient.get('/v1/portfolio');
         const payload = response.data?.data ?? response.data;
         setPortfolio(payload);
-        // Auto-show welcome modal if configured
         if (payload?.isWelcomeModalEnabled && payload?.modalTitle) {
           setShowWelcomeModal(true);
         }
@@ -108,7 +411,7 @@ const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({ onBack }) => {
           const toolsData = await portfolioApi.getToolboxConfig();
           setToolboxConfig(toolsData);
         } catch (e) {
-          console.warn("Could not fetch toolbox config, defaulting to all enabled.");
+          console.warn('Could not fetch toolbox config.');
         }
       } catch (err) {
         console.error('Error fetching portfolio:', err);
@@ -131,8 +434,7 @@ const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({ onBack }) => {
       const payload = response.data?.data ?? response.data;
       setMessages(prev => [...prev, { role: 'assistant', content: payload.reply }]);
     } catch (err) {
-      console.error('Chat error:', err);
-      setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, I encountered an error. Please try again." }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' }]);
     } finally {
       setIsLoading(false);
     }
@@ -141,184 +443,250 @@ const PortfolioPreview: React.FC<PortfolioPreviewProps> = ({ onBack }) => {
   const profileGreeting = portfolio?.headline || 'Hello 👋';
   const userTitle = portfolio?.tagline || 'Portfolio';
 
-  // Resolve theme — fallback to DEFAULT if unknown value
   const themeKey: ThemeKey = (portfolio?.theme as ThemeKey) in THEMES
     ? (portfolio?.theme as ThemeKey)
     : 'DEFAULT';
   const t = THEMES[themeKey];
 
+  // Last user message (for bubble display)
+  const lastUserMsg = [...messages].reverse().find(m => m.role === 'user');
+
   return (
     <div className={`${t.bg} ${t.text} font-sans h-screen flex flex-col relative overflow-hidden transition-colors duration-300`}>
-      {/* Cursors */}
       {portfolio?.cursorAnimation === 'FLUID' && <SplashCursor />}
 
-      {/* Welcome Modal */}
+      {/* ── Welcome Modal ─────────────────────────── */}
       {showWelcomeModal && portfolio?.modalTitle && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setShowWelcomeModal(false)}>
-          <div
-            className={`relative w-full max-w-md rounded-2xl shadow-2xl border p-8 ${themeKey === 'DARK'
-              ? 'bg-zinc-900 border-zinc-700 text-zinc-100'
-              : 'bg-white border-gray-100 text-gray-900'
-              }`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setShowWelcomeModal(false)}
-              className={`absolute top-4 right-4 size-8 flex items-center justify-center rounded-full transition-colors ${themeKey === 'DARK' ? 'hover:bg-zinc-700 text-zinc-400' : 'hover:bg-gray-100 text-gray-400'
-                }`}
-            >
+          <div className={`relative w-full max-w-md rounded-2xl shadow-2xl border p-8 ${themeKey === 'DARK' ? 'bg-zinc-900 border-zinc-700 text-zinc-100' : 'bg-white border-gray-100 text-gray-900'}`} onClick={e => e.stopPropagation()}>
+            <button onClick={() => setShowWelcomeModal(false)} className={`absolute top-4 right-4 size-8 flex items-center justify-center rounded-full transition-colors ${themeKey === 'DARK' ? 'hover:bg-zinc-700 text-zinc-400' : 'hover:bg-gray-100 text-gray-400'}`}>
               <span className="material-symbols-outlined text-[20px]">close</span>
             </button>
             <h2 className="text-xl font-bold mb-3">{portfolio.modalTitle}</h2>
-            {portfolio.modalContent && (
-              <p className={`text-sm leading-relaxed whitespace-pre-wrap ${themeKey === 'DARK' ? 'text-zinc-400' : 'text-gray-500'
-                }`}>{portfolio.modalContent}</p>
-            )}
-            <button
-              onClick={() => setShowWelcomeModal(false)}
-              className="mt-6 w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
-              style={{ background: 'var(--accent-blue, #3b6feb)' }}
-            >
-              Got it
-            </button>
+            {portfolio.modalContent && <p className={`text-sm leading-relaxed whitespace-pre-wrap ${themeKey === 'DARK' ? 'text-zinc-400' : 'text-gray-500'}`}>{portfolio.modalContent}</p>}
+            <button onClick={() => setShowWelcomeModal(false)} className="mt-6 w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90" style={{ background: 'var(--accent-blue, #3b6feb)' }}>Got it</button>
           </div>
         </div>
       )}
-      {/* Banner */}
-      <div className="relative bg-[#f1e38b] border-b border-[#d7ca73] py-2.5 px-3 md:px-4 flex items-center justify-center text-xs md:text-sm font-medium shrink-0 z-50">
+
+      {/* ── Banner ─────────────────────────────────── */}
+      <div className="relative bg-[#f1e38b] border-b border-[#d7ca73] py-2.5 px-4 flex items-center justify-center text-xs font-medium shrink-0 z-50">
         <div className="flex items-center gap-2 text-zinc-900">
-          <span className="material-symbols-outlined text-[18px]">info</span>
+          <span className="material-symbols-outlined text-[16px]">info</span>
           <span>This portfolio is unpublished — only you can see it</span>
         </div>
-        <button
-          onClick={onBack}
-          className="ml-8 inline-flex items-center gap-1.5 hover:opacity-75 transition-opacity text-zinc-900"
-        >
+        <button onClick={onBack} className="ml-6 inline-flex items-center gap-1.5 hover:opacity-75 transition-opacity text-zinc-900 font-medium">
           Back to Dashboard
-          <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+          <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
         </button>
       </div>
 
-      <main className="relative flex-1 flex flex-col overflow-hidden">
-        {/* Background radial for DEFAULT/PLAYFUL */}
-        {themeKey !== 'DARK' && (
-          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.03)_0%,transparent_100%)]"></div>
-        )}
-        {/* Dark mode noise overlay */}
-        {themeKey === 'DARK' && (
-          <div className="absolute inset-0 pointer-events-none opacity-[0.04]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")' }}></div>
-        )}
+      {/* ── Info button ─────────────────────────────── */}
+      {portfolio?.modalTitle && (
+        <button onClick={() => setShowWelcomeModal(true)} title="Welcome info" className={`fixed top-[52px] right-4 size-8 rounded-full flex items-center justify-center shadow-md z-40 transition-all hover:scale-105 ${themeKey === 'DARK' ? 'bg-zinc-800 border border-zinc-600 text-zinc-300' : 'bg-white border border-gray-200 text-gray-500'}`}>
+          <span className="material-symbols-outlined text-[16px]">info</span>
+        </button>
+      )}
 
-        {/* Info button — opens Welcome Modal */}
-        {portfolio?.modalTitle && (
-          <button
-            onClick={() => setShowWelcomeModal(true)}
-            title="Welcome info"
-            className={`fixed bottom-4 left-4 md:left-6 size-9 rounded-full flex items-center justify-center shadow-lg z-50 transition-all hover:scale-105 ${themeKey === 'DARK'
-              ? 'bg-zinc-800 border border-zinc-600 text-zinc-300 hover:bg-zinc-700'
-              : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
-              }`}
+      {/* ══════════════════════════════════════════════
+          IDLE STATE — Hero centered
+      ══════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {!hasConversation && (
+          <motion.div
+            key="hero"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0, y: -30 }}
+            transition={{ duration: 0.35, ease: 'easeInOut' }}
+            className="flex-1 flex flex-col items-center justify-center px-4 pb-8"
           >
-            <span className="material-symbols-outlined text-[18px]">info</span>
-          </button>
-        )}
+            {/* Avatar */}
+            <motion.div
+              className={`mb-6 ${portfolio?.avatarShape === 'ROUNDED' ? 'rounded-full' : 'rounded-[2rem]'} overflow-hidden shadow-2xl ring-1 ${themeKey === 'DARK' ? 'ring-white/10' : 'ring-gray-900/5'}`}
+              style={{ width: 180, height: 180 }}
+            >
+              {portfolio?.avatarUrl
+                ? <img src={portfolio.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                : <div className={`w-full h-full flex items-center justify-center text-7xl font-black ${themeKey === 'DARK' ? 'bg-zinc-800 text-zinc-400' : 'bg-gray-100 text-gray-400'}`}>{profileGreeting.charAt(0).toUpperCase()}</div>
+              }
+            </motion.div>
 
-        {/* Powered badge */}
-        <div className={`fixed bottom-4 right-4 md:right-6 px-4 py-2 text-[12px] font-medium rounded-lg shadow-lg opacity-80 hover:opacity-100 transition-opacity z-50 ${themeKey === 'DARK' ? 'bg-zinc-800 text-zinc-300 border border-zinc-700' : 'bg-gray-800 text-white'}`}>
-          Powered by Profolio
-        </div>
+            <h2 className={`text-lg font-serif italic mb-2 text-center ${t.subText}`}>
+              {profileGreeting} <span className="not-italic">👋</span>
+            </h2>
+            <h1 className={`text-4xl md:text-5xl font-serif mb-10 text-center tracking-tight ${t.heroText}`}>{userTitle}</h1>
 
-        <div className="relative z-10 w-full max-w-5xl mx-auto px-4 pt-10 md:pt-16 pb-24 flex flex-col items-center flex-1">
-          <h2 className={`text-lg md:text-xl font-serif italic mb-2 md:mb-3 text-center tracking-tight ${t.subText}`}>
-            {profileGreeting} <span className="not-italic align-middle text-2xl">👋</span>
-          </h2>
-          <h1 className={`text-3xl md:text-[4rem] font-serif mb-8 md:mb-10 text-center tracking-tight leading-[1.1] px-4 ${t.heroText}`}>
-            {userTitle}
-          </h1>
-
-          {/* Avatar */}
-          <div className="mb-8 md:mb-10 flex justify-center">
-            <div className={`w-[160px] h-[160px] md:w-[220px] md:h-[220px] relative overflow-hidden shadow-[0_15px_30px_-10px_rgba(0,0,0,0.15)] ring-1 ${themeKey === 'DARK' ? 'ring-white/10 bg-zinc-800' : 'ring-gray-900/5 bg-white'} ${portfolio?.avatarShape === 'ROUNDED' ? 'rounded-full' : 'rounded-[1.5rem] md:rounded-[2rem]'}`}>
-              {portfolio?.avatarUrl ? (
-                <img src={portfolio.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-              ) : (
-                <div className={`w-full h-full flex items-center justify-center ${themeKey === 'DARK' ? 'bg-gradient-to-br from-zinc-700 to-zinc-800 text-zinc-400' : themeKey === 'PLAYFUL' ? 'bg-gradient-to-br from-purple-100 to-pink-100 text-purple-400' : 'bg-gradient-to-br from-gray-100 to-gray-200 text-gray-400'} text-6xl font-black`}>
-                  {profileGreeting.charAt(0).toUpperCase()}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Chat input */}
-          <div className="w-full max-w-2xl mx-auto">
-            <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="relative mb-8 md:mb-12">
-              <input
-                className={`w-full h-[54px] md:h-[60px] pl-6 md:pl-7 pr-16 rounded-full border ${t.inputBorder} ${t.inputBg} ${t.inputText} text-base shadow-sm ${t.inputFocus} focus:outline-none focus:ring-2 transition-all hover:shadow-md backdrop-blur-md`}
-                placeholder={portfolio?.chatPlaceholder || 'Ask me anything...'}
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                disabled={isLoading}
-              />
-              <button
-                type="submit"
-                disabled={isLoading || !inputValue.trim()}
-                className={`absolute right-2 top-1/2 -translate-y-1/2 size-10 md:size-11 rounded-full ${t.sendBtn} text-white flex items-center justify-center transition-all disabled:opacity-50 shadow-md`}
-              >
-                <span className="material-symbols-outlined text-[18px] md:text-[20px]">arrow_forward</span>
-              </button>
+            {/* Chat input (idle) */}
+            <form onSubmit={e => { e.preventDefault(); handleSendMessage(); }} className="w-full max-w-xl mb-8">
+              <div className={`flex items-center h-14 rounded-full border ${t.inputBorder} ${t.inputBg} shadow-sm px-2 pl-6 gap-2 transition-all duration-300 ${inputFocused ? 'shadow-md ring-2 ring-gray-200' : ''}`}>
+                <input
+                  ref={inputRef}
+                  className={`flex-1 bg-transparent outline-none text-[15px] ${t.inputText}`}
+                  placeholder={portfolio?.chatPlaceholder || 'Ask me anything...'}
+                  value={inputValue}
+                  onChange={e => setInputValue(e.target.value)}
+                  onFocus={() => setInputFocused(true)}
+                  onBlur={() => setInputFocused(false)}
+                />
+                <button type="submit" disabled={!inputValue.trim()} className={`size-10 rounded-full ${t.sendBtn} text-white flex items-center justify-center shrink-0 transition-all disabled:opacity-40`}>
+                  <span className="material-symbols-outlined text-[20px]">arrow_upward</span>
+                </button>
+              </div>
             </form>
 
-            {/* Quick action buttons */}
-            <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4 px-2">
-              {quickActions.map((btn) => (
-                <button
-                  key={btn.label}
-                  onClick={() => handleSendMessage(btn.q)}
-                  disabled={isLoading}
-                  className={`w-[84px] h-[84px] md:w-[104px] md:h-[104px] ${t.quickBtn} border rounded-[1.25rem] md:rounded-2xl flex flex-col items-center justify-center gap-1.5 hover:shadow-md transition-all shadow-sm focus:outline-none disabled:opacity-60`}
-                >
-                  <span className="material-symbols-outlined text-[22px] md:text-[24px] font-light">{btn.icon}</span>
-                  <span className="text-[12px] md:text-[13px] font-semibold">{btn.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Conversation */}
-          {hasConversation && (
-            <div className="w-full max-w-3xl mx-auto mt-10 space-y-4">
-              <AnimatePresence initial={false}>
-                {messages.map((m, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            {/* Quick action chips (idle — big cards) */}
+            {quickActions.length > 0 && (
+              <div className="flex flex-wrap justify-center gap-3 max-w-2xl">
+                {quickActions.map(btn => (
+                  <button
+                    key={btn.id}
+                    onClick={() => handleSendMessage(btn.q)}
+                    className={`w-[90px] h-[90px] ${t.chipBtn} rounded-2xl flex flex-col items-center justify-center gap-1.5 transition-all hover:shadow-md hover:-translate-y-0.5`}
                   >
-                    <div
-                      className={`max-w-[85%] md:max-w-[78%] px-4 py-3 rounded-2xl md:px-5 md:py-3.5 text-[14px] md:text-[15px] leading-relaxed shadow-sm ${m.role === 'user' ? t.userBubble : t.aiBubble
-                        }`}
-                    >
-                      {m.content}
-                    </div>
-                  </motion.div>
+                    <span className="material-symbols-outlined text-[24px]">{btn.icon}</span>
+                    <span className="text-[12px] font-semibold">{btn.label}</span>
+                  </button>
                 ))}
-              </AnimatePresence>
-              {isLoading && (
-                <div className="flex justify-start">
-                  <div className={`${themeKey === 'DARK' ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-200'} border shadow-sm px-6 py-4 rounded-2xl rounded-tl-sm flex gap-1.5 items-center`}>
-                    <span className={`size-2 ${t.typingDot} rounded-full animate-bounce`} style={{ animationDelay: '0ms' }}></span>
-                    <span className={`size-2 ${t.typingDot} rounded-full animate-bounce`} style={{ animationDelay: '150ms' }}></span>
-                    <span className={`size-2 ${t.typingDot} rounded-full animate-bounce`} style={{ animationDelay: '300ms' }}></span>
-                  </div>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ══════════════════════════════════════════════
+          ACTIVE STATE — compact header + content + fixed bottom bar
+      ══════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {hasConversation && (
+          <motion.div
+            key="active"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="flex-1 flex flex-col overflow-hidden"
+          >
+            {/* Compact avatar header */}
+            <div className="flex flex-col items-center pt-5 pb-3 px-4 shrink-0">
+              <motion.div
+                initial={{ scale: 1.4, y: 30 }}
+                animate={{ scale: 1, y: 0 }}
+                transition={{ type: 'spring', stiffness: 200, damping: 22 }}
+                className={`size-14 overflow-hidden shadow-lg ring-1 ${portfolio?.avatarShape === 'ROUNDED' ? 'rounded-full' : 'rounded-2xl'} ${themeKey === 'DARK' ? 'ring-white/10' : 'ring-gray-900/5'}`}
+              >
+                {portfolio?.avatarUrl
+                  ? <img src={portfolio.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                  : <div className={`w-full h-full flex items-center justify-center text-2xl font-black ${themeKey === 'DARK' ? 'bg-zinc-800 text-zinc-400' : 'bg-gray-100 text-gray-400'}`}>{profileGreeting.charAt(0).toUpperCase()}</div>
+                }
+              </motion.div>
             </div>
-          )}
-        </div>
-      </main>
+
+            {/* Scrollable conversation — ONLY latest Q&A */}
+            <div className="flex-1 overflow-y-auto px-4 md:px-8 pb-4">
+              <AnimatePresence initial={false}>
+                {(() => {
+                  // Only show the last AI answer + its preceding user question
+                  const lastAiIdx = [...messages].map((m, i) => ({ m, i })).reverse().find(x => x.m.role === 'assistant')?.i;
+                  if (lastAiIdx === undefined) return null;
+
+                  const aiMsg = messages[lastAiIdx];
+                  const userMsg = lastAiIdx > 0 && messages[lastAiIdx - 1]?.role === 'user'
+                    ? messages[lastAiIdx - 1]
+                    : null;
+
+                  return (
+                    <motion.div
+                      key={lastAiIdx}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="w-full max-w-3xl mx-auto mb-8"
+                    >
+                      {userMsg && (
+                        <div className="flex justify-center mb-4">
+                          <span className="px-4 py-2 rounded-full bg-gray-900 text-white text-sm font-medium shadow-sm max-w-sm text-center">
+                            {userMsg.content}
+                          </span>
+                        </div>
+                      )}
+                      <AIResponseRenderer content={aiMsg.content} textClass={t.text} />
+                    </motion.div>
+                  );
+                })()}
+              </AnimatePresence>
+
+              {/* Typing indicator */}
+              {isLoading && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full max-w-3xl mx-auto py-2">
+                  <div className="flex items-center gap-1.5">
+                    {[0, 150, 300].map(delay => (
+                      <span key={delay} className={`size-2.5 ${t.typingDot} rounded-full animate-bounce`} style={{ animationDelay: `${delay}ms` }} />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+              <div ref={contentEndRef} />
+            </div>
+
+
+            {/* ── Fixed bottom bar ─── */}
+            <div className="shrink-0 px-4 pt-3 pb-5">
+              <div className="mx-auto transition-all duration-300" style={{ maxWidth: inputFocused ? '36rem' : '26rem' }}>
+
+                {/* Quick action chips — only visible when input focused */}
+                <AnimatePresence>
+                  {inputFocused && quickActions.length > 0 && (
+                    <motion.div
+                      key="chips"
+                      initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                      animate={{ opacity: 1, height: 'auto', marginBottom: 12 }}
+                      exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                      transition={{ duration: 0.2, ease: 'easeOut' }}
+                      className="overflow-hidden"
+                    >
+                      <div className="flex items-center gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                        {quickActions.map(btn => (
+                          <button
+                            key={btn.id}
+                            onMouseDown={e => { e.preventDefault(); handleSendMessage(btn.q); }}
+                            disabled={isLoading}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all ${t.chipBtn} disabled:opacity-50`}
+                          >
+                            <span className="material-symbols-outlined text-[14px]">{btn.icon}</span>
+                            {btn.label}
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Chat input */}
+                <form onSubmit={e => { e.preventDefault(); handleSendMessage(); }}>
+                  <div className={`flex items-center rounded-full border ${t.inputBorder} ${t.inputBg} shadow-sm px-2 pl-6 gap-2 transition-all duration-300 ${inputFocused ? 'h-14 shadow-md' : 'h-11'}`}>
+                    <input
+                      className={`flex-1 bg-transparent outline-none text-[15px] ${t.inputText}`}
+                      placeholder={portfolio?.chatPlaceholder || 'Ask me anything...'}
+                      value={inputValue}
+                      onChange={e => setInputValue(e.target.value)}
+                      onFocus={() => setInputFocused(true)}
+                      onBlur={() => setInputFocused(false)}
+                      disabled={isLoading}
+                    />
+                    <button type="submit" disabled={isLoading || !inputValue.trim()} className={`rounded-full ${t.sendBtn} text-white flex items-center justify-center shrink-0 transition-all duration-300 disabled:opacity-40 ${inputFocused ? 'size-10' : 'size-7'}`}>
+                      <span className={`material-symbols-outlined transition-all duration-300 ${inputFocused ? 'text-[16px]' : 'text-[14px]'}`}>arrow_upward</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Powered badge */}
+      <div className={`fixed bottom-4 right-4 px-3 py-1.5 text-[11px] font-medium rounded-lg shadow-md opacity-60 hover:opacity-90 transition-opacity z-30 ${themeKey === 'DARK' ? 'bg-zinc-800 text-zinc-400 border border-zinc-700' : 'bg-gray-900 text-white'}`}>
+        Powered by Profolio
+      </div>
     </div>
   );
 };
