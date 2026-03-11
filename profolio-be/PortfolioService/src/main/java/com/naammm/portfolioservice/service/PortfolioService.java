@@ -55,7 +55,7 @@ public class PortfolioService {
     @Transactional
     public PortfolioDto updatePortfolio(UUID userId, PortfolioDto dto) {
         Portfolio portfolio = portfolioRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Portfolio not found for user: " + userId));
+                .orElseGet(() -> createDefaultPortfolio(userId));
 
         if (dto.getSlug() != null && !dto.getSlug().equals(portfolio.getSlug())) {
             if (portfolioRepository.existsBySlug(dto.getSlug())) {
