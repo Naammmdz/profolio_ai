@@ -30,9 +30,10 @@ public class ToolsService {
 
     // ─── Toolbox Config ──────────────────────────────────────
 
-    @Transactional(readOnly = true)
+    @Transactional
     public ToolboxConfigDto getToolboxConfig(String userId) {
-        Portfolio portfolio = getPortfolioByUserId(userId);
+        Portfolio portfolio = portfolioRepository.findByUserId(UUID.fromString(userId))
+                .orElseGet(() -> createDefaultPortfolioForUser(userId));
         ToolboxConfig config = toolboxConfigRepository.findByPortfolio(portfolio)
                 .orElseGet(() -> createEmptyToolboxConfig(portfolio));
         return mapToToolboxConfigDto(config);
@@ -110,9 +111,10 @@ public class ToolsService {
 
     @Transactional(readOnly = true)
     public List<ProjectDto> getProjects(String userId) {
-        Portfolio portfolio = getPortfolioByUserId(userId);
-        return projectRepository.findByPortfolioOrderByDisplayOrderAsc(portfolio)
-                .stream().map(this::mapToProjectDto).toList();
+        return portfolioRepository.findByUserId(UUID.fromString(userId))
+                .map(p -> projectRepository.findByPortfolioOrderByDisplayOrderAsc(p)
+                        .stream().map(this::mapToProjectDto).toList())
+                .orElse(List.of());
     }
 
     @Transactional
@@ -166,9 +168,10 @@ public class ToolsService {
 
     @Transactional(readOnly = true)
     public List<SkillCategoryDto> getSkillCategories(String userId) {
-        Portfolio portfolio = getPortfolioByUserId(userId);
-        return skillCategoryRepository.findByPortfolioOrderByDisplayOrderAsc(portfolio)
-                .stream().map(this::mapToSkillCategoryDto).toList();
+        return portfolioRepository.findByUserId(UUID.fromString(userId))
+                .map(p -> skillCategoryRepository.findByPortfolioOrderByDisplayOrderAsc(p)
+                        .stream().map(this::mapToSkillCategoryDto).toList())
+                .orElse(List.of());
     }
 
     @Transactional
@@ -237,6 +240,19 @@ public class ToolsService {
     private Portfolio getPortfolioByUserId(String userId) {
         return portfolioRepository.findByUserId(UUID.fromString(userId))
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+    }
+
+    @Transactional
+    private Portfolio createDefaultPortfolioForUser(String userId) {
+        return portfolioRepository.findByUserId(UUID.fromString(userId))
+                .orElseGet(() -> portfolioRepository.save(
+                        Portfolio.builder()
+                                .userId(UUID.fromString(userId))
+                                .slug("user-" + UUID.randomUUID().toString().substring(0, 8))
+                                .status(Portfolio.PortfolioStatus.DRAFT)
+                                .theme("DEFAULT")
+                                .build()
+                ));
     }
 
     private void verifyOwnership(Portfolio portfolio, String userId) {

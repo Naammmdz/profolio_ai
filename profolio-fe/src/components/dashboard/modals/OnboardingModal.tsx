@@ -45,10 +45,16 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose, onCo
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
+                timeout: 120_000, // AI processing can take 15-30s — override default 10s
             });
             setStep('success');
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to process CV. Please try again or fill manually.');
+            // Timeout: backend may still be processing — show softer message
+            if (err.code === 'ECONNABORTED') {
+                setError('Processing is taking longer than usual. Please wait a moment and refresh to check if your data was saved.');
+            } else {
+                setError(err.response?.data?.message || 'Failed to process CV. Please try again or fill manually.');
+            }
             setStep('upload');
         } finally {
             setIsLoading(false);
