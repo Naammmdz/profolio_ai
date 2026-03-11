@@ -11,5 +11,6 @@ public class SuggestedQuestionDto {
     private UUID id;
     private String question;
     private String category;
+    @com.fasterxml.jackson.annotation.JsonProperty("isDefault")
     private Boolean isDefault;
 }

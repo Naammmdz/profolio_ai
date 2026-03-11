@@ -1,5 +1,6 @@
 package com.naammm.portfolioservice.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,8 +9,13 @@ import java.util.List;
 @Data
 @Builder
 public class ToolboxConfigDto {
+    @JsonProperty("isGlobalEnabled")
     private Boolean isGlobalEnabled;
+    
+    @JsonProperty("isProjectsEnabled")
     private Boolean isProjectsEnabled;
+    
+    @JsonProperty("isSkillsEnabled")
     private Boolean isSkillsEnabled;
 
     private MeInfo meInfo;
@@ -22,6 +28,7 @@ public class ToolboxConfigDto {
     @Data
     @Builder
     public static class MeInfo {
+        @JsonProperty("isEnabled")
         private Boolean isEnabled;
         private String name;
         private String age;
@@ -34,6 +41,7 @@ public class ToolboxConfigDto {
     @Data
     @Builder
     public static class HobbiesInfo {
+        @JsonProperty("isEnabled")
         private Boolean isEnabled;
         private String title;
         private String description;
@@ -43,6 +51,7 @@ public class ToolboxConfigDto {
     @Data
     @Builder
     public static class ContactInfo {
+        @JsonProperty("isEnabled")
         private Boolean isEnabled;
         private String name;
         private String email;
@@ -56,6 +65,7 @@ public class ToolboxConfigDto {
     @Data
     @Builder
     public static class ResumeInfo {
+        @JsonProperty("isEnabled")
         private Boolean isEnabled;
         private String title;
         private String description;
@@ -66,6 +76,7 @@ public class ToolboxConfigDto {
     @Data
     @Builder
     public static class VideoInfo {
+        @JsonProperty("isEnabled")
         private Boolean isEnabled;
         private String title;
         private String url;
@@ -75,6 +86,7 @@ public class ToolboxConfigDto {
     @Data
     @Builder
     public static class LocationInfo {
+        @JsonProperty("isEnabled")
         private Boolean isEnabled;
         private String city;
         private String country;
