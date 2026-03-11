@@ -45,7 +45,7 @@ public class PortfolioService {
 
     // --- Portfolio CRUD ---
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PortfolioDto getPortfolioByUserId(UUID userId) {
         Portfolio portfolio = portfolioRepository.findByUserId(userId)
                 .orElseGet(() -> createDefaultPortfolio(userId));
@@ -81,7 +81,7 @@ public class PortfolioService {
 
     // --- Personality CRUD ---
 
-    @Transactional(readOnly = true)
+    @Transactional
     public AIPersonalityDto getPersonality(UUID userId) {
         Portfolio portfolio = portfolioRepository.findByUserId(userId)
                 .orElseGet(() -> createDefaultPortfolio(userId));
