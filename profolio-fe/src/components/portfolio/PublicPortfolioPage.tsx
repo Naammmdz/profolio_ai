@@ -241,6 +241,10 @@ const PublicPortfolioPage: React.FC = () => {
     portfolio.toolboxConfig.isProjectsEnabled !== false && { id: 'projects', icon: 'work', label: 'Projects', q: 'What projects have you worked on?' },
     portfolio.toolboxConfig.isSkillsEnabled !== false && { id: 'skills', icon: 'layers', label: 'Skills', q: 'What are your technical skills?' },
     portfolio.toolboxConfig.contactInfo?.isEnabled !== false && { id: 'contact', icon: 'person_search', label: 'Contact', q: 'How can I contact you?' },
+    portfolio.toolboxConfig.hobbiesInfo?.isEnabled !== false && { id: 'hobbies', icon: 'interests', label: 'Hobbies', q: 'What are your hobbies and interests?' },
+    portfolio.toolboxConfig.resumeInfo?.isEnabled !== false && { id: 'resume', icon: 'description', label: 'Resume', q: 'Can I see your resume?' },
+    portfolio.toolboxConfig.videoInfo?.isEnabled !== false && { id: 'video', icon: 'play_circle', label: 'Video', q: 'Do you have an introduction video?' },
+    portfolio.toolboxConfig.locationInfo?.isEnabled !== false && { id: 'location', icon: 'location_on', label: 'Location', q: 'Where are you based?' },
   ].filter(Boolean) : [];
 
   return (
