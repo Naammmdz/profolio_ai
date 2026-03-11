@@ -17,6 +17,9 @@
 
 ## 📋 Overview
 
+> **💡 Why "Profolio"?** 
+> It's not a typo! **Profolio** is a portmanteau of **Pro** (Professional/Proactive) and **Portfolio**. Unlike a traditional static "Portfolio", this system actively works for you as a *Pro*fessional AI representative.
+
 **Profolio AI** is a groundbreaking, interactive platform that moves beyond traditional static portfolios where recruiters only "scroll" and "read".
 
 This project allows users to upload their CV/Resume. The AI then processes, analyzes, and extracts the rich contextual data from this document to **roleplay as the user**. 
