@@ -1,4 +1,5 @@
 <div align="center">
+  <img src="assets/logo.png" width="120" alt="Profolio AI Logo" />
   <h1>🚀 Profolio AI</h1>
   <p><i>Turn static Resumes into Interactive Portfolios - Where an AI "Persona" plays the role of YOU in front of recruiters.</i></p>
 
