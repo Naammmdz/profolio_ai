@@ -2,7 +2,7 @@
   <img src="assets/logo.png" width="120" alt="Profolio AI Logo" />
   <h1>🚀 Profolio AI</h1>
   <p><i>Turn static Resumes into Interactive Portfolios - Where an AI "Persona" plays the role of YOU in front of recruiters.</i></p>
-
+  <a href="https://unikorn.vn/p/profolio-ai?ref=embed-profolio-ai" target="_blank"><img src="https://unikorn.vn/api/widgets/badge/profolio-ai/rank?theme=light&type=daily" alt="Profolio AI - Hàng ngày" style="width: 250px; height: 64px;" width="250" height="64" /></a>
   <p>
     <img src="https://img.shields.io/badge/React-18.3.1-blue.svg?style=flat-square&logo=react" alt="React" />
     <img src="https://img.shields.io/badge/Vite-6.2.0-purple.svg?style=flat-square&logo=vite" alt="Vite" />
