@@ -7,6 +7,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,6 +21,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class WebSecurityConfig {
 
     private final CorsConfigurationSource corsConfigurationSource;
@@ -43,10 +45,11 @@ public class WebSecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/auth/register", "/actuator/**", "/oauth2/token")
+                        .ignoringRequestMatchers("/api/auth/register", "/api/auth/admin/**", "/actuator/**", "/oauth2/token")
                 )
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/register").permitAll()
+                        .requestMatchers("/api/auth/admin/**").authenticated()
                         .requestMatchers("/login", "/login/**", "/register", "/register/**", "/actuator/health", "/css/**", "/js/**", "/images/**", "/error").permitAll()
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
                         .anyRequest().authenticated()

@@ -63,6 +63,15 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
+    @Column(nullable = false)
+    private Boolean banned = false;
+
+    @Column(name = "banned_at")
+    private LocalDateTime bannedAt;
+
+    @Column(name = "banned_reason")
+    private String bannedReason;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

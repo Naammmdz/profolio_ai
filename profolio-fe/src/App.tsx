@@ -4,6 +4,7 @@ import LandingPage from './components/landing/LandingPage';
 import Dashboard from './components/dashboard/Dashboard';
 import PortfolioPreview from './components/portfolio/PortfolioPreview';
 import PublicPortfolioPage from './components/portfolio/PublicPortfolioPage';
+import AdminDashboard from './components/admin/AdminDashboard';
 import Callback from './components/auth/Callback';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import NotFoundPage from './components/common/NotFoundPage';
@@ -30,6 +31,15 @@ const App: React.FC = () => {
         element={
           <ProtectedRoute>
             <PortfolioPreview onBack={() => navigate('/dashboard')} />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <AdminDashboard />
           </ProtectedRoute>
         }
       />
