@@ -63,15 +63,18 @@ const AdminDashboard: React.FC = () => {
 
   const token = auth.user?.access_token;
 
-  // Roles are in the access_token JWT payload, not in OIDC profile (id_token)
-  const getRolesFromToken = (): string[] => {
+  // Primary: read from OIDC profile (id_token) — standard approach
+  // Fallback: decode access_token JWT for backwards compatibility
+  const getRoles = (): string[] => {
+    const profileRoles = (auth.user?.profile as any)?.roles;
+    if (Array.isArray(profileRoles) && profileRoles.length > 0) return profileRoles;
     if (!token) return [];
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       return payload.roles || [];
     } catch { return []; }
   };
-  const roles = getRolesFromToken();
+  const roles = getRoles();
   const isAdmin = roles.includes('ADMIN');
 
   useEffect(() => {

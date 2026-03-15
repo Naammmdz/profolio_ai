@@ -47,6 +47,13 @@ public class TokenConfig {
                     context.getClaims().claim("name", user.getName() != null ? user.getName() : email);
                     context.getClaims().claim("email_verified", user.getEmailVerified());
                 });
+
+                // Include roles in ID token for frontend to read via profile
+                Set<String> authorities = AuthorityUtils.authorityListToSet(context.getPrincipal().getAuthorities());
+                Set<String> roles = authorities.stream()
+                        .map(auth -> auth.replaceFirst("^ROLE_", ""))
+                        .collect(Collectors.toSet());
+                context.getClaims().claim("roles", roles);
             }
         };
     }
