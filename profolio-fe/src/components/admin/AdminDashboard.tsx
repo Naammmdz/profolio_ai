@@ -62,7 +62,16 @@ const AdminDashboard: React.FC = () => {
   const [banReason, setBanReason] = useState('');
 
   const token = auth.user?.access_token;
-  const roles: string[] = (auth.user?.profile as any)?.roles || [];
+
+  // Roles are in the access_token JWT payload, not in OIDC profile (id_token)
+  const getRolesFromToken = (): string[] => {
+    if (!token) return [];
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.roles || [];
+    } catch { return []; }
+  };
+  const roles = getRolesFromToken();
   const isAdmin = roles.includes('ADMIN');
 
   useEffect(() => {
