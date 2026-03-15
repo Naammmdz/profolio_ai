@@ -182,6 +182,34 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ currentTab, onTabCh
 
               {/* Menu Items */}
               <div className="py-1">
+                {/* Admin Panel - only visible for ADMIN role */}
+                {(() => {
+                  const profileRoles = (userProfile as any)?.roles;
+                  let roles: string[] = [];
+                  if (Array.isArray(profileRoles)) {
+                    roles = profileRoles;
+                  } else {
+                    try {
+                      const token = auth.user?.access_token;
+                      if (token) {
+                        const payload = JSON.parse(atob(token.split('.')[1]));
+                        roles = payload.roles || [];
+                      }
+                    } catch {}
+                  }
+                  return roles.includes('ADMIN') ? (
+                    <button
+                      onClick={() => {
+                        setShowDropdown(false);
+                        navigate('/admin');
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-primary hover:bg-surface-highlight transition-colors text-left"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">admin_panel_settings</span>
+                      <span>Admin Panel</span>
+                    </button>
+                  ) : null;
+                })()}
                 <button
                   onClick={() => {
                     setShowDropdown(false);
